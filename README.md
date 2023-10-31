@@ -40,7 +40,7 @@ if ($cnt && 'ctrl' == $surl[0]) {
 ## For j_.. actions add to HTML:
 ```html
 <script src="w/acl/acl.js"></script>
-<script>upload.jact = 'ctrl'</script>
+<script>acl.jact = 'ctrl'</script>
 ```
 
 Where 'ctrl' - tuning value (any of `/^[\w+\-]+$/`)
