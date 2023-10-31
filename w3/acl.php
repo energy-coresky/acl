@@ -1,18 +1,15 @@
 <?php
 
-class ACL
+class Acl extends Console
 {
-    static $image = [
-    ];
-
-    static function cfg() {
-        return (object)\SKY::$plans['acl']['app']['options'];
+    function __construct($argv = [], $found = []) {
+        Plan::$ware = 'acl';
+        parent::__construct($argv, $found);
+        Plan::$ware = 'main';
     }
 
-    static function model() {
-        $prev = Plan::set('acl');
-        $model = \MVC::$mc->x_able;
-        Plan::$ware = $prev;
-        return $model;
+    /** ACL test */
+    function a_t() {
+        print_r(1);
     }
 }

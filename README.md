@@ -17,8 +17,8 @@ object_group, object_type, object_ID
 
 Essence | Count
 :----- | :-----
-Installer class | present (**upload\\acl**)
-_w3_ class | 1 (**ACL**)
+Installer class | present (**acl\\ware**)
+_w3_ class | 2 (**Acl** (console), **ACM**)
 Controller | 1, has tune, optional
 Model | 3
 Jet templates | 2
