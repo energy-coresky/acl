@@ -31,7 +31,7 @@ Status: _under development_
 
 ## Rewrite for a_.. actions:
 ```php
-if ($cnt && 'upload' == $surl[0]) {
+if ($cnt && 'ctrl' == $surl[0]) {
     common_c::$tune = array_shift($surl);
     $cnt--;
 }
