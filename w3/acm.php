@@ -1,17 +1,15 @@
 <?php
 
-class ACM
+class ACM # Access control manager
 {
-    static $image = [
-    ];
-
     static function cfg() {
-        return (object)\SKY::$plans['acl']['app']['options'];
+        return (object)SKY::$plans['acl']['app']['options'];
     }
 
-    static function model() {
+    static function model($tbl) {
         $prev = Plan::set('acl');
-        $model = \MVC::$mc->x_able;
+        $name = 'x_' . self::cfg()->tt . '_' . $tbl;
+        $model = MVC::$mc->$name;
         Plan::$ware = $prev;
         return $model;
     }

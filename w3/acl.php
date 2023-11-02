@@ -10,6 +10,7 @@ class Acl extends Console
 
     /** ACL test */
     function a_t() {
-        print_r(1);
+        MVC::$cc = new common_c;
+        echo (string)MVC::$cc->x_object;
     }
 }

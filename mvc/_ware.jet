@@ -8,43 +8,22 @@
 </div>
 #.install
 
-
-
-acl_profile acl_group acl_object
-
 #.data.table -----------------------------------------------------------------------------------------------------------
-@if('MySQLi' == $dd->name)
-CREATE TABLE `{{$table}}` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `obj` varchar(10) DEFAULT NULL,
-  `obj_id` int(11) NOT NULL DEFAULT '0',
-  `name` varchar(255) NOT NULL DEFAULT '',
-  `comment` varchar(255) DEFAULT NULL,
-  `dt_c` datetime NOT NULL,
-  `c_user_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=%engine% DEFAULT CHARSET=utf8
-@elseif('SQLite3' == $dd->name)
-CREATE TABLE `{{$table}}` (
-  "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  "obj" VARCHAR(10) DEFAULT NULL,
-  "obj_id" INTEGER NOT NULL DEFAULT '0',
-  "name" VARCHAR(255) DEFAULT '',
-  "comment" VARCHAR(255) DEFAULT NULL,
-  "dt_c" DATETIME NOT NULL,
-  "u_user_id" INTEGER DEFAULT NULL
-)
-@else
-  <b>{{$dd->name}}</b> driver <r>NOT supported for now</r>
+@if('MySQLi' == $dd->name)@inc(tables_my)
+@elseif('SQLite3' == $dd->name)@inc(tables_l3)
+@else<b>{{$dd->name}}</b> driver <r>NOT supported for now</r>
 ~if
 ~
 #.table.rewrite
+@if($tune)
 <pre style="padding:20px 30px; margin-top:10px; background:lightyellow">
 if ($cnt && '{{$tune}}' == $surl[0]) {
     common_c::$tune = array_shift($surl);
     $cnt--;
 }
 </pre>
+@else--
+~if
 #.rewrite
 ~
 sky.d.ware(1, 1, $('#finalize').serialize())
@@ -61,10 +40,11 @@ sky.d.ware(1, 1, $('#finalize').serialize())
   <h3>Manual steps to do:</h3>
   <pre>
     1. In SQL:
-    <b>DROP TABLE `{{$table}}`</b><br>
-    2. In application code:
+    @loop($tables as $table)
+    <b>DROP TABLE `{{$table[0]}}`;</b>
+    ~loop@eat()2. In application code:
     Check the application & remove all reference to this ware.
-    Delete Coresky rewrite if used:<br>@inc(.rewrite)
+    @if($tune)Delete Coresky rewrite:<br>@inc(.rewrite)~if
   </pre>
 </div>
 #.uninstall

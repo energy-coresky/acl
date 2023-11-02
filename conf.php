@@ -5,5 +5,6 @@ return [
     'app' => [
         'type' => 'prod',
         'flags' => 'tune',
+        'cli' => 'c:/web/hole',
     ],
 ];

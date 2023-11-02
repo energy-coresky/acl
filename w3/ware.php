@@ -1,24 +1,33 @@
 <?php
 
 namespace acl;
-use Plan, SQL, Display, Form;
+use Plan, SQL, Display, Form, Rare;
 
 class ware extends \Wares
 {
-    public $bases = ['SQLite3', 'MySQLi'];
+    public $bases   = ['SQLite3', 'MySQLi'];
     public $engines = ['InnoDB', 'MyISAM'];
+    public $tables  = ['access', 'log', 'user2grp', 'object', 'user'];
 
     function form() {
         return [
             'connection' => ['Database connection', 'select', $this->databases()],
-            'table' => ['Table name', '', '', 'acl'],
+            'tt' => ['Table\'s tune (middle part)', '', '', 'acl'],
+            'ext' => ['Ware\'s mode', 'radio', ['simple', 'extended'], 1],
         ];
     }
 
+    function tables($dd, $tt) {
+        $ary = [];
+        foreach ($this->tables as $one)
+            $ary[] = [$name = $dd->pref . $tt . "_$one", $dd->_tables($name)];
+        return $ary;
+    }
+
     function vars() {
-        $model = ant::model();
-        $dd = $model->dd();
-        $exist = $model->get_table($table);
+        $cfg = \ACM::cfg();
+        $dd = SQL::open($cfg->connection);
+        $tables = $this->tables($dd, $tt = $cfg->tt);
         $object = $this;
         $tune = Plan::_r(['main', 'wares.php'])['acl']['tune'];
         return compact(array_keys(get_defined_vars()));
@@ -27,30 +36,35 @@ class ware extends \Wares
     function install($mode) {
         $data = \view('ware.data', $vars = $this->vars());
         [$sql, $rewrite, $ajax] = explode("\n~\n", \unl($data));
+        $sql = explode("\n~~\n", $sql);
         extract($vars, EXTR_REFS);
         if ($mode) {
-            if (!$exist) {
-                $sql = str_replace('%engine%', $this->engines[$_POST['engine'] ?? 0], $sql);
-                $dd->sqlf(\SQL::NO_PARSE, trim($sql)); //2do: use migrations
+            foreach ($tables as $i => $table) {
+                if ($table[1])
+                    continue;
+                $str = str_replace('%engine%', $this->engines[$_POST['engine'] ?? 0], $sql[$i]);
+                foreach (Rare::split($str) as $create)
+                    $dd->sqlf(SQL::NO_PARSE, trim($create)); //2do: use migrations
             }
             echo 'OK';
             return;
         }
-        $form = [
-            's' => 'acl.install',
-            'mode' => 1,
-            ["Table <b>$table</b>", 'ni', $exist ? 'exist' : 'NOT exist'],
-            ["Create <b>$table</b> table", 'checkbox', ' disabled', !$exist],
-            ['', 'ni', \pre($sql)],
-        ];
-        if ('MySQLi' == $dd->name && !$exist)
+        $form = ['s' => 'acl.install', 'mode' => 1];
+        foreach ($tables as $i => $table) {
+            $form += [
+                $i * 10 + 4 => ["Table <b>$table[0]</b>", 'ni', $table[1] ? 'exist' : 'NOT exist'],
+                $i * 10 + 5 => ["Create <b>$table[0]</b> table", 'checkbox', ' disabled', !$table[1]],
+                $i * 10 + 6 => ['', 'ni', \pre($sql[$i])],
+            ];
+        }
+        if ('MySQLi' == $dd->name)
             $form += ['engine' => ['Select %engine%', 'select', $this->engines]];
         unset($_POST['mode']);
         return [
             'md' => Display::md(Plan::_g('README.md')),
             'license' => Display::bash(Plan::_g('LICENSE')),
             'form' => Form::A([], $form + [
-                9 => ['<b>Manual step:</b><br>Add/check rewrite for this ware', 'ni', $rewrite],
+                99 => ['<b>Manual step:</b><br>Add/check rewrite for this ware', 'ni', $rewrite],
                 ['Finalize', 'button', "onclick=\"$ajax\""]
             ]),
         ];

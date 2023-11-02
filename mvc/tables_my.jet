@@ -1,0 +1,58 @@
+
+CREATE TABLE `{{$dd->pref . $tt}}_access` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `obj` varchar(10) DEFAULT NULL,
+  `obj_id` int(11) NOT NULL DEFAULT '0',
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `comment` varchar(255) DEFAULT NULL,
+  `dt_c` datetime NOT NULL,
+  `c_user_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=%engine% DEFAULT CHARSET=utf8
+~~
+CREATE TABLE `{{$dd->pref . $tt}}_grp_obj` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+) ENGINE=%engine% DEFAULT CHARSET=utf8
+~~
+CREATE TABLE `{{$dd->pref . $tt}}_grp_user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+) ENGINE=%engine% DEFAULT CHARSET=utf8
+~~
+CREATE TABLE "acl_object" ( -- objects for access & it's groups
+  "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  "name" VARCHAR(55) DEFAULT '-',
+  "grp_id" INTEGER DEFAULT 0,
+  "is_grp" INTEGER DEFAULT 0,
+  "comment" VARCHAR(255) DEFAULT NULL,
+  "dt" DATETIME NOT NULL
+);
+INSERT INTO "acl_object" values (1, 'ACL self', 0, 1, '', '1971-01-01 01:01:01')
+~~
+CREATE TABLE `{{$dd->pref . $tt}}_profile` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `comment` varchar(255) DEFAULT NULL,
+  `dt` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=%engine% DEFAULT CHARSET=utf8
+
+
+
+
+
+     err in:
+
+$sql = <<<EOD
+CREATE TABLE "acl_object" ( -- objects for access & it's groups
+  "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  "name" VARCHAR(55) DEFAULT '-',
+  "grp_id" INTEGER DEFAULT 0,
+  "is_grp" INTEGER DEFAULT 0,
+  "comment" VARCHAR(255) DEFAULT NULL,
+  "dt" DATETIME NOT NULL
+  );
+INSERT INTO "acl_object" values (1, 'ACL self', 0, 1, '', '1971-01-01 01:01:01')
+EOD;
+$ary = Rare::split($sql);
+print_r(count($ary));
+print_r($ary);

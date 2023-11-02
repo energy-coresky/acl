@@ -1,0 +1,27 @@
+
+#.profile --------------------------------------------------------------------------------------------
+<h1>Profiles</h1>
+<table width="80%">
+  <tr style="background:skyblue">
+    <th>ID</th><th>Name</th><th>Comment</th><th>Added at</th><th>Action <a href="?apid">add new</a></th>
+  </tr>
+@loop($list as $id => $one)
+  <tr style="background:{{$id % 2 ? '#eee' : ''}}">
+    <td>{{$id}}</td>
+    <td>{{$one->name}}</td>
+    <td>{{$one->comment}}</td>
+    <td>{{$one->dt}}</td>
+    <td>
+      @if($id>2)
+        <a href="?epid={{$id}}">edit</a> |
+        <a href="?dpid={{$id}}">delete</a>
+      ~if
+    </td>
+  </tr>
+~loop
+</table>
+#.profile
+
+#.apid.epid --------------------------------------------------------------------------------------------
+<h1>{{$sky->_2 ? 'Edit' : 'Add'}} profile</h1>{!$form!}
+#.apid.epid

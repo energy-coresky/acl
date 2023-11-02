@@ -1,0 +1,46 @@
+
+CREATE TABLE "{{$dd->pref . $tt}}_access" (
+  "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  "obj" VARCHAR(55) NOT NULL,
+  "crud" INTEGER NOT NULL, -- c=1|r=2|u=3|d=4
+  "obj_id" INTEGER DEFAULT 0,
+  "is_deny" INTEGER DEFAULT 0,
+  "pid" INTEGER DEFAULT 0,
+  "gid" INTEGER DEFAULT 0,
+  "uid" INTEGER DEFAULT 0,
+  "user_id" INTEGER NOT NULL,
+  "dt_c" DATETIME NOT NULL
+)
+~~
+CREATE TABLE "{{$dd->pref . $tt}}_log" ( -- ACL's actions log (optional)
+  "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  "user_id" INTEGER NOT NULL,
+  "comment" VARCHAR(255) DEFAULT NULL,
+  "dt" DATETIME NOT NULL
+)
+~~
+CREATE TABLE "{{$dd->pref . $tt}}_user2grp" ( -- user's groups
+  "user_id" INTEGER NOT NULL,
+  "grp_id" INTEGER NOT NULL
+)
+~~
+CREATE TABLE "{{$dd->pref . $tt}}_object" ( -- objects for access & its groups
+  "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  "name" VARCHAR(55) DEFAULT '-',
+  "grp_id" INTEGER DEFAULT 0,
+  "is_grp" INTEGER DEFAULT 0,
+  "comment" VARCHAR(255) DEFAULT NULL,
+  "dt" DATETIME NOT NULL
+);
+INSERT INTO "{{$dd->pref . $tt}}_object" values (1, 'ACL self', 0, 1, '', '1971-01-01 01:01:01');
+~~
+CREATE TABLE "{{$dd->pref . $tt}}_user" ( -- profiles & user groups
+  "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  "name" VARCHAR(55) DEFAULT '',
+  "is_grp" INTEGER DEFAULT 0,
+  "comment" VARCHAR(255) DEFAULT NULL,
+  "dt" DATETIME NOT NULL
+);
+INSERT INTO "{{$dd->pref . $tt}}_user" values (0, 'Anonymous', 0, 'No auth at all', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_user" values (1, 'Root', 0, 'Undeniable full access', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_user" values (2, 'Authed', 0, 'Minimal access', '1971-01-01 01:01:01');
