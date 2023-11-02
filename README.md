@@ -19,12 +19,12 @@ Essence | Count
 :----- | :-----
 Installer class | present (**acl\\ware**)
 _w3_ class | 2 (**Acl** (console), **ACM**)
-Controller | 1, has tune, optional
-Model | 3
+Controllers | 1, has tune, optional
+Models | 3
 Jet templates | 2
-Table in the database | 3
+Tables in the database | 5
 dd drivers support | 2 (**sqlite3**, **mysqli**) for now
-_Asset_ files | 1 (**acl.js**)
+_Asset_ files | 0
 
 
 Status: _under development_

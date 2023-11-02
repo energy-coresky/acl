@@ -2,11 +2,11 @@
 
 namespace acl;
 use Form;
-use function sqlf;
+use function sqlf, jump;
 
 class t_user extends \Model_t
 {
-    use common;    //private $ext_out;
+    use common;
 
     function profile($post, $id = 0) {
         $form = [
@@ -15,10 +15,9 @@ class t_user extends \Model_t
             ['Submit', 'submit', 'onclick="return sky.f.submit()"'],
         ];
         if (!$post)
-            return ['form' => new Form($form, $id ? $this->one(['id=' => $id]) : [])];
+            return new Form($form, $id ? $this->one(['id=' => $id]) : []);
         (new Form($form))->validate();
         $ary = [
-            'is_grp' => 0,
             'name' => $post->name,
             'comment' => $post->comment,
             '!dt' => '$now',
@@ -28,9 +27,8 @@ class t_user extends \Model_t
     }
 
     function dpid($id) {
-        $id > 2 or die;
-        $this->delete($id);
-        sqlf('update $_users set pid=2 where pid=%d', $id);
+        if ($this->delete(['id=' => $id, 'id>' => 2, 'is_grp=' => 0]))
+            sqlf('update $_users set pid=2 where pid=%d', $id);
         jump('acl?profile');
     }
 }
