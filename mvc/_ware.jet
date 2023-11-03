@@ -1,4 +1,8 @@
-#.jet install acl ware template
+#.jet acl main template
+
+#._
+#if(Plan::view_t(['main', 'acl.jet']))@inc(acl.)#else@inc(_access.)#end
+#._
 
 #.install ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 @inc(__dev.title)

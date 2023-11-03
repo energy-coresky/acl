@@ -6,7 +6,7 @@
     <th>ID</th><th>Name</th><th>Comment</th><th>Added at</th><th>Action <a href="?cpid">add new</a></th>
   </tr>
 @loop($list as $id => $one)
-  <tr style="background:{{$id % 2 ? '#eee' : ''}}">
+  <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
     <td>{{$id}}</td>
     <td>{{$one->name}}</td>
     <td>{{$one->comment}}</td>
@@ -25,3 +25,4 @@
 #.cpid --------------------------------------------------------------------------------------------
 <h1>{{$sky->_2 ? 'Edit' : 'Add'}} profile</h1>{!$form!}
 #.cpid
+

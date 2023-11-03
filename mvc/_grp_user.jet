@@ -1,0 +1,34 @@
+#._
+@inc(_log.)
+#._
+
+#.grp_user --------------------------------------------------------------------------------------------
+<h1>User Groups</h1>
+<table width="80%">
+  <tr style="background:skyblue">
+    <th>ID</th><th>Name</th><th>Comment</th><th>Added at</th><th>Action <a href="?cgu">add new</a></th>
+  </tr>
+@loop($list as $id => $one)
+  <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
+    <td>{{$id}}</td>
+    <td>{{$one->name}}</td>
+    <td>{{$one->comment}}</td>
+    <td>{{$one->dt}}</td>
+    <td>
+      @if($id>2)
+        <a href="?cgu={{$id}}">edit</a> |
+        <a href="?dgu={{$id}}">delete</a>
+      ~if
+    </td>
+  </tr>
+  @empty
+  <tr>
+    <td colspan="5"><h1>No Defined User Groups</h1></td>
+  </tr>
+~loop
+</table>
+#.grp_user
+
+#.cgu --------------------------------------------------------------------------------------------
+<h1>{{$sky->_2 ? 'Edit' : 'Add'}} User Group</h1>{!$form!}
+#.cgu
