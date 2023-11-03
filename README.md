@@ -21,7 +21,7 @@ Installer class | present (**acl\\ware**)
 _w3_ class | 2 (**Acl** (console), **ACM**)
 Controllers | 1, has tune, optional
 Models | 3
-Jet templates | 2
+Jet templates | 10
 Tables in the database | 5
 dd drivers support | 2 (**sqlite3**, **mysqli**) for now
 _Asset_ files | 0
