@@ -3,3 +3,16 @@
 @inc(_object.)
 #._
 
+#.log
+<h1>User's Actions Log</h1>
+<table width="80%">
+  <tr style="background:skyblue">
+    <th>ID</th>
+  </tr>
+@loop($e_log)
+  <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
+    <td>{{$row->id}}</td>
+  </tr>
+~loop
+</table>
+#.log

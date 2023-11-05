@@ -1,5 +1,18 @@
 
 #._
-@inc(_grp_object.)
+@inc(_group.)
 #._
 
+#.access
+<h1>User's Access</h1>
+<table width="80%">
+  <tr style="background:skyblue">
+    <th>ID</th>
+  </tr>
+@loop($e_access)
+  <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
+    <td>{{$row->id}}</td>
+  </tr>
+~loop
+</table>
+#.access

@@ -80,20 +80,6 @@ return array (
         ),
       ),
     ),
-    'a_grp_user' => 
-    array (
-      0 => 1,
-      1 => 
-      array (
-        0 => 1,
-      ),
-      2 => 
-      array (
-      ),
-      3 => 
-      array (
-      ),
-    ),
     'a_cgu' => 
     array (
       0 => 65,
@@ -150,6 +136,90 @@ return array (
           3 => '\\d+',
           4 => 0,
         ),
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    'a_group' => 
+    array (
+      0 => 1,
+      1 => 
+      array (
+        0 => 1,
+      ),
+      2 => 
+      array (
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    'a_object' => 
+    array (
+      0 => 1,
+      1 => 
+      array (
+        0 => 1,
+      ),
+      2 => 
+      array (
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    'a_users' => 
+    array (
+      0 => 1,
+      1 => 
+      array (
+        0 => 1,
+      ),
+      2 => 
+      array (
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    'a_types' => 
+    array (
+      0 => 1,
+      1 => 
+      array (
+        0 => 1,
+      ),
+      2 => 
+      array (
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    'a_access' => 
+    array (
+      0 => 1,
+      1 => 
+      array (
+        0 => 1,
+      ),
+      2 => 
+      array (
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    'a_log' => 
+    array (
+      0 => 1,
+      1 => 
+      array (
+        0 => 1,
+      ),
+      2 => 
+      array (
       ),
       3 => 
       array (

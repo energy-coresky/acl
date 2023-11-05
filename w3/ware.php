@@ -44,7 +44,7 @@ class ware extends \Wares
                     continue;
                 $str = str_replace('%engine%', $this->engines[$_POST['engine'] ?? 0], $sql[$i]);
                 foreach (Rare::split($str) as $create)
-                    $dd->sqlf(SQL::NO_PARSE, trim($create)); //2do: use migrations
+                    $dd->sqlf(SQL::NO_PARSE, $create); //2do: use migrations
             }
             echo 'OK';
             return;

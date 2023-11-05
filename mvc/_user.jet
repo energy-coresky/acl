@@ -1,4 +1,26 @@
 
+#.users --------------------------------------------------------------------------------------------
+<h1>Users</h1>
+<table width="80%">
+  <tr style="background:skyblue">
+    <th>ID</th><th>Login</th><th>E-mail</th><th>Profile</th><th>Date Registered</th><th>Action <a href="?cpid">add new</a></th>
+  </tr>
+@loop($e_users)
+  <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
+    <td>{{$row->id}}</td>
+    <td><a href="?user={{$row->id}}">{{$row->login}}</a></td>
+    <td>{{$row->email}}</td>
+    <td>{{$row->profile}}</td>
+    <td>{{$row->dt_r}}</td>
+    <td>
+      <a href="?emulate={{$row->id}}">emulate</a>
+      <a href="?lock={{$row->id}}">lock</a>
+    </td>
+  </tr>
+~loop
+</table>
+#.users
+
 #.profile --------------------------------------------------------------------------------------------
 <h1>Profiles</h1>
 <table width="80%">
@@ -12,7 +34,7 @@
     <td>{{$one->comment}}</td>
     <td>{{$one->dt}}</td>
     <td>
-      @if($id>2)
+      @if($id>4)
         <a href="?cpid={{$id}}">edit</a> |
         <a href="?dpid={{$id}}">delete</a>
       ~if
@@ -25,4 +47,3 @@
 #.cpid --------------------------------------------------------------------------------------------
 <h1>{{$sky->_2 ? 'Edit' : 'Add'}} profile</h1>{!$form!}
 #.cpid
-

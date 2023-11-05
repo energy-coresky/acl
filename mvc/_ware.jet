@@ -1,8 +1,28 @@
 #.jet acl main template
 
 #._
-#if(Plan::view_t(['main', 'acl.jet']))@inc(acl.)#else@inc(_access.)#end
+#if(Plan::view_t(['main', 'acl.jet']))
+    @inc(acl.)
+#else
+    @inc(.menu)@inc(_access.)
+#end
 #._
+
+#.menu
+<a@aca($sky->_1=='users') href=@acl(acl?users)>USERS</a>
+<a@aca($sky->_1=='profile') href=@acl(acl?profile)>PROFILES</a>
+<a@aca($sky->_1=='group') href=@acl(acl?group)>USER-GROUPS</a>
+<a@aca($sky->_1=='object') href=@acl(acl?object)>OBJECTS</a>
+<a@aca($sky->_1=='types') href=@acl(acl?types)>OBJ-TYPES</a>
+<a@aca($sky->_1=='access') href=@acl(acl?access)>ACCESS</a>
+<a@aca($sky->_1=='log') href=@acl(acl?log)>LOG</a>
+<style>
+[aca] {
+    background:blue;
+    color:#fff;
+}
+</style>
+#.menu
 
 #.install ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 @inc(__dev.title)
@@ -13,7 +33,7 @@
 #.install
 
 #.data.table -----------------------------------------------------------------------------------------------------------
-@if('MySQLi' == $dd->name)@inc(tables_my)
+@if(    'MySQLi' == $dd->name)@inc(tables_my)
 @elseif('SQLite3' == $dd->name)@inc(tables_l3)
 @else<b>{{$dd->name}}</b> driver <r>NOT supported for now</r>
 ~if

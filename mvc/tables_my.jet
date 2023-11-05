@@ -36,23 +36,3 @@ CREATE TABLE `{{$dd->pref . $tt}}_profile` (
   PRIMARY KEY (`id`)
 ) ENGINE=%engine% DEFAULT CHARSET=utf8
 
-
-
-
-
-     err in:
-
-$sql = <<<EOD
-CREATE TABLE "acl_object" ( -- objects for access & it's groups
-  "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  "name" VARCHAR(55) DEFAULT '-',
-  "grp_id" INTEGER DEFAULT 0,
-  "is_grp" INTEGER DEFAULT 0,
-  "comment" VARCHAR(255) DEFAULT NULL,
-  "dt" DATETIME NOT NULL
-  );
-INSERT INTO "acl_object" values (1, 'ACL self', 0, 1, '', '1971-01-01 01:01:01')
-EOD;
-$ary = Rare::split($sql);
-print_r(count($ary));
-print_r($ary);
