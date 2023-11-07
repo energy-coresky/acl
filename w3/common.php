@@ -16,6 +16,15 @@ trait common
         return new \Model_t($this->cfg()->tt . ($log ? '_log' : '_user2grp'));
     }
 
+    function log($desc) {
+        global $user;
+        $this->t_log->insert([
+            'user_id' => (int)$user->id,
+            'comment' => $desc,
+            '!dt' => '$now',
+        ]);
+    }
+
     function head_y() {
         $cfg = $this->cfg();
         $this->table = $cfg->tt . '_' . substr(explode('\\', __CLASS__)[1], 2);

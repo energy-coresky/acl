@@ -3,26 +3,23 @@
 @inc(_user.)
 #._
 
-  "grp_id" INTEGER DEFAULT 0,
-  "is_typ" INTEGER DEFAULT 0,
-
-#.object
+#.object --------------------------------------------------------------------------------------------
 <h1>Objects</h1>
 <table width="80%">
   <tr style="background:skyblue">
-    <th>ID</th><th>Name</th><th>Type</th><th>Comment</th><th>Added at</th><th>Action <a href="?cgu">add new</a></th>
+    <th>ID</th><th>Name</th><th>Type</th><th>Comment</th><th>Added at</th><th>Action <a href="?cobj">add new</a></th>
   </tr>
-@loop($list as $id => $one)
+@loop($e_obj)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
-    <td>{{$id}}</td>
-    <td>{{$one->name}}</td>
-    <td>{{$one->type}}</td>
-    <td>{{$one->comment}}</td>
-    <td>{{$one->dt}}</td>
+    <td>{{$row->id}}</td>
+    <td>{{$row->name}}</td>
+    <td>{{$row->type}}</td>
+    <td>{{$row->comment}}</td>
+    <td>{{$row->dt}}</td>
     <td>
-      @if($id>2)
-        <a href="?cob={{$id}}">edit</a> |
-        <a href="?cob={{$id}}">delete</a>
+      @if($row->id>1)
+        <a href="?cobj={{$row->id}}">edit</a> |
+        <a href="?dobj={{$row->id}}">delete</a>
       ~if
     </td>
   </tr>
@@ -34,11 +31,15 @@
 </table>
 #.object
 
+#.cobj
+<h1>{{$sky->_2 ? 'Edit' : 'Add'}} Object</h1>{!$form!}
+#.cobj
+
 #.types --------------------------------------------------------------------------------------------
 <h1>Object Types</h1>
 <table width="80%">
   <tr style="background:skyblue">
-    <th>ID</th><th>Name</th><th>Comment</th><th>Added at</th><th>Action <a href="?cgu">add new</a></th>
+    <th>ID</th><th>Name</th><th>Comment</th><th>Added at</th><th>Action <a href="?cot">add new</a></th>
   </tr>
 @loop($list as $id => $one)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
@@ -47,9 +48,9 @@
     <td>{{$one->comment}}</td>
     <td>{{$one->dt}}</td>
     <td>
-      @if($id>2)
-        <a href="?cob={{$id}}">edit</a> |
-        <a href="?cob={{$id}}">delete</a>
+      @if($id>1)
+        <a href="?cot={{$id}}">edit</a> |
+        <a href="?dot={{$id}}">delete</a>
       ~if
     </td>
   </tr>
@@ -61,8 +62,7 @@
 </table>
 #.types
 
-
-#.cob --------------------------------------------------------------------------------------------
+#.cot
 <h1>{{$sky->_2 ? 'Edit' : 'Add'}} Object Type</h1>{!$form!}
-#.cob
+#.cot
 

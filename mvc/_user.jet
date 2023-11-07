@@ -1,9 +1,12 @@
+#.register
+<h1>Register new user</h1>{!$form!}
+#.register
 
 #.users --------------------------------------------------------------------------------------------
 <h1>Users</h1>
 <table width="80%">
   <tr style="background:skyblue">
-    <th>ID</th><th>Login</th><th>E-mail</th><th>Profile</th><th>Date Registered</th><th>Action <a href="?cpid">add new</a></th>
+    <th>ID</th><th>Login</th><th>E-mail</th><th>Profile</th><th>Date Registered</th><th>Action <a href="?register">register new</a></th>
   </tr>
 @loop($e_users)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
@@ -37,7 +40,7 @@
       @if($id>4)
         <a href="?cpid={{$id}}">edit</a> |
         <a href="?dpid={{$id}}">delete</a>
-      ~if
+      @else@eat()Cannot change~if
     </td>
   </tr>
 ~loop

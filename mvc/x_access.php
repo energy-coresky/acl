@@ -17,11 +17,12 @@ class t_access extends \Model_t
         ];
     }
 
-    function log($page = 1) {
+    function listing($page = 1) {
+        $sql = "select l.*, u.login as user from $this->t_log l left join \$_users u on u.id=l.user_id";
         return [
-            'query' => $this->t_log->all(),
+            'query' => $this->sqlf($sql),
             'row_c' => function ($row) {
-                $row->profile = 1;
+                $row->user = $row->user ?? 'Anonymous';
             },
         ];
     }

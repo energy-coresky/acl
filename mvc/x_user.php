@@ -24,17 +24,31 @@ class t_user extends \Model_t
     }
 
     function users() {
-        $list = $this->sqlf('@select id, name from $_ where is_grp=0');
+        $profiles = $this->sqlf('@select id, name from $_ where is_grp=0');
         return [
             'query' => $this->sqlf('select * from $_users'),
-            'row_c' => function ($row) use (&$list) {
-                $row->profile = $list[$row->pid];
+            'row_c' => function ($row) use (&$profiles) {
+                $row->profile = $profiles[$row->pid];
             },
         ];
     }
 
     function register($post) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
+        $profiles = $this->sqlf('@select id, name from $_ where is_grp=0 and id>0');
+        $form = new Form([
+            '+login' => ['Login'],
+            '+passw' => ['Password'],
+            '+email' => ['E-mail'],
+            '+pid' => ['Profile', 'select', $profiles, '', 2],
+            '+uname' => ['User Name'],
+            ['Submit', 'submit', 'onclick="return sky.f.submit()"'],
+        ]);
+        if (!$post)
+            return $form;
+        $user = new \Model_t('users');
+        $id = $user->insert($form->validate() + ['!dt_r' => '$now']);
+        $this->log("Register new user `$post->login`");
+        jump('acl?users');
     }
 
     function profile($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -43,12 +57,15 @@ class t_user extends \Model_t
         (new Form($this->form))->validate();
         $ary = $this->data($post, 0);
         $id ? $this->update($ary, ['id=' => $id]) : $this->insert($ary);
+        $this->log("Profile `$post->name` " . ($id ? ", ID=$id modified" : 'added'));
         jump('acl?profile');
     }
 
     function dpid($id) {
-        $this->delete(['id=' => $id, 'id>' => 4, 'is_grp=' => 0])
-            && $this->sqlf('update $_users set pid=2 where pid=%d', $id);
+        if ($this->delete(['id=' => $id, 'id>' => 4, 'is_grp=' => 0])) {
+            $this->sqlf('update $_users set pid=2 where pid=%d', $id);
+            $this->log("Profile ID=$id deleted");
+        }
         jump('acl?profile');
     }
 

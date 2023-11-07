@@ -27,7 +27,7 @@ CREATE TABLE "{{$dd->pref . $tt}}_user2grp" ( -- user's groups
 CREATE TABLE "{{$dd->pref . $tt}}_object" ( -- objects for access & its groups
   "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   "name" VARCHAR(55) DEFAULT '-',
-  "grp_id" INTEGER DEFAULT 0,
+  "typ_id" INTEGER DEFAULT 0,
   "is_typ" INTEGER DEFAULT 0,
   "comment" VARCHAR(255) DEFAULT NULL,
   "dt" DATETIME NOT NULL
