@@ -8,6 +8,16 @@ class t_access extends \Model_t
 {
     use common;
 
+    function allow($user, $char, $name) {
+        $where = qp('obj=$+ and (pid=$. or uid=$.', $name, $user->pid, $user->id);
+        $grp = $this->t_user2grp->all(['user_id=' => $user->id], 'grp_id');
+        $grp ? $where->append(' or gid in ($@))', $grp) : $where->append(')');
+        foreach ($this->all($where, 'is_deny') as $deny) {
+
+        }
+        return 1;
+    }
+
     function page($page = 1) {
         return [
             'query' => $this->all(),
@@ -27,3 +37,15 @@ class t_access extends \Model_t
         ];
     }
 }
+/*
+    [id] => "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+    [obj] => "obj" VARCHAR(55) NOT NULL
+    [crud] => "crud" INTEGER NOT NULL
+    [obj_id] => "obj_id" INTEGER DEFAULT NULL
+    [is_deny] => "is_deny" INTEGER DEFAULT NULL
+    [pid] => "pid" INTEGER DEFAULT NULL
+    [gid] => "gid" INTEGER DEFAULT NULL
+    [uid] => "uid" INTEGER DEFAULT NULL
+    [user_id] => "user_id" INTEGER NOT NULL
+    [dt_c] => "dt_c" DATETIME NOT NULL
+*/

@@ -8,6 +8,11 @@ class Acl extends Console
         Plan::$ware = 'main';
     }
 
+    /** Lock user */
+    function a_lock() {
+        echo '2do';
+    }
+
     /** ACL test */
     function a_t() {
         MVC::$cc = new common_c;
