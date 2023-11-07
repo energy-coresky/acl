@@ -27,7 +27,8 @@ trait common
 
     function head_y() {
         $cfg = $this->cfg();
-        $this->table = $cfg->tt . '_' . substr(explode('\\', __CLASS__)[1], 2);
+        $table = 'ACM' == __CLASS__ ? 'user2grp' : substr(explode('\\', __CLASS__)[1], 2);
+        $this->table = $cfg->tt . '_' . $table;
         return SQL::open($cfg->connection);
     }
 }

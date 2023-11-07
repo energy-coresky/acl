@@ -8,10 +8,9 @@ class t_access extends \Model_t
 {
     use common;
 
-    function allow($user, $char, $name) {
+    function allow($user, $char, $name, $groups) {
         $where = qp('obj=$+ and (pid=$. or uid=$.', $name, $user->pid, $user->id);
-        $grp = $this->t_user2grp->all(['user_id=' => $user->id], 'grp_id');
-        $grp ? $where->append(' or gid in ($@))', $grp) : $where->append(')');
+        $groups ? $where->append(' or gid in ($@))', $groups) : $where->append(')');
         foreach ($this->all($where, 'is_deny') as $deny) {
 
         }

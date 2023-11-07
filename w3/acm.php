@@ -1,29 +1,27 @@
 <?php
 
-class ACM extends MVC_BASE # Access control manager
+class ACM extends Model_t # Access control manager
 {
-    static function cfg() {
-        return (object)SKY::$plans['acl']['app']['options'];
+    use acl\common;
+
+    static function instance() {
+        static $acm;
+        return $acm ?? ($acm = new self);
     }
 
     static function __callStatic($name, $args) {
         global $user;
-        static $acm;
-        isset($acm) or $acm = new self;
-
         $prev = Plan::set('acl');
-        if ($user->pid < 2) # root
-            return (bool)$user->pid;
-        $result = $acm->x_access->allow($user, $name[0], substr($name, 1));
+        $acm = self::instance();
+        $bool = $user->pid < 2
+            ? (bool)$user->pid
+            : $acm->x_access->allow($user, $name[0], substr($name, 1), $acm->groups());
         Plan::$ware = $prev;
-        return $result;
+        return $bool;
     }
 
-    static function model($tbl) {
-        $prev = Plan::set('acl');
-        $name = 'x_' . self::cfg()->tt . '_' . $tbl;
-        $model = MVC::$mc->$name;
-        Plan::$ware = $prev;
-        return $model;
+    function groups() {
+        global $user;
+        return $this->all(['user_id=' => $user->id], 'grp_id');
     }
 }
