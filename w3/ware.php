@@ -14,6 +14,7 @@ class ware extends \Wares
             'connection' => ['Database connection', 'select', $this->databases()],
             'tt' => ['Table\'s tune (middle part)', '', '', 'acl'],
             'ext' => ['Ware\'s mode', 'radio', ['simple', 'extended'], 1],
+            'log' => ['Logate C/U/D in ACL ware', 'radio', ['off', 'on'], 1],
         ];
     }
 

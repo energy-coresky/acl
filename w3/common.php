@@ -5,6 +5,9 @@ use SKY, Plan, SQL;
 
 trait common
 {
+    protected $ext;
+    protected $log;
+
     function cfg() {
         return (object)SKY::$plans['acl']['app']['options'];
     }
@@ -29,6 +32,8 @@ trait common
         $cfg = $this->cfg();
         $table = 'ACM' == __CLASS__ ? 'user2grp' : substr(explode('\\', __CLASS__)[1], 2);
         $this->table = $cfg->tt . '_' . $table;
+        $this->ext = $cfg->ext;
+        $this->log = $cfg->log;
         return SQL::open($cfg->connection);
     }
 }
