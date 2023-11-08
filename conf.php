@@ -7,4 +7,7 @@ return [
         'flags' => 'tune',
         'cli' => 'c:/web/hole',
     ],
+    'ram' => [
+        'path' => '/acl/',
+    ],
 ];

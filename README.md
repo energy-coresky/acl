@@ -4,7 +4,7 @@
 Production ware. Use this product if your application need access control manager.
 
 This ACL ware support simple and extended mode for manage access for
-CRUD operations.
+CRUD operations. CUD operation logging configurable at the ware installation stage.
 
 **Simple mode**: Create/Read/Update/Delete for users profile <span style="color:green">allow</span> objects types.
 User's groups and single _user\_id_ do not used for ACL.
@@ -20,10 +20,10 @@ Essence | Brief Info
 :----- | :-----
 Current status | _UNDER DEVELOPMENT_
 Installer class | present (**acl\\ware**)
-_w3_ class | 2 (**Acl** (console), **ACM**)
+_w3_ classes | 2 (**Acl** (console), **ACM**)
 Controllers | 1, has optional tune
 Models | 3
-Jet templates | 10, can change
+Jet templates | 10, tunable
 Tables in the database | 5, tunable names
 dd drivers support | 2 (**sqlite3**, **mysqli**) for now
 _Asset_ files | 0
@@ -53,16 +53,16 @@ Where **Ressence**:
 ## Replacing Jet templates
 See the root templates call:
 ```jet
-#._
+#._ magic marker
 #if(Plan::view_t(['main', 'acl.jet']))
     @inc(acl.)
 #else
     @inc(.menu)@inc(_access.)
 #end
-#._
+#._ magic marker
 ```
 All templates can be changed with application code in file **acl.jet**.
-You can also use parts of original ACL Jet files back using `@inc(_user.profile)` for example
+You can also use parts of original ACL Jet files using back `@inc(_user.profile)` for example
 
 
 ## Improvement for MySQL

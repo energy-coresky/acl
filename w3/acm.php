@@ -9,6 +9,11 @@ class ACM extends Model_t # Access control manager
         return $acm ?? ($acm = new self);
     }
 
+    static function logging($desc) {
+        $acm = self::instance();
+        $acm->log($desc);
+    }
+
     static function __callStatic($name, $args) {
         global $user;
         $prev = Plan::set('acl');
