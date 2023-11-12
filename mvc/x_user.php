@@ -8,17 +8,17 @@ class t_user extends \Model_t
 {
     use common;
 
-    private $form = [
-        '+name' => ['Name'],
-        '+comment' => ['Comment'],
-        ['Submit', 'submit', 'onclick="return sky.f.submit()"'],
-    ];
+    function form($id = 0) {
+        return new Form([
+            '+name' => ['Name'],
+            '+comment' => ['Comment'],
+            ['Submit', 'submit', 'onclick="return sky.f.submit()"'],
+        ], $id ? $this->one(['id=' => $id]) : []);
+    }
 
-    function data($post, $is_grp) {
-        return [
-            'is_grp' => $is_grp,
-            'name' => $post->name,
-            'comment' => $post->comment,
+    function validate($is_grp) {
+        return $this->form()->validate() + [
+            '.is_grp' => $is_grp,
             '!dt' => '$now',
         ];
     }
@@ -52,12 +52,11 @@ class t_user extends \Model_t
 
     function profile($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         if (!$post)
-            return new Form($this->form, $id ? $this->one(['id=' => $id]) : []);
-        (new Form($this->form))->validate();
-        $ary = $this->data($post, 0);
+            return $this->form($id);
+        $ary = $this->validate(0);
         $id ? $this->update($ary, ['id=' => $id]) : $this->insert($ary);
         $this->log("Profile `$post->name` " . ($id ? ", ID=$id modified" : 'added'));
-        jump('acl?profile');
+        jump('acl?profiles');
     }
 
     function dpid($id) {
@@ -65,16 +64,16 @@ class t_user extends \Model_t
             $this->sqlf('update $_users set pid=2 where pid=%d', $id);
             $this->log("Profile ID=$id deleted");
         }
-        jump('acl?profile');
+        jump('acl?profiles');
     }
 
     function group($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         if (!$post)
-            return new Form($this->form, $id ? $this->one(['id=' => $id]) : []);
-        (new Form($this->form))->validate();
-        $ary = $this->data($post, 1);
+            return $this->form($id);
+        $ary = $this->validate(1);
         $id ? $this->update($ary, ['id=' => $id]) : $this->insert($ary);
-        jump('acl?group');
+        $this->log("User Group `$post->name` " . ($id ? ", ID=$id modified" : 'added'));
+        jump('acl?groups');
     }
 
     function groups(array $ids) {
@@ -82,8 +81,10 @@ class t_user extends \Model_t
     }
 
     function dgu($id) {
-        $this->delete(['id=' => $id, 'id>' => 2, 'is_grp=' => 1])
-            && $this->t_user2grp->delete(['grp_id=' => $id]);
-        jump('acl?group');
+        if ($this->delete(['id=' => $id, 'id>' => 2, 'is_grp=' => 1])) {
+            $this->t_user2grp->delete(['grp_id=' => $id]);
+            $this->log("User Group ID=$id deleted");
+        }
+        jump('acl?groups');
     }
 }
