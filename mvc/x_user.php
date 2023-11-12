@@ -1,7 +1,7 @@
 <?php
 
 namespace acl;
-use Form;
+use ACM, Form;
 use function jump;
 
 class t_user extends \Model_t
@@ -24,7 +24,7 @@ class t_user extends \Model_t
     }
 
     function users() {
-        $profiles = $this->sqlf('@select id, name from $_ where is_grp=0');
+        $profiles = ACM::usrProfiles();
         return [
             'query' => $this->sqlf('select * from $_users'),
             'row_c' => function ($row) use (&$profiles) {
@@ -34,12 +34,11 @@ class t_user extends \Model_t
     }
 
     function register($post) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-        $profiles = $this->sqlf('@select id, name from $_ where is_grp=0 and id>0');
         $form = new Form([
             '+login' => ['Login'],
             '+passw' => ['Password'],
             '+email' => ['E-mail'],
-            '+pid' => ['Profile', 'select', $profiles, '', 2],
+            '+pid' => ['Profile', 'select', ACM::usrProfiles(0), '', 2],
             '+uname' => ['User Name'],
             ['Submit', 'submit', 'onclick="return sky.f.submit()"'],
         ]);
@@ -76,6 +75,10 @@ class t_user extends \Model_t
         $ary = $this->data($post, 1);
         $id ? $this->update($ary, ['id=' => $id]) : $this->insert($ary);
         jump('acl?group');
+    }
+
+    function groups(array $ids) {
+        return $ids ? $this->sqlf('@select id,name from $_ where is_grp=1 and id in (%s)', $ids) : [];
     }
 
     function dgu($id) {

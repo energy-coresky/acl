@@ -9,13 +9,19 @@ class t_object extends \Model_t
 {
     use common;
 
-    function listing($page = 1) {
-        $sql = 'select o.*, t.name as type from $_ o left join $_ t on t.id=o.typ_id where o.is_typ=0';
+    function listing($id = 0) {
+        $sql = 'select o.*, t.name as type from $_ o left join $_ t on t.id=o.typ_id ';
+        if ($id) {
+            $sql .= 'left join ' . $this->x_access . ' a on a.obj=o.name ';
+            $user = $this->sqlf('>select * from $_users where id=%d', $id);
+            $user->groups = $this->x_user->groups(ACM::usrGroups($id));
+        }
         return [
-            'query' => $this->sqlf($sql),
+            'query' => $this->sqlf($sql .'where o.is_typ=0'),
             'row_c' => function ($row) {
-                //$row->type = $row->user ?? 'Anonymous';
+                
             },
+            'usr' => $user ?? 0,
         ];
     }
 

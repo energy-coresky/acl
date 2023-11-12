@@ -1,4 +1,4 @@
-#.register
+#.register    <a href="?cobj">add new</a>
 <h1>Register new user</h1>{!$form!}
 #.register
 
@@ -11,7 +11,7 @@
 @loop($e_users)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
     <td>{{$row->id}}</td>
-    <td><a href="?user={{$row->id}}">{{$row->login}}</a></td>
+    <td><a href="?access={{$row->id}}">{{$row->login}}</a></td>
     <td>{{$row->email}}</td>
     <td>{{$row->profile}}</td>
     <td>{{$row->dt_r}}</td>
@@ -28,7 +28,7 @@
 </table>
 #.users
 
-#.profile --------------------------------------------------------------------------------------------
+#.profiles --------------------------------------------------------------------------------------------
 <h1>Profiles</h1>
 <table width="80%">
   <tr style="background:skyblue">
@@ -37,7 +37,7 @@
 @loop($list as $id => $one)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
     <td>{{$id}}</td>
-    <td>{{$one->name}}</td>
+    <td><a href="?accpid={{$id}}">{{$one->name}}</a></td>
     <td>{{$one->comment}}</td>
     <td>{{$one->dt}}</td>
     <td>
@@ -49,7 +49,7 @@
   </tr>
 ~loop
 </table>
-#.profile
+#.profiles
 
 #.cpid --------------------------------------------------------------------------------------------
 <h1>{{$sky->_2 ? 'Edit' : 'Add'}} profile</h1>{!$form!}

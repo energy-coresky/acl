@@ -8,9 +8,14 @@ class t_access extends \Model_t
 {
     use common;
 
-    function allow($user, $char, $name, $groups) {
+    function allow($user, $char, $name) {
         $where = qp('obj=$+ and (pid=$. or uid=$.', $name, $user->pid, $user->id);
-        $groups ? $where->append(' or gid in ($@))', $groups) : $where->append(')');
+        if ($groups = ACM::usrGroups($user->id)) {
+            $where->append(' or gid in ($@))', $groups);
+        } else {
+            $where->append(')');
+        }
+
         foreach ($this->all($where, 'is_deny') as $deny) {
 
         }

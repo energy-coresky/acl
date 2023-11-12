@@ -9,13 +9,12 @@
 #._
 
 #.menu
-<a@aca($sky->_1=='users') href=@acl(acl?users)>USERS</a>
-<a@aca($sky->_1=='profile') href=@acl(acl?profile)>PROFILES</a>
-<a@aca($sky->_1=='group') href=@acl(acl?group)>USER-GROUPS</a>
-<a@aca($sky->_1=='object') href=@acl(acl?object)>OBJECTS</a>
-<a@aca($sky->_1=='types') href=@acl(acl?types)>OBJ-TYPES</a>
-<a@aca($sky->_1=='access') href=@acl(acl?access)>ACCESS</a>
-<a@aca($sky->_1=='log') href=@acl(acl?log)>LOG</a>
+|<a@aca($sky->_1=='users') href=@acl(acl?users)>USERS</a>|
+|<a@aca($sky->_1=='profiles') href=@acl(acl?profiles)>PROFILES</a>|
+|<a@aca($sky->_1=='groups') href=@acl(acl?groups)>USER-GROUPS</a>| ●●●
+|<a@aca($sky->_1=='objects') href=@acl(acl?objects)>OBJECTS</a>|
+|<a@aca($sky->_1=='types') href=@acl(acl?types)>OBJ-TYPES</a>|
+|<a@aca($sky->_1=='log') href=@acl(acl?log)>LOG</a>|
 <style>
 [aca] {
     background:blue;

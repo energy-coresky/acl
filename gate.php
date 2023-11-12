@@ -5,7 +5,7 @@
 return array (
   'c_acl' => 
   array (
-    'a_profile' => 
+    'a_profiles' => 
     array (
       0 => 1,
       1 => 
@@ -141,7 +141,7 @@ return array (
       array (
       ),
     ),
-    'a_group' => 
+    'a_groups' => 
     array (
       0 => 1,
       1 => 
@@ -155,7 +155,7 @@ return array (
       array (
       ),
     ),
-    'a_object' => 
+    'a_objects' => 
     array (
       0 => 1,
       1 => 
@@ -206,6 +206,14 @@ return array (
       ),
       2 => 
       array (
+        0 => 
+        array (
+          0 => '',
+          1 => 'access',
+          2 => '',
+          3 => '\\d+',
+          4 => 0,
+        ),
       ),
       3 => 
       array (
@@ -364,6 +372,28 @@ return array (
           3 => '.+',
           4 => 0,
         ),
+      ),
+    ),
+    'a_user' => 
+    array (
+      0 => 1,
+      1 => 
+      array (
+        0 => 1,
+      ),
+      2 => 
+      array (
+        0 => 
+        array (
+          0 => '',
+          1 => 'user',
+          2 => '',
+          3 => '\\d+',
+          4 => 0,
+        ),
+      ),
+      3 => 
+      array (
       ),
     ),
   ),

@@ -15,11 +15,21 @@ class c_acl extends Controller
         return ['e_users' => $this->x_user->users()];
     }
 
+    function a_access($id) {
+        return ['e_obj' => $this->x_object->listing($id)];
+    }
+
+    function a_accpid($id) {
+    }
+
+    function a_accgrp($id) {
+    }
+
     function a_register($post) {
         return ['form' => $this->x_user->register($post)];
     }
 
-    function a_profile() { # -=-=-=-=-=-=-= PROFILE =-=-=-=-=-=-=-=-=-=-=
+    function a_profiles() { # -=-=-=-=-=-=-= PROFILE =-=-=-=-=-=-=-=-=-=-=
         return ['list' => $this->x_user->all(['is_grp=' => 0])];
     }
 
@@ -31,7 +41,7 @@ class c_acl extends Controller
         $this->x_user->dpid($id);
     }
 
-    function a_group() { # -=-=-=-=- USER GRUOPS -=-=-=-=-=-=-=-=-=-=-=
+    function a_groups() { # -=-=-=-=- USER GRUOPS -=-=-=-=-=-=-=-=-=-=-=
         return ['list' => $this->x_user->all(['is_grp=' => 1])];
     }
 
@@ -43,7 +53,7 @@ class c_acl extends Controller
         $this->x_user->dgu($id);
     }
 
-    function a_object() { # -=-=-=-=-=-= OBJECTS =-=-=-=-=-=-=-=-=-=-=-=
+    function a_objects() { # -=-=-=-=-=-= OBJECTS =-=-=-=-=-=-=-=-=-=-=-=
         return ['e_obj' => $this->x_object->listing()];
     }
 
@@ -65,9 +75,5 @@ class c_acl extends Controller
 
     function a_dot($id) {
         $this->x_object->dobj($id);
-    }
-
-    function a_access() { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-        return ['e_access' => $this->x_access->page()];
     }
 }

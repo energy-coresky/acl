@@ -10,11 +10,12 @@ CRUD operations. CUD operation logging configurable at the ware installation sta
 User's groups and single _user\_id_ do not used for ACL.
 
 **Extended mode**:
-Create/Read/Update/Delete = C/R/U/D
-for
+Create/Read/Update/Delete = C/R/U/D for
 user_profile, user_group, user_id
 <span style="color:green">allow</span>/<span style="color:red">deny</span> for
 object_group, object_type, object_ID
+
+User to Profiles is one to many relation. Users to Groups is many to many relation.
 
 Essence | Brief Info
 :----- | :-----

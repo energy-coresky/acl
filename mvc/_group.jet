@@ -2,7 +2,7 @@
 @inc(_log.)
 #._
 
-#.group --------------------------------------------------------------------------------------------
+#.groups --------------------------------------------------------------------------------------------
 <h1>User Groups</h1>
 <table width="80%">
   <tr style="background:skyblue">
@@ -11,7 +11,7 @@
 @loop($list as $id => $one)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
     <td>{{$id}}</td>
-    <td>{{$one->name}}</td>
+    <td><a href="?accgrp={{$id}}">{{$one->name}}</a></td>
     <td>{{$one->comment}}</td>
     <td>{{$one->dt}}</td>
     <td>
@@ -27,7 +27,7 @@
   </tr>
 ~loop
 </table>
-#.group
+#.groups
 
 #.cgu --------------------------------------------------------------------------------------------
 <h1>{{$sky->_2 ? 'Edit' : 'Add'}} User Group</h1>{!$form!}
