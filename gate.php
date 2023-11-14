@@ -374,7 +374,7 @@ return array (
         ),
       ),
     ),
-    'a_user' => 
+    'a_accpid' => 
     array (
       0 => 1,
       1 => 
@@ -386,7 +386,51 @@ return array (
         0 => 
         array (
           0 => '',
-          1 => 'user',
+          1 => 'accpid',
+          2 => '',
+          3 => '\\d+',
+          4 => 0,
+        ),
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    'a_accgrp' => 
+    array (
+      0 => 1,
+      1 => 
+      array (
+        0 => 1,
+      ),
+      2 => 
+      array (
+        0 => 
+        array (
+          0 => '',
+          1 => 'accgrp',
+          2 => '',
+          3 => '\\d+',
+          4 => 0,
+        ),
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    'a_user2grp' => 
+    array (
+      0 => 1,
+      1 => 
+      array (
+        0 => 1,
+      ),
+      2 => 
+      array (
+        0 => 
+        array (
+          0 => '',
+          1 => 'user2grp',
           2 => '',
           3 => '\\d+',
           4 => 0,

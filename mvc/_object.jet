@@ -7,7 +7,7 @@
 <h1>Objects</h1>
 <table width="80%">
   <tr style="background:skyblue">
-    <th>ID</th><th>Name</th><th>Type</th><th>Comment</th><th>Added at</th><th>Action <a href="?cobj">add new</a></th>
+    <th>ID</th><th>Name</th><th>Type</th><th>Comment</th><th width="17%">Added at</th><th width="17%">Action <a href="?cobj">add new</a></th>
   </tr>
 @loop($e_obj)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
@@ -39,7 +39,7 @@
 <h1>Object Types</h1>
 <table width="80%">
   <tr style="background:skyblue">
-    <th>ID</th><th>Name</th><th>Comment</th><th>Added at</th><th>Action <a href="?cot">add new</a></th>
+    <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Added at</th><th width="17%">Action <a href="?cot">add new</a></th>
   </tr>
 @loop($list as $id => $one)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">

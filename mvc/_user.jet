@@ -6,7 +6,7 @@
 <h1>Users</h1>
 <table width="80%">
   <tr style="background:skyblue">
-    <th>ID</th><th>Login</th><th>E-mail</th><th>Profile</th><th>Date Registered</th><th>Action <a href="?register">register new</a></th>
+    <th>ID</th><th>Login</th><th>E-mail</th><th>Profile</th><th width="17%">Date Registered</th><th width="17%">Action <a href="?register">register new</a></th>
   </tr>
 @loop($e_users)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
@@ -32,7 +32,7 @@
 <h1>Profiles</h1>
 <table width="80%">
   <tr style="background:skyblue">
-    <th>ID</th><th>Name</th><th>Comment</th><th>Added at</th><th>Action <a href="?cpid">add new</a></th>
+    <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Added at</th><th width="17%">Action <a href="?cpid">add new</a></th>
   </tr>
 @loop($list as $id => $one)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">

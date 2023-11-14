@@ -7,8 +7,8 @@
 <h1>User's Actions Log</h1>
 <table width="80%">
   <tr style="background:skyblue">
-    <th>Date</th>
-    <th>User</th>
+    <th width="17%">Date</th>
+    <th width="17%">User</th>
     <th>Description</th>
   </tr>
 @loop($e_log)

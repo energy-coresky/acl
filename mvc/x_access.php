@@ -31,8 +31,8 @@ class t_access extends \Model_t
         ];
     }
 
-    function listing($page = 1) {
-        $sql = "select l.*, u.login as user from $this->t_log l left join \$_users u on u.id=l.user_id";
+    function logging($page = 1) {
+        $sql = "select l.*, u.login as user from \$_$this->t_log l left join \$_users u on u.id=l.user_id";
         return [
             'query' => $this->sqlf($sql),
             'row_c' => function ($row) {

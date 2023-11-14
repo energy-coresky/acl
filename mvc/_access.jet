@@ -1,15 +1,14 @@
-
 #._
 @inc(_group.)
 #._
 
-#.ug
+#.ug ========================================================================================
 @loop($e_obj->usr->groups as $gid => $gname)
   <b>{{$gname}}</b><br>
   @empty
   <b>the user does not belong to groups</b><br>
 ~loop
-<a href="#">edit user groups</a>
+<a href="?user2grp={{$e_obj->usr->id}}">edit user groups</a>
 #.ue.ug
 <b>{{$e_obj->usr->email}}</b>
 #.up.ue
@@ -29,14 +28,16 @@
   <tr><td align="right" valign="top">User Groups</td><td align="left">@inc(.ug)</td></tr>
 </table>
 <h1>Integrated access to objects</h1>
+#.objlist
 <table width="80%">
   <tr style="background:skyblue">
-    <th>##</th><th>Name</th><th>Comment</th><th width="1">C</th><th width="1">R</th><th width="1">U</th><th width="1">D</th>
+    <th>##</th><th>Name</th><th>Type</th><th>Comment</th><th width="1">C</th><th width="1">R</th><th width="1">U</th><th width="1">D</th>
   </tr>
 @loop($e_obj)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
     <td>{{1 + $_}}</td>
     <td>{{$row->name}}</td>
+    <td>{{$row->type}}</td>
     <td>{{$row->comment}}</td>
     <td>OK</td><td>OK</td><td>-</td><td>OK</td>
   </tr>
@@ -46,10 +47,14 @@
   </tr>
 ~loop
 </table>
-#.access
+#.access.objlist
 
-#.accpid
+#.accpid ========================================================================================
+<h1>Access to objects for <u>{{$e_obj->rw['name']}}</u> Profile</h1>
+@inc(.objlist)
 #.accpid
 
-#.accgrp
+#.accgrp ========================================================================================
+<h1>Access to objects for <u>{{$e_obj->rw['name']}}</u> User Group</h1>
+@inc(.objlist)
 #.accgrp

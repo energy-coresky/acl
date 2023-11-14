@@ -6,7 +6,7 @@
 <h1>User Groups</h1>
 <table width="80%">
   <tr style="background:skyblue">
-    <th>ID</th><th>Name</th><th>Comment</th><th>Added at</th><th>Action <a href="?cgu">add new</a></th>
+    <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Added at</th><th width="17%">Action <a href="?cgu">add new</a></th>
   </tr>
 @loop($list as $id => $one)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
@@ -32,3 +32,25 @@
 #.cgu --------------------------------------------------------------------------------------------
 <h1>{{$sky->_2 ? 'Edit' : 'Add'}} User Group</h1>{!$form!}
 #.cgu
+
+#.user2grp
+<h1>Edit User Groups for user_id={{$e_grp->usr->id}}, {{$e_grp->usr->email}}</h1>
+<table width="80%">
+  <tr style="background:skyblue">
+    <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Action</th>
+  </tr>
+@loop($e_grp)
+  <tr>
+    <td>{{$row->id}}</td>
+    <td>{{$row->name}}</td>
+    <td>{{$row->comment}}</td>
+    <td>@if($row->ok)<a href="#">remove from group</a>
+      @else<a href="#">add to group</a>
+      ~if
+    </td>
+  </tr>
+  @empty
+  <h1>User Groups Not Found</h1>
+~loop
+</table>
+#.user2grp

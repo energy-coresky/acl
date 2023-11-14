@@ -76,15 +76,31 @@ class t_user extends \Model_t
         jump('acl?groups');
     }
 
-    function groups(array $ids) {
-        return $ids ? $this->sqlf('@select id,name from $_ where is_grp=1 and id in (%s)', $ids) : [];
-    }
-
     function dgu($id) {
         if ($this->delete(['id=' => $id, 'id>' => 2, 'is_grp=' => 1])) {
             $this->t_user2grp->delete(['grp_id=' => $id]);
             $this->log("User Group ID=$id deleted");
         }
         jump('acl?groups');
+    }
+
+    function get_user($id) {
+        return $this->sqlf('>select * from $_users where id=%d', $id);
+    }
+
+    function user2grp($id) {
+        $user = $this->get_user($id);
+        $tbl = (string)$this->t_user2grp;
+        $sql = 'select g.*, u2g.grp_id as ok from $_ g
+            left join $_` u2g on (u2g.user_id=$. and u2g.grp_id=g.id)
+            where g.is_grp=1';
+        return [
+            'query' => sql($sql, $tbl, $id),
+            'usr' => $user,
+        ];
+    }
+
+    function groups(array $ids) {
+        return $ids ? $this->sqlf('@select id,name from $_ where is_grp=1 and id in (%s)', $ids) : [];
     }
 }

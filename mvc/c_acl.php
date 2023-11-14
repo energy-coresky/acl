@@ -8,7 +8,7 @@ class c_acl extends Controller
     }
 
     function a_log() {
-        return ['e_log' => $this->x_access->listing()];
+        return ['e_log' => $this->x_access->logging()];
     }
 
     function a_users() {
@@ -16,17 +16,23 @@ class c_acl extends Controller
     }
 
     function a_access($id) {
-        return ['e_obj' => $this->x_object->listing($id)];
+        return ['e_obj' => $this->x_object->access($id, 0, 0)];
     }
 
     function a_accpid($id) {
+        return ['e_obj' => $this->x_object->access(0, $id, 0)];
     }
 
     function a_accgrp($id) {
+        return ['e_obj' => $this->x_object->access(0, 0, $id)];
     }
 
     function a_register($post) {
         return ['form' => $this->x_user->register($post)];
+    }
+
+    function a_user2grp($id) {
+        return ['e_grp' => $this->x_user->user2grp($id)];
     }
 
     function a_profiles() { # -=-=-=-=-=-=-= PROFILE =-=-=-=-=-=-=-=-=-=-=
