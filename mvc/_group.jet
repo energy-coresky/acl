@@ -35,17 +35,18 @@
 
 #.user2grp
 <h1>Edit User Groups for user_id={{$e_grp->usr->id}}, {{$e_grp->usr->email}}</h1>
+<form method="post" id="f2"><input type="hidden" name="is_add"><input type="hidden" name="grp_id">@csrf
 <table width="80%">
   <tr style="background:skyblue">
     <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Action</th>
   </tr>
 @loop($e_grp)
-  <tr>
+  <tr style="background:{{$row->ok ? '#cfc' : ''}}">
     <td>{{$row->id}}</td>
     <td>{{$row->name}}</td>
     <td>{{$row->comment}}</td>
-    <td>@if($row->ok)<a href="#">remove from group</a>
-      @else<a href="#">add to group</a>
+    <td>@if($row->ok)<a @href(acl_u2g(0, {{$row->id}}))>remove from group</a>
+      @else<a @href(acl_u2g(1, {{$row->id}}))>add to group</a>
       ~if
     </td>
   </tr>
@@ -53,4 +54,11 @@
   <h1>User Groups Not Found</h1>
 ~loop
 </table>
+</form><script>
+function acl_u2g(is_add, id) {
+  $('#f2 input[name=is_add]').val(is_add);
+  $('#f2 input[name=grp_id]').val(id);
+  $('#f2').submit();
+}
+</script>
 #.user2grp

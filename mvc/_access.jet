@@ -31,7 +31,8 @@
 #.objlist
 <table width="80%">
   <tr style="background:skyblue">
-    <th>##</th><th>Name</th><th>Type</th><th>Comment</th><th width="1">C</th><th width="1">R</th><th width="1">U</th><th width="1">D</th>
+    <th>##</th><th>Name</th><th>Type</th><th>Comment</th>
+    <th width="1">&nbsp;C&nbsp;</th><th width="1">&nbsp;R&nbsp;</th><th width="1">&nbsp;U&nbsp;</th><th width="1">&nbsp;D&nbsp;</th>
   </tr>
 @loop($e_obj)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
@@ -39,7 +40,7 @@
     <td>{{$row->name}}</td>
     <td>{{$row->type}}</td>
     <td>{{$row->comment}}</td>
-    <td>OK</td><td>OK</td><td>-</td><td>OK</td>
+    <td>Y</td><td>Y</td><td>-</td><td>Y</td>
   </tr>
   @empty
   <tr>

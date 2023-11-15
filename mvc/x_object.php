@@ -63,8 +63,8 @@ class t_object extends \Model_t
             return $form;
         $ary = $form->validate() + ['is_typ' => 0, '!dt' => '$now'];
         $id ? $this->update($ary, ['id=' => $id]) : $this->insert($ary);
-        $this->log("Object Type `$post->name` " . ($id ? ", ID=$id modified" : 'added'));
-        jump('acl?object');
+        $this->log("Object `$post->name` " . ($id ? ", ID=$id modified" : 'added'));
+        jump('acl?objects');
     }
 
     function save_t($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

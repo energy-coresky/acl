@@ -9,12 +9,12 @@
 #._
 
 #.menu
-|<a@aca($sky->_1=='users') href=@acl(acl?users)>USERS</a>|
-|<a@aca($sky->_1=='profiles') href=@acl(acl?profiles)>PROFILES</a>|
-|<a@aca($sky->_1=='groups') href=@acl(acl?groups)>USER-GROUPS</a>| ●●●
-|<a@aca($sky->_1=='objects') href=@acl(acl?objects)>OBJECTS</a>|
-|<a@aca($sky->_1=='types') href=@acl(acl?types)>OBJ-TYPES</a>|
-|<a@aca($sky->_1=='log') href=@acl(acl?log)>LOG</a>|
+@if(ACM::Raclu())|<a@aca($sky->_1=='users') href=@acl(acl?users)>USERS</a>|~if
+ @if(ACM::Raclp())|<a@aca($sky->_1=='profiles') href=@acl(acl?profiles)>PROFILES</a>|~if
+ @if(ACM::Raclg())|<a@aca($sky->_1=='groups') href=@acl(acl?groups)>USER-GROUPS</a>|~if ●●●
+ @if(ACM::Raclo())|<a@aca($sky->_1=='objects') href=@acl(acl?objects)>OBJECTS</a>|~if
+ @if(ACM::Raclt())|<a@aca($sky->_1=='types') href=@acl(acl?types)>OBJ-TYPES</a>|~if
+ @if(ACM::Racll())|<a@aca($sky->_1=='log') href=@acl(acl?log)>LOG</a>|~if
 <style>
 [aca] {
     background:blue;

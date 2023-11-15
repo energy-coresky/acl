@@ -88,8 +88,14 @@ class t_user extends \Model_t
         return $this->sqlf('>select * from $_users where id=%d', $id);
     }
 
-    function user2grp($id) {
+    function user2grp($id, $post) {
         $user = $this->get_user($id);
+        if ($post && $post->is_add) {
+            in_array($post->grp_id, ACM::usrGroups($id))
+                or $this->t_user2grp->insert(['.user_id' => $id, '.grp_id' => $post->grp_id]);
+        } elseif ($post) {
+            $this->t_user2grp->delete(['.user_id=' => $id, '.grp_id=' => $post->grp_id]);
+        }
         $tbl = (string)$this->t_user2grp;
         $sql = 'select g.*, u2g.grp_id as ok from $_ g
             left join $_` u2g on (u2g.user_id=$. and u2g.grp_id=g.id)

@@ -31,8 +31,8 @@ class c_acl extends Controller
         return ['form' => $this->x_user->register($post)];
     }
 
-    function a_user2grp($id) {
-        return ['e_grp' => $this->x_user->user2grp($id)];
+    function a_user2grp($id, $post) {
+        return ['e_grp' => $this->x_user->user2grp($id, $post)];
     }
 
     function a_profiles() { # -=-=-=-=-=-=-= PROFILE =-=-=-=-=-=-=-=-=-=-=
