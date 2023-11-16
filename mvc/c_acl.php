@@ -11,19 +11,23 @@ class c_acl extends Controller
         return ['e_log' => $this->x_access->logging()];
     }
 
+    function j_crud($x, $name, $mode) {
+        $this->x_access->crud($x, $name, $mode); # 3 acla gid7
+    }
+
     function a_users() {
         return ['e_users' => $this->x_user->users()];
     }
 
-    function a_access($id) {
+    function a_uid($id) {
         return ['e_obj' => $this->x_object->access($id, 0, 0)];
     }
 
-    function a_accpid($id) {
+    function a_pid($id) {
         return ['e_obj' => $this->x_object->access(0, $id, 0)];
     }
 
-    function a_accgrp($id) {
+    function a_gid($id) {
         return ['e_obj' => $this->x_object->access(0, 0, $id)];
     }
 

@@ -22,6 +22,29 @@ class t_access extends \Model_t
         return 1;
     }
 
+    function crud($x, $name, $mode) { # sample: 3 acla gid7
+        global $user;
+        $cr = [1, 2, 4, 8, 16];
+        $id = substr($mode, 3);
+        $mode = $mode[0]; # u or p or g
+        if ('u' == $mode) {
+            
+        } else {
+            $crud = $this->one(['obj=' => $name, $mode . 'id=' => $id]);
+            trace($crud);
+            $crud or $this->insert([
+                '+obj' => $name,
+                '.crud' => $cr[$x],
+                '.is_deny' => 0,
+                ".{$mode}id" => $id,
+                '.user_id' => $user->id,
+                '!dt_c' => '$now',
+            ]);
+        }
+        //echo $x.$name.$mode;
+        json(['y' => '']);
+    }
+
     function page($page = 1) {
         return [
             'query' => $this->all(),

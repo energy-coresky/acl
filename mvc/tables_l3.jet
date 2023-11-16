@@ -2,7 +2,7 @@
 CREATE TABLE "{{$dd->pref . $tt}}_access" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   "obj" VARCHAR(55) NOT NULL,
-  "crud" INTEGER NOT NULL, -- c=1|r=2|u=3|d=4
+  "crud" INTEGER NOT NULL, -- c=1|r=2|u=4|d=8|x=16
   "obj_id" INTEGER DEFAULT 0,
   "is_deny" INTEGER DEFAULT 0,
   "pid" INTEGER DEFAULT 0,
@@ -10,7 +10,7 @@ CREATE TABLE "{{$dd->pref . $tt}}_access" (
   "uid" INTEGER DEFAULT 0,
   "user_id" INTEGER NOT NULL,
   "dt_c" DATETIME NOT NULL
-)
+);
 ~~
 CREATE TABLE "{{$dd->pref . $tt}}_log" ( -- ACL's actions log (optional)
   "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -33,6 +33,14 @@ CREATE TABLE "{{$dd->pref . $tt}}_object" ( -- objects for access & its groups
   "dt" DATETIME NOT NULL
 );
 INSERT INTO "{{$dd->pref . $tt}}_object" values (1, 'ACL self', 0, 1, '', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (2, 'zzz', 0, 0, 'Fictitious object', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (3, 'acla', 1, 0, 'Overall access to ACL pages', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (4, 'aclg', 1, 0, 'User Groups', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (5, 'acll', 1, 0, 'ACL action''s log', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (6, 'aclo', 1, 0, 'ACL objects', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (7, 'aclp', 1, 0, 'Users profiles', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (8, 'aclt', 1, 0, 'ACL object types', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (9, 'aclu', 1, 0, 'ACL users', '1971-01-01 01:01:01');
 ~~
 CREATE TABLE "{{$dd->pref . $tt}}_user" ( -- profiles & user groups
   "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,

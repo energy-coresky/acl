@@ -19,7 +19,7 @@
 <select style="width:100px">
   {!option($e_obj->usr->state, ACM::$user_states)!}
 </select>
-#.access.us
+#.uid.us
 <h1>User: <u>{{$e_obj->usr->login}}</u>, ID={{$e_obj->usr->id}}</h1>
 <table width="80%">
   <tr><td align="right" width="50%">User State</td><td align="left">@inc(.us)</td></tr>
@@ -31,31 +31,64 @@
 #.objlist
 <table width="80%">
   <tr style="background:skyblue">
-    <th>##</th><th>Name</th><th>Type</th><th>Comment</th>
-    <th width="1">&nbsp;C&nbsp;</th><th width="1">&nbsp;R&nbsp;</th><th width="1">&nbsp;U&nbsp;</th><th width="1">&nbsp;D&nbsp;</th>
+    <th>##</th><th>Name</th><th>Type</th><th>Object Description</th>
+    <th width="1">&nbsp;C&nbsp;</th><th width="1">&nbsp;R&nbsp;</th><th width="1">&nbsp;U&nbsp;</th><th width="1">&nbsp;D&nbsp;</th><th width="1">&nbsp;X&nbsp;</th>
   </tr>
 @loop($e_obj)
-  <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
+  <tr style="background:{{$_ % 2 ? '#eee' : ''}}" n="{{$row->name}}">
     <td>{{1 + $_}}</td>
     <td>{{$row->name}}</td>
     <td>{{$row->type}}</td>
     <td>{{$row->comment}}</td>
-    <td>Y</td><td>Y</td><td>-</td><td>Y</td>
+    <td class="crud">{{($row->crud)(1)}}</td><td class="crud">{{($row->crud)(2)}}</td>
+    <td class="crud">{{($row->crud)(4)}}</td><td class="crud">{{($row->crud)(8)}}</td>
+    <td class="crud">{{($row->crud)(16)}}</td>
   </tr>
   @empty
   <tr>
     <td colspan="6"><h1>No Defined Objects</h1></td>
   </tr>
 ~loop
-</table>
-#.access.objlist
+</table>@inc(.jscss)
+#.uid.objlist
 
-#.accpid ========================================================================================
+#.pid ========================================================================================
 <h1>Access to objects for <u>{{$e_obj->rw['name']}}</u> Profile</h1>
-@inc(.objlist)
-#.accpid
+@if(0 == $sky->_2)<h1 style="color:red">Anonymous Profile do not has access to all Objects and cannot tune</h1>
+@elseif(1 == $sky->_2)<h1 style="color:green">Root Profile has untunable access to all Objects</h1>
+@else@inc(.objlist)
+~if
+#.pid
 
-#.accgrp ========================================================================================
+#.gid ========================================================================================
 <h1>Access to objects for <u>{{$e_obj->rw['name']}}</u> User Group</h1>
 @inc(.objlist)
-#.accgrp
+#.gid
+
+#.jscss
+<style>
+.crud {
+  cursor:default;
+}
+.crud:hover {
+  border:1px solid red;
+}
+</style>
+<script>
+$('td.crud').each(function (i) {
+  if ($(this).html())
+    $(this).css('background', '#dfd');
+  $(this).attr('x', i % 5).click(function () {
+    let el = $(this), hash = {
+      x: el.attr('x'),
+      name: el.parent().find('td:eq(1)').html(),
+      mode: '{{$sky->_1 . $sky->_2}}'
+    };
+    ajax('crud', hash, function (r) {
+      el.html(r.y).css('background', r.y ? '#dfd' : '');
+    }, 'acl');
+  });
+});
+</script>
+#.jscss
+

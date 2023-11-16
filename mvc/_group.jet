@@ -11,7 +11,7 @@
 @loop($list as $id => $one)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
     <td>{{$id}}</td>
-    <td><a href="?accgrp={{$id}}">{{$one->name}}</a></td>
+    <td><a href="?gid={{$id}}">{{$one->name}}</a></td>
     <td>{{$one->comment}}</td>
     <td>{{$one->dt}}</td>
     <td>

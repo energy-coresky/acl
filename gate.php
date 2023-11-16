@@ -197,7 +197,7 @@ return array (
       array (
       ),
     ),
-    'a_access' => 
+    'a_uid' => 
     array (
       0 => 1,
       1 => 
@@ -209,7 +209,7 @@ return array (
         0 => 
         array (
           0 => '',
-          1 => 'access',
+          1 => 'uid',
           2 => '',
           3 => '\\d+',
           4 => 0,
@@ -374,7 +374,7 @@ return array (
         ),
       ),
     ),
-    'a_accpid' => 
+    'a_pid' => 
     array (
       0 => 1,
       1 => 
@@ -386,7 +386,7 @@ return array (
         0 => 
         array (
           0 => '',
-          1 => 'accpid',
+          1 => 'pid',
           2 => '',
           3 => '\\d+',
           4 => 0,
@@ -396,7 +396,7 @@ return array (
       array (
       ),
     ),
-    'a_accgrp' => 
+    'a_gid' => 
     array (
       0 => 1,
       1 => 
@@ -408,7 +408,7 @@ return array (
         0 => 
         array (
           0 => '',
-          1 => 'accgrp',
+          1 => 'gid',
           2 => '',
           3 => '\\d+',
           4 => 0,
@@ -453,6 +453,43 @@ return array (
           1 => 'grp_id',
           2 => 'grp_id',
           3 => '\\d+',
+          4 => 0,
+        ),
+      ),
+    ),
+    'j_crud' => 
+    array (
+      0 => 0,
+      1 => 
+      array (
+      ),
+      2 => 
+      array (
+      ),
+      3 => 
+      array (
+        0 => 
+        array (
+          0 => '',
+          1 => 'x',
+          2 => '',
+          3 => '[0-4]',
+          4 => 0,
+        ),
+        1 => 
+        array (
+          0 => '',
+          1 => 'name',
+          2 => '',
+          3 => '\\w+',
+          4 => 0,
+        ),
+        2 => 
+        array (
+          0 => '',
+          1 => 'mode',
+          2 => '',
+          3 => '(uid\\d+|pid\\d+|gid\\d+)',
           4 => 0,
         ),
       ),

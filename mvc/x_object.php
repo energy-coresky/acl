@@ -16,7 +16,26 @@ class t_object extends \Model_t
         ];
     }
 
+    function row_c(&$row) {
+        static $p = [];
+        if (!$row->__i || $p[0]->name == $row->name) {
+            $p[] = $row;
+            return true;
+        }
+        $_ = $row;
+        $crud = $deny = 0;
+        foreach ($p as $one)
+            $one->deny ? ($deny |= $one->crud) : ($crud |= $one->crud);
+        $row = $p[0];
+        $crud &= ~$deny;
+        $row->crud = function ($x) use ($crud) {
+            return $crud & $x ? 'Y' : '';
+        };
+        $p = [$_];
+    }
+
     function access($uid, $pid, $gid) {
+        $ord = ' order by name';
         $sql = 'select o.*, t.name as type,
                   a.is_deny as deny, a.crud, a.obj_id
                     from $_ o
@@ -31,22 +50,22 @@ class t_object extends \Model_t
                 ? '(a.uid=$. or a.pid=$. or a.gid in ($@))) where o.is_typ=0'
                 : '(a.uid=$. or a.pid=$.)) where o.is_typ=0';
             return [
-                'query' => $groups ? $this->sql($sql, $access, $uid, $pid, $groups) : $this->sql($sql, $access, $uid, $pid),
-                'row_c' => function ($row) {
-                },
+                'query' => $groups ? $this->sql($sql . $ord, $access, $uid, $user->pid, $groups) : $this->sql($sql . $ord, $access, $uid, $user->pid),
+                'row_c' => [$this, 'row_c'],
                 'usr' => $user,
             ];
         } elseif ($gid) { # groupID
             $row = $this->x_user->one(['.id=' => $gid, 'is_grp=' => 1]);
             $sql .= 'a.gid=$.) where o.is_typ=0';
-            $q = $this->sql($sql, $access, $gid);
+            $q = $this->sql($sql . $ord, $access, $gid);
         } else { # profileID
             $row = $this->x_user->one(['.id=' => $pid, 'is_grp=' => 0]);
             $sql .= 'a.pid=$.) where o.is_typ=0';
-            $q = $this->sql($sql, $access, $pid);
+            $q = $this->sql($sql . $ord, $access, $pid);
         }
         return [
             'query' => $q,
+            'row_c' => [$this, 'row_c'],
             'rw' => $row,
         ];
     }

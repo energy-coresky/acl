@@ -11,7 +11,7 @@
 @loop($e_users)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
     <td>{{$row->id}}</td>
-    <td><a href="?access={{$row->id}}">{{$row->login}}</a></td>
+    <td><a style="color:{{1==$row->pid?'green;font-weight:bold':''}}" href="?uid={{$row->id}}">{{$row->login}}</a></td>
     <td>{{$row->email}}</td>
     <td>{{$row->profile}}</td>
     <td>{{$row->dt_r}}</td>
@@ -37,7 +37,7 @@
 @loop($list as $id => $one)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
     <td>{{$id}}</td>
-    <td><a href="?accpid={{$id}}">{{$one->name}}</a></td>
+    <td><a style="color:{{1==$id?'green':($id?'':'red')}}" href="?pid={{$id}}">{{$one->name}}</a></td>
     <td>{{$one->comment}}</td>
     <td>{{$one->dt}}</td>
     <td>
