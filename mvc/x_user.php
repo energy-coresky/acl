@@ -26,7 +26,10 @@ class t_user extends \Model_t
     function users() {
         $profiles = ACM::usrProfiles();
         return [
-            'query' => $this->sqlf('select * from $_users'),
+            'query' => $this->sqlf('select u.*, count(g.user_id) as cnt from $_users u
+                left join $_' . $this->t_user2grp . ' g on (g.user_id=u.id)
+                group by u.id
+                order by u.id desc'),
             'row_c' => function ($row) use (&$profiles) {
                 $row->profile = $profiles[$row->pid];
             },

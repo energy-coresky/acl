@@ -24,7 +24,7 @@ Installer class | present (**acl\\ware**)
 _w3_ classes | 2 (**Acl** (console), **ACM**)
 Controllers | 1, has optional tune
 Models | 3
-Jet templates | 10, tunable
+Jet templates | 8, tunable
 Tables in the database | 5, tunable names
 dd drivers support | 2 (**sqlite3**, **mysqli**) for now
 _Asset_ files | 0
@@ -74,3 +74,14 @@ ALTER TABLE tblname CHANGE `obj` `obj` enum('com','per','prj','act','face') DEFA
 -- add a index:
 ..
 ```
+
+## Drop old ACL Log records
+
+You can do it using CRON task for example:
+```php
+->at('2 2', function() use ($cron) {
+    $cron->sql('delete from $_acl_log where dt ... ');
+})
+```
+
+<hr>
