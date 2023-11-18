@@ -9,10 +9,17 @@ class t_object extends \Model_t
 {
     use common;
 
+    function busy($id = 0) {
+        $acm = new ReflectionClass('ACM');
+        $fun = array_map(fn($v) => strtolower($v->name), $acm->getMethods());
+        $fun = array_filter($fun, fn($v) => in_array($v[0], ['c', 'r', 'u', 'd', 'x']));
+        $fun = array_map(fn($v) => substr($v, 1), $fun);
+    }
+
     function listing() {
         $sql = 'select o.*, t.name as type from $_ o left join $_ t on t.id=o.typ_id';
         return [
-            'query' => $this->sqlf($sql .' where o.is_typ=0'),
+            'query' => $this->sqlf($sql .' where o.is_typ=0 order by name'),
         ];
     }
 

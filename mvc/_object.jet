@@ -28,7 +28,7 @@
   </tr>
 ~loop
 </table>
-#.objects
+#.objects <pre>{!ACM::busy()!}</pre>
 
 #.cobj
 <h1>{{$sky->_2 ? 'Edit' : 'Add'}} Object</h1>{!$form!}

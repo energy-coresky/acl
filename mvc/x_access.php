@@ -92,15 +92,3 @@ class t_access extends \Model_t
         ];
     }
 }
-/*
-    [id] => "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-    [obj] => "obj" VARCHAR(55) NOT NULL
-    [crud] => "crud" INTEGER NOT NULL
-    [obj_id] => "obj_id" INTEGER DEFAULT NULL
-    [is_deny] => "is_deny" INTEGER DEFAULT NULL
-    [pid] => "pid" INTEGER DEFAULT NULL
-    [gid] => "gid" INTEGER DEFAULT NULL
-    [uid] => "uid" INTEGER DEFAULT NULL
-    [user_id] => "user_id" INTEGER NOT NULL
-    [dt_c] => "dt_c" DATETIME NOT NULL
-*/
