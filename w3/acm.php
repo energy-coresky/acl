@@ -26,10 +26,13 @@ class ACM extends Model_t # Access control manager
     static function __callStatic($name, $args) {
         return Plan::set('acl', function () use ($name) {
             global $user;
+            $cr = ['C' => 1, 'R' => 2, 'U' => 4, 'D' => 8, 'X' => 16];
+            if (!isset($cr[$name[0]]))
+                throw new Error('Wrong char');
             $acm = self::instance();
             return $user->pid < 2
                 ? (bool)$user->pid
-                : $acm->x_access->allow($user, $name[0], substr($name, 1), $acm);
+                : $acm->x_access->allow($cr[$name[0]], substr($name, 1), $user);
         });
     }
 
