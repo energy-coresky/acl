@@ -24,7 +24,7 @@ class ACM extends Model_t # Access control manager
     }
 
     static function __callStatic($name, $args) {
-        return Plan::set('acl', function () use ($name) {
+        return Plan::set('acl', function () use ($name, $args) {
             global $user;
             $cr = ['C' => 1, 'R' => 2, 'U' => 4, 'D' => 8, 'X' => 16];
             if (!isset($cr[$name[0]]))
@@ -32,7 +32,7 @@ class ACM extends Model_t # Access control manager
             $acm = self::instance();
             return $user->pid < 2
                 ? (bool)$user->pid
-                : $acm->x_access->allow($cr[$name[0]], substr($name, 1), $user);
+                : $acm->x_access->allow($user, $cr[$name[0]], substr($name, 1), $args ? $args[0] : null);
         });
     }
 

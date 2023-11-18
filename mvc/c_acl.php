@@ -40,7 +40,7 @@ class c_acl extends Controller
     }
 
     function a_profiles() { # -=-=-=-=-=-=-= PROFILE =-=-=-=-=-=-=-=-=-=-=
-        return ['list' => $this->x_user->all(['is_grp=' => 0])];
+        return ACM::Raclp() ? ['list' => $this->x_user->all(['is_grp=' => 0])] : 404;
     }
 
     function a_cpid($id, $post) {
@@ -52,7 +52,7 @@ class c_acl extends Controller
     }
 
     function a_groups() { # -=-=-=-=- USER GRUOPS -=-=-=-=-=-=-=-=-=-=-=
-        return ['list' => $this->x_user->all(['is_grp=' => 1])];
+        return ACM::Raclg() ? ['list' => $this->x_user->all(['is_grp=' => 1])] : 404;
     }
 
     function a_cgu($id, $post) {

@@ -8,12 +8,12 @@ class t_access extends \Model_t
 {
     use common;
 
-    function allow($x, $name, $user) {
-        [$ok] = $this->user($name, $user);
-        return 1; # $ok & $x
+    function allow($user, $x, $name, $obj_id) {
+        [$ok] = $this->user($name, $user, $obj_id);
+        return $ok & $x;
     }
 
-    function user($name, $user) {
+    function user($name, $user, $obj_id) {
         $where = qp('obj=$+ and (pid=$. or uid=$.', $name, $user->pid, $user->id);
         ($groups = ACM::usrGroups($user->id)) ? $where->append(' or gid in ($@))', $groups) : $where->append(')');
         $ok = $deny = $allow = 0;
@@ -49,10 +49,11 @@ class t_access extends \Model_t
         $x = 1 << $x;
         $id = substr($mode, 3);
         $mode = $mode[0]; # u or p or g
+        $obj_id = 0;
         if ('u' == $mode) { # user integrated
             if (!$user = $this->x_user->get_user($id))
                 throw new Error('Wrong user id');
-            [$ok, $_ok, $deny, $allow] = $this->user($name, $user);
+            [$ok, $_ok, $deny, $allow] = $this->user($name, $user, $obj_id);
             if ($on = $ok & $x) { # allow change to deny
                 if ($allow)
                     $x == $allow->crud ? $this->delete($allow->id) : $this->update(['.crud' => $allow->crud & ~$x], $allow->id);

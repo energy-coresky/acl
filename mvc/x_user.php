@@ -54,8 +54,8 @@ class t_user extends \Model_t
     }
 
     function profile($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-        if (!$post)
-            return $this->form($id);
+        if (!$post || $id && !ACM::Uaclp() || !$id && !ACM::Caclp())
+            return $this->form($id && ACM::Raclp() ? $id : 0);
         $ary = $this->validate(0);
         $id ? $this->update($ary, ['id=' => $id]) : $this->insert($ary);
         $this->log("Profile `$post->name` " . ($id ? ", ID=$id modified" : 'added'));
@@ -63,7 +63,7 @@ class t_user extends \Model_t
     }
 
     function dpid($id) {
-        if ($this->delete(['id=' => $id, 'id>' => 4, 'is_grp=' => 0])) {
+        if (ACM::Daclp() && $this->delete(['id=' => $id, 'id>' => 4, 'is_grp=' => 0])) {
             $this->sqlf('update $_users set pid=2 where pid=%d', $id);
             $this->log("Profile ID=$id deleted");
         }
@@ -71,8 +71,8 @@ class t_user extends \Model_t
     }
 
     function group($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-        if (!$post)
-            return $this->form($id);
+        if (!$post || $id && !ACM::Uaclg() || !$id && !ACM::Caclg())
+            return $this->form($id && ACM::Raclg() ? $id : 0);
         $ary = $this->validate(1);
         $id ? $this->update($ary, ['id=' => $id]) : $this->insert($ary);
         $this->log("User Group `$post->name` " . ($id ? ", ID=$id modified" : 'added'));
@@ -80,7 +80,7 @@ class t_user extends \Model_t
     }
 
     function dgu($id) {
-        if ($this->delete(['id=' => $id, 'id>' => 2, 'is_grp=' => 1])) {
+        if (ACM::Daclg() && $this->delete(['id=' => $id, 'id>' => 2, 'is_grp=' => 1])) {
             $this->t_user2grp->delete(['grp_id=' => $id]);
             $this->log("User Group ID=$id deleted");
         }

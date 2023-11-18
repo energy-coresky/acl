@@ -27,6 +27,9 @@
   <tr><td align="right">E-mail</td><td align="left">@inc(.ue)</td></tr>
   <tr><td align="right" valign="top">User Groups</td><td align="left">@inc(.ug)</td></tr>
 </table>
+@if(1 == $e_obj->usr->pid)
+  <h1 style="color:green">Root Profile has untunable access to all Objects</h1>
+@else
 <h1>Integrated access to objects</h1>
 #.objlist
 <table width="80%">
@@ -50,7 +53,9 @@
   </tr>
 ~loop
 </table>@inc(.jscss)
-#.uid.objlist
+#.objlist
+~if
+#.uid
 
 #.pid ========================================================================================
 <h1>Access to objects for <u>{{$e_obj->rw['name']}}</u> Profile</h1>

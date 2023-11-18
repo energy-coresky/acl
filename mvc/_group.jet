@@ -6,7 +6,10 @@
 <h1>User Groups</h1>
 <table width="80%">
   <tr style="background:skyblue">
-    <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Added at</th><th width="17%">Action <a href="?cgu">add new</a></th>
+    <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Added at</th>
+    <th width="17%">Action
+      @if(ACM::Caclg())<a href="?cgu">add new</a>~if
+    </th>
   </tr>
 @loop($list as $id => $one)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
@@ -16,8 +19,8 @@
     <td>{{$one->dt}}</td>
     <td>
       @if($id>2)
-        <a href="?cgu={{$id}}">edit</a> |
-        <a href="?dgu={{$id}}">delete</a>
+        @if(ACM::Uaclg())<a href="?cgu={{$id}}">edit</a>~if |
+        @if(ACM::Daclg())<a href="?dgu={{$id}}">delete</a>~if
       ~if
     </td>
   </tr>
