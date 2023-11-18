@@ -6,14 +6,14 @@
 <h1>Users</h1>
 <table width="80%">
   <tr style="background:skyblue">
-    <th>ID</th><th>Login</th><th>E-mail</th><th>Profile, (Groups)</th><th width="17%">Date Registered</th><th width="17%">Action <a href="?register">register new</a></th>
+    <th>ID</th><th>Login</th><th>E-mail</th><th>Profile, Groups, State</th><th width="17%">Date Registered</th><th width="17%">Action <a href="?register">register new</a></th>
   </tr>
 @loop($e_users)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
     <td>{{$row->id}}</td>
     <td><a style="color:{{1==$row->pid?'green;font-weight:bold':''}}" href="?uid={{$row->id}}">{{$row->login}}</a></td>
     <td>{{$row->email}}</td>
-    <td>{{$row->profile}} ({{$row->cnt}})</td>
+    <td>{{$row->profile}}, {{$row->cnt}}, {{$row->state}}</td>
     <td>{{$row->dt_r}}</td>
     <td>
     @if($row->id == $y_user->id)

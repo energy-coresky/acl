@@ -6,7 +6,7 @@
 @loop($e_obj->usr->groups as $gid => $gname)
   <b>{{$gname}}</b><br>
   @empty
-  <b>the user does not belong to groups</b><br>
+  <span style="color:red;font-weight:bold">the user does not belong to groups</span><br>
 ~loop
 <a href="?user2grp={{$e_obj->usr->id}}">edit user groups</a>
 #.ue.ug
@@ -92,8 +92,6 @@ $('td.crud').each(function (i) {
 </script>
 #.jscss
 
-
-
 #.log ========================================================================================
 <h1>User's Actions Log</h1>
 <table width="80%">
@@ -115,6 +113,4 @@ $('td.crud').each(function (i) {
 ~loop
 </table>
 #.log
-
-
 

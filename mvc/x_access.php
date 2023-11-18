@@ -22,36 +22,44 @@ class t_access extends \Model_t
         return 1;
     }
 
-    function crud($x, $name, $mode) { # sample: 3 acla gid7
+    function add($crud, $name, $mode, $id, $deny = 0) {
         global $user;
-        $cr = [1, 2, 4, 8, 16];
-        $id = substr($mode, 3);
-        $mode = $mode[0]; # u or p or g
-        if ('u' == $mode) {
-            
-        } else {
-            $crud = $this->one(['obj=' => $name, $mode . 'id=' => $id]);
-            trace($crud);
-            $crud or $this->insert([
-                '+obj' => $name,
-                '.crud' => $cr[$x],
-                '.is_deny' => 0,
-                ".{$mode}id" => $id,
-                '.user_id' => $user->id,
-                '!dt_c' => '$now',
-            ]);
-        }
-        //echo $x.$name.$mode;
-        json(['y' => '']);
+        $this->insert([
+            '+obj' => $name,
+            '.crud' => $crud,
+            '.is_deny' => $deny,
+            ".{$mode}id" => $id,
+            '.user_id' => $user->id,
+            '!dt_c' => '$now',
+        ]);
     }
 
-    function page($page = 1) {
-        return [
-            'query' => $this->all(),
-            'row_c' => function ($row) {
-                $row->profile = 1;
-            },
-        ];
+    function crud($x, $name, $mode) { # sample: 3 acla gid7
+        $cr = [1, 2, 4, 8, 16];
+        $x = $cr[$x];
+        $y = 'Y';
+        $id = substr($mode, 3);
+        $mode = $mode[0]; # u or p or g
+        if ('u' == $mode) { # user integrated
+            
+        } else {
+            $row = $this->one(['obj=' => $name, $mode . 'id=' => $id]);
+            if (!$row) {
+                $this->add($x, $name, $mode, $id);
+            } elseif ($x == $row['crud']) {
+                $this->delete($row['id']);
+                $y = '';
+            } else {
+                if ($x & $row['crud']) {
+                    $y = '';
+                    $row['crud'] &= ~$x;
+                } else {
+                    $row['crud'] |= $x;
+                }
+                $this->update(['.crud' => $row['crud']], $row['id']);
+            }
+        }
+        json(['y' => $y]);
     }
 
     function logging($page = 1) {

@@ -84,4 +84,20 @@ You can do it using CRON task for example:
 })
 ```
 
+## Fictitious ACM class
+
+If the application code contains references to the ACL class, but you need to temporarily uninstall
+the ACL product, you can add a dummy ACM class to the application's w3 folder:
+```php
+<?php
+
+class ACM # stub class used when ACL ware do not installed
+{
+    static function __callStatic($name, $args) {
+        return false; # or true
+    }
+}
+
+```
+
 <hr>

@@ -2,9 +2,9 @@
 
 #._
 #if(Plan::view_t(['main', 'acl.jet']))
-    @inc(acl.)
+  @inc(acl.)
 #else
-    @inc(.menu)@inc(_access.)
+  @inc(.menu)@inc(_access.)
 #end
 #._
 
@@ -17,8 +17,8 @@
  @if(ACM::Racll())|<a@aca($sky->_1=='log') href=@acl(acl?log)>LOG</a>|~if
 <style>
 [aca] {
-    background:blue;
-    color:#fff;
+  background:blue;
+  color:#fff;
 }
 </style>
 #.menu
@@ -26,8 +26,8 @@
 #.install ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 @inc(__dev.title)
 <div style="margin:10px;">
-   <form id="finalize">{!$form!}</form><hr>
-   {!$md!}{!$license!}
+  <form id="finalize">{!$form!}</form><hr>
+  {!$md!}{!$license!}
 </div>
 #.install
 
@@ -41,8 +41,8 @@
 @if($tune)
 <pre style="padding:20px 30px; margin-top:10px; background:lightyellow">
 if ($cnt && '{{$tune}}' == $surl[0]) {
-    common_c::$tune = array_shift($surl);
-    $cnt--;
+  common_c::$tune = array_shift($surl);
+  $cnt--;
 }
 </pre>
 @else--
