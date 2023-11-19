@@ -61,6 +61,8 @@ class t_access extends \Model_t
         $mode = $mode[0]; # u or p or g
         $obj_id = 0;
         if ('u' == $mode) { # user integrated
+            if (!ACM::Xaclu())
+                return json(['y' => 'X']);
             $user = $this->x_user->get_user($id);
             [$ok, $_ok, $deny, $allow] = $this->user($name, $user, $obj_id);
             if ($on = $ok & $x) { # allow change to deny
@@ -76,6 +78,8 @@ class t_access extends \Model_t
                     $allow ? $this->update(['.crud' => $allow->crud | $x], $allow->id) : $this->add($x, $name, $id);
             }
         } else {
+            if ('p' == $mode && !ACM::Xaclp() || 'g' == $mode && !ACM::Xaclg())
+                return json(['y' => 'X']);
             $row = $this->one(['obj=' => $name, $mode . 'id=' => $id]);
             if (!$row) {
                 $this->add($x, $name, $id, $mode);

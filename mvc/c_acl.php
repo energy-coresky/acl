@@ -8,30 +8,30 @@ class c_acl extends Controller
     }
 
     function a_log() {
-        return ['e_log' => $this->x_access->logging()];
+        return ACM::Racll() ? ['e_log' => $this->x_access->logging()] : 404;
     }
 
     function a_error() {
     }
 
     function j_crud($x, $name, $mode) {
-        $this->x_access->crud($x, $name, $mode); # 3 acla gid7
+        $this->x_access->crud($x, $name, $mode);
     }
 
     function a_users() {
-        return ['e_users' => $this->x_user->users()];
+        return ACM::Raclu() ? ['e_users' => $this->x_user->users()] : 404;
     }
 
     function a_uid($id) {
-        return ['e_obj' => $this->x_object->access($id, 0, 0)];
+        return ACM::Racla() ? ['e_obj' => $this->x_object->access($id, 0, 0)] : 404;
     }
 
     function a_pid($id) {
-        return ['e_obj' => $this->x_object->access(0, $id, 0)];
+        return ACM::Racla() ? ['e_obj' => $this->x_object->access(0, $id, 0)] : 404;
     }
 
     function a_gid($id) {
-        return ['e_obj' => $this->x_object->access(0, 0, $id)];
+        return ACM::Racla() ? ['e_obj' => $this->x_object->access(0, 0, $id)] : 404;
     }
 
     function a_register($post) {

@@ -32,12 +32,13 @@
 @else
 <h1>Integrated access to objects</h1>
 #.objlist
+@if(ACM::Racla())
 <table width="80%">
   <tr style="background:skyblue">
     <th>##</th><th>Name</th><th>Type</th><th>Object Description</th>
     <th width="1">&nbsp;C&nbsp;</th><th width="1">&nbsp;R&nbsp;</th><th width="1">&nbsp;U&nbsp;</th><th width="1">&nbsp;D&nbsp;</th><th width="1">&nbsp;X&nbsp;</th>
   </tr>
-@loop($e_obj)
+  @loop($e_obj)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}" n="{{$row->name}}">
     <td>{{1 + $_}}</td>
     <td>{{$row->name}}</td>
@@ -51,8 +52,9 @@
   <tr>
     <td colspan="6"><h1>No Defined Objects</h1></td>
   </tr>
-~loop
+  ~loop
 </table>@inc(.jscss)
+~if
 #.objlist
 ~if
 #.uid

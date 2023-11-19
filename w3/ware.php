@@ -32,7 +32,7 @@ class ware extends \Wares
         $tables = $this->tables($dd, $tt = $cfg->tt);
         $object = $this;
         $tune = Plan::_r(['main', 'wares.php'])['acl']['tune'];
-        return compact(array_keys(get_defined_vars()));
+        return get_defined_vars();
     }
 
     function install($mode) {
