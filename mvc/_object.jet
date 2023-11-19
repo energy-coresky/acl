@@ -6,7 +6,10 @@
 <h1>Objects</h1>
 <table width="80%">
   <tr style="background:skyblue">
-    <th>ID</th><th>Name</th><th>Type</th><th>Comment</th><th width="17%">Added at</th><th width="17%">Action <a href="?cobj">add new</a></th>
+    <th>ID</th><th>Name</th><th>Type</th><th>Comment</th><th width="17%">Added at</th>
+    <th width="17%">Action
+      @if(ACM::Caclo())<a href="?cobj">add new</a>~if
+    </th>
   </tr>
 @loop($e_obj)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
@@ -17,8 +20,8 @@
     <td>{{$row->dt}}</td>
     <td>
       @if($row->id>1)
-        <a href="?cobj={{$row->id}}">edit</a> |
-        <a href="?dobj={{$row->id}}">delete</a>
+        @if(ACM::Uaclo())<a href="?cobj={{$row->id}}">edit</a>~if |
+        @if(ACM::Daclo())<a href="?dobj={{$row->id}}">delete</a>~if
       ~if
     </td>
   </tr>
@@ -39,7 +42,10 @@
 <h1>Object Types</h1>
 <table width="80%">
   <tr style="background:skyblue">
-    <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Added at</th><th width="17%">Action <a href="?cot">add new</a></th>
+    <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Added at</th>
+    <th width="17%">Action
+      @if(ACM::Caclt())<a href="?cot">add new</a>~if
+    </th>
   </tr>
 @loop($list as $id => $one)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
@@ -49,8 +55,8 @@
     <td>{{$one->dt}}</td>
     <td>
       @if($id>1)
-        <a href="?cot={{$id}}">edit</a> |
-        <a href="?dot={{$id}}">delete</a>
+        @if(ACM::Uaclt())<a href="?cot={{$id}}">edit</a>~if |
+        @if(ACM::Daclt())<a href="?dot={{$id}}">delete</a>~if
       ~if
     </td>
   </tr>

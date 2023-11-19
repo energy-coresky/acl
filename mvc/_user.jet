@@ -32,7 +32,10 @@
 <h1>Profiles</h1>
 <table width="80%">
   <tr style="background:skyblue">
-    <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Added at</th><th width="17%">Action <a href="?cpid">add new</a></th>
+    <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Added at</th>
+    <th width="17%">Action
+      @if(ACM::Caclp())<a href="?cpid">add new</a>~if
+    </th>
   </tr>
 @loop($list as $id => $one)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
@@ -42,8 +45,8 @@
     <td>{{$one->dt}}</td>
     <td>
       @if($id>4)
-        <a href="?cpid={{$id}}">edit</a> |
-        <a href="?dpid={{$id}}">delete</a>
+        @if(ACM::Uaclp())<a href="?cpid={{$id}}">edit</a>~if |
+        @if(ACM::Daclp())<a href="?dpid={{$id}}">delete</a>~if
       @else@eat()Cannot change~if
     </td>
   </tr>

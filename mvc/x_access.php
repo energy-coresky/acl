@@ -9,9 +9,17 @@ class t_access extends \Model_t
     use common;
 
     function allow($user, $x, $name, $obj_id) {
-        [$ok] = $this->user($name, $user, $obj_id);
-        if (SKY::$debug)
-            \trace($x . $name, $ok & $x ? 'ACL ALLOW' : 'ACL DENY');
+        static $cache = [];
+        if (isset($cache[$name][$obj_id])) {
+            $ok = $cache[$name][$obj_id];
+            if (SKY::$debug > 1)
+                \trace(array_flip(ACM::$cr)[$x] . $name, $ok & $x ? 'ACL ALLOW' : 'ACL DENY');
+        } else {
+            [$ok] = $this->user($name, $user, $obj_id);
+            $cache[$name][$obj_id] = $ok;
+            if (SKY::$debug)
+                \trace(array_flip(ACM::$cr)[$x] . $name, $ok & $x ? 'ACL ALLOW' : 'ACL DENY');
+        }
         return $ok & $x;
     }
 
