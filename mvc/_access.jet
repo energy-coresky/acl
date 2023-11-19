@@ -70,7 +70,7 @@
 @inc(.objlist)
 #.gid
 
-#.jscss
+#.jscss ========================================================================================
 <style>
 .crud {
   cursor:default;
@@ -119,3 +119,9 @@ $('td.crud').each(function (i) {
 </table>
 #.log
 
+#.error
+<h1>Error</h1>
+@if(2 == $sky->_2)<h1>This Object Type in Usage!</h1>
+@else<h1>Unexpected error</h1>
+~if
+#.error

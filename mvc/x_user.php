@@ -88,7 +88,9 @@ class t_user extends \Model_t
     }
 
     function get_user($id) {
-        return $this->sqlf('>select * from $_users where id=%d', $id);
+        if (!$user = $this->sqlf('>select * from $_users where id=%d', $id))
+            throw new Error("Wrong user ID=$id");
+        return $user;
     }
 
     function user2grp($id, $post) {
@@ -99,12 +101,11 @@ class t_user extends \Model_t
         } elseif ($post) {
             $this->t_user2grp->delete(['.user_id=' => $id, '.grp_id=' => $post->grp_id]);
         }
-        $tbl = (string)$this->t_user2grp;
         $sql = 'select g.*, u2g.grp_id as ok from $_ g
             left join $_` u2g on (u2g.user_id=$. and u2g.grp_id=g.id)
             where g.is_grp=1';
         return [
-            'query' => sql($sql, $tbl, $id),
+            'query' => sql($sql, (string)$this->t_user2grp, $id),
             'usr' => $user,
         ];
     }

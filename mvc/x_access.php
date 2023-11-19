@@ -10,6 +10,8 @@ class t_access extends \Model_t
 
     function allow($user, $x, $name, $obj_id) {
         [$ok] = $this->user($name, $user, $obj_id);
+        if (SKY::$debug)
+            trace($x . $name, $ok & $x ? 'ACL ALLOW' : 'ACL DENY');
         return $ok & $x;
     }
 
@@ -51,8 +53,7 @@ class t_access extends \Model_t
         $mode = $mode[0]; # u or p or g
         $obj_id = 0;
         if ('u' == $mode) { # user integrated
-            if (!$user = $this->x_user->get_user($id))
-                throw new Error('Wrong user id');
+            $user = $this->x_user->get_user($id);
             [$ok, $_ok, $deny, $allow] = $this->user($name, $user, $obj_id);
             if ($on = $ok & $x) { # allow change to deny
                 if ($allow)
@@ -83,7 +84,7 @@ class t_access extends \Model_t
     }
 
     function logging($page = 1) {
-        $sql = "select l.*, u.login as user from \$_$this->t_log l left join \$_users u on u.id=l.user_id";
+        $sql = "select l.*, u.login as user from \$_$this->t_log l left join \$_users u on u.id=l.user_id order by id desc";
         return [
             'query' => $this->sqlf($sql),
             'row_c' => function ($row) {

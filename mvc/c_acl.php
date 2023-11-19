@@ -11,6 +11,9 @@ class c_acl extends Controller
         return ['e_log' => $this->x_access->logging()];
     }
 
+    function a_error() {
+    }
+
     function j_crud($x, $name, $mode) {
         $this->x_access->crud($x, $name, $mode); # 3 acla gid7
     }
@@ -84,6 +87,6 @@ class c_acl extends Controller
     }
 
     function a_dot($id) {
-        $this->x_object->dobj($id);
+        $this->x_object->dot($id);
     }
 }

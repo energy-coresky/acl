@@ -32,6 +32,7 @@
 
 #.cobj
 <h1>{{$sky->_2 ? 'Edit' : 'Add'}} Object</h1>{!$form!}
+@if($k_busy ?? false)<h1 style="color:red">This Object name is busy!</h1>~if
 #.cobj
 
 #.types --------------------------------------------------------------------------------------------
