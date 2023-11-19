@@ -1,7 +1,7 @@
 <?php
 
 namespace acl;
-use ACM, SQL;
+use SKY, ACM;
 use function qp;
 
 class t_access extends \Model_t
@@ -11,7 +11,7 @@ class t_access extends \Model_t
     function allow($user, $x, $name, $obj_id) {
         [$ok] = $this->user($name, $user, $obj_id);
         if (SKY::$debug)
-            trace($x . $name, $ok & $x ? 'ACL ALLOW' : 'ACL DENY');
+            \trace($x . $name, $ok & $x ? 'ACL ALLOW' : 'ACL DENY');
         return $ok & $x;
     }
 
