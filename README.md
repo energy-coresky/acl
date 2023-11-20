@@ -27,6 +27,7 @@ Models | 3
 Jet templates | 8, tunable
 Tables in the database | 5, tunable names
 dd drivers support | 2 (**sqlite3**, **mysqli**) for now
+SKY::$vars | 1 (**$k_acl**)
 _Asset_ files | 0
 
 ## Rewrite for a_.. actions if "tune" used:

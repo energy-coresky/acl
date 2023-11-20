@@ -14,8 +14,8 @@ class t_object extends \Model_t
         $ary = array_map(fn($v) => strtolower($v->name), $acm->getMethods());
         $ary = array_filter($ary, fn($v) => in_array($v[0], ['c', 'r', 'u', 'd', 'x']));
         if (in_array($name = strtolower($name), array_map(fn($v) => substr($v, 1), $ary)))
-            return $this->k_busy = true;//////////////////////
-        return $this->k_busy = $this->one(['is_typ=' => 0, 'id!=' => $id, 'name=' => $name]);
+            return $this->k_acl->busy = true;
+        return $this->k_acl->busy = $this->one(['is_typ=' => 0, 'id!=' => $id, 'name=' => $name]);
     }
 
     function row_c(&$row) {
@@ -46,7 +46,7 @@ class t_object extends \Model_t
         $access = (string)$this->x_access;
         if ($uid) { # userID
             $user = $this->x_user->get_user($uid);
-            $user->groups = $this->x_user->groups($groups = ACM::usrGroups($uid));
+            $user->groups = $this->x_user->gnames($groups = ACM::usrGroups($uid));
             $q = $groups
                 ? $this->sql($sql . '(a.uid=$. or a.pid=$. or a.gid in ($@)))' . $end, $access, $uid, $user->pid, $groups)
                 : $this->sql($sql . '(a.uid=$. or a.pid=$.))' . $end, $access, $uid, $user->pid);
@@ -69,7 +69,7 @@ class t_object extends \Model_t
         ];
     }
 
-    function save_o($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    function save_obj($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         $types = $this->all(['is_typ=' => 1], 'id,name');
         $form = new Form([
             '+name' => ['Name'],
@@ -89,20 +89,13 @@ class t_object extends \Model_t
         if (ACM::Daclo()) {
             $obj = $this->one(['id=' => $id, 'id>' => 10, 'is_typ=' => 0]);
             if (!$obj || $this->x_access->one(['obj=' => $obj['name']]))
-                jump('acl?error');
-            $this->delete($id) && $this->log("Object ID=$id deleted");
+                jump('acl?error=1');
+            $this->delete($id) && $this->log("Object `$obj[name]` ID=$id deleted");
         }
         jump('acl?objects');
     }
 
-    function listing() {
-        $sql = 'select o.*, t.name as type from $_ o left join $_ t on t.id=o.typ_id';
-        return [
-            'query' => $this->sqlf($sql .' where o.is_typ=0 order by name'),
-        ];
-    }
-
-    function save_t($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    function save_typ($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         $form = new Form([
             '+name' => ['Name'],
             '+comment' => ['Comment'],
@@ -124,5 +117,15 @@ class t_object extends \Model_t
                 && $this->log("Object Type ID=$id deleted");
         }
         jump('acl?types');
+    }
+
+    function listing($is_typ) {
+        $sql = 'select o.*, t.name as type
+            from $_ o
+            left join $_ t on t.id=o.typ_id
+            where o.is_typ=%d order by o.name';
+        return [
+            'query' => $this->sqlf($sql, $is_typ),
+        ];
     }
 }

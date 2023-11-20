@@ -552,5 +552,35 @@ return array (
       array (
       ),
     ),
+    'a_state' => 
+    array (
+      0 => 1,
+      1 => 
+      array (
+        0 => 1,
+      ),
+      2 => 
+      array (
+        0 => 
+        array (
+          0 => '',
+          1 => 'state',
+          2 => '',
+          3 => '\\d+',
+          4 => 0,
+        ),
+        1 => 
+        array (
+          0 => '',
+          1 => 'code',
+          2 => '',
+          3 => 'ini|act|blk|del',
+          4 => 0,
+        ),
+      ),
+      3 => 
+      array (
+      ),
+    ),
   ),
 );

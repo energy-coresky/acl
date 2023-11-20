@@ -3,6 +3,7 @@
 class c_acl extends Controller
 {
     function head_y($action) {
+        $this->k_acl = new stdClass;
         MVC::body("ware." . substr($action, 2));
         return parent::head_y($action);
     }
@@ -18,10 +19,6 @@ class c_acl extends Controller
         $this->x_access->crud($x, $name, $mode);
     }
 
-    function a_users() {
-        return ACM::Raclu() ? ['e_users' => $this->x_user->users()] : 404;
-    }
-
     function a_uid($id) {
         return ACM::Racla() ? ['e_obj' => $this->x_object->access($id, 0, 0)] : 404;
     }
@@ -32,6 +29,14 @@ class c_acl extends Controller
 
     function a_gid($id) {
         return ACM::Racla() ? ['e_obj' => $this->x_object->access(0, 0, $id)] : 404;
+    }
+
+    function a_users() {
+        return ACM::Raclu() ? ['e_users' => $this->x_user->users()] : 404;
+    }
+
+    function a_state($id, $name) {
+        return ACM::Daclv() ? $this->x_user->state($id, $name) : 404;
     }
 
     function a_register($post) {
@@ -55,7 +60,7 @@ class c_acl extends Controller
     }
 
     function a_groups() { # -=-=-=-=- USER GRUOPS -=-=-=-=-=-=-=-=-=-=-=
-        return ACM::Raclg() ? ['list' => $this->x_user->all(['is_grp=' => 1])] : 404;
+        return ACM::Raclg() ? ['e_grp' => $this->x_user->groups()] : 404;
     }
 
     function a_cgu($id, $post) {
@@ -67,11 +72,11 @@ class c_acl extends Controller
     }
 
     function a_objects() { # -=-=-=-=-=-= OBJECTS =-=-=-=-=-=-=-=-=-=-=-=
-        return ['e_obj' => $this->x_object->listing()];
+        return ACM::Raclo() ? ['e_obj' => $this->x_object->listing(0)] : 404;
     }
 
     function a_cobj($id, $post) {
-        return ['form' => $this->x_object->save_o($post, $id)];
+        return ['form' => $this->x_object->save_obj($post, $id)];
     }
 
     function a_dobj($id) {
@@ -79,11 +84,11 @@ class c_acl extends Controller
     }
 
     function a_types() { # -=-=-=-=-=- OBJECT TYPES =-=-=-=-=-=-=-=-=-=
-        return ['list' => $this->x_object->all(['is_typ=' => 1])];
+        return ACM::Raclt() ? ['e_obj' => $this->x_object->listing(1)] : 404;
     }
 
     function a_cot($id, $post) {
-        return ['form' => $this->x_object->save_t($post, $id)];
+        return ['form' => $this->x_object->save_typ($post, $id)];
     }
 
     function a_dot($id) {

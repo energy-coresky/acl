@@ -11,16 +11,16 @@
       @if(ACM::Caclg())<a href="?cgu">add new</a>~if
     </th>
   </tr>
-@loop($list as $id => $one)
+@loop($e_grp)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
-    <td>{{$id}}</td>
-    <td><a href="?gid={{$id}}">{{$one->name}}</a></td>
-    <td>{{$one->comment}}</td>
-    <td>{{$one->dt}}</td>
+    <td>{{$row->id}}</td>
+    <td><a href="?gid={{$row->id}}">{{$row->name}}</a></td>
+    <td>{{$row->comment}}</td>
+    <td>{{$row->dt}}</td>
     <td>
-      @if($id>2)
-        @if(ACM::Uaclg())<a href="?cgu={{$id}}">edit</a>~if |
-        @if(ACM::Daclg())<a href="?dgu={{$id}}">delete</a>~if
+      @if($row->id > 2)
+        @if(ACM::Uaclg())<a href="?cgu={{$row->id}}">edit</a>~if |
+        @if(ACM::Daclg())<a href="?dgu={{$row->id}}">delete</a>~if
       ~if
     </td>
   </tr>

@@ -20,7 +20,10 @@
       my <a href="?configure={{$row->id}}">configure</a>
     @else
       <a href="?emulate={{$row->id}}">emulate</a>
-      <a href="?lock={{$row->id}}">lock</a>
+      @if(ACM::Daclv())
+        @if($row->state == 'act')<a href="?state={{$row->id}}&code=blk">lock</a>
+        @else<a href="?state={{$row->id}}&code=act">unlock</a>~if
+      ~if
     ~if
     </td>
   </tr>

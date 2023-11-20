@@ -35,7 +35,7 @@
 
 #.cobj
 <h1>{{$sky->_2 ? 'Edit' : 'Add'}} Object</h1>{!$form!}
-@if($k_busy ?? false)<h1 style="color:red">This Object name is busy!</h1>~if
+@if($k_acl->busy ?? false)<h1 style="color:red">This Object name is busy!</h1>~if
 #.cobj
 
 #.types --------------------------------------------------------------------------------------------
@@ -47,16 +47,16 @@
       @if(ACM::Caclt())<a href="?cot">add new</a>~if
     </th>
   </tr>
-@loop($list as $id => $one)
+@loop($e_obj)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
-    <td>{{$id}}</td>
-    <td>{{$one->name}}</td>
-    <td>{{$one->comment}}</td>
-    <td>{{$one->dt}}</td>
+    <td>{{$row->id}}</td>
+    <td>{{$row->name}}</td>
+    <td>{{$row->comment}}</td>
+    <td>{{$row->dt}}</td>
     <td>
-      @if($id>1)
-        @if(ACM::Uaclt())<a href="?cot={{$id}}">edit</a>~if |
-        @if(ACM::Daclt())<a href="?dot={{$id}}">delete</a>~if
+      @if($row->id > 1)
+        @if(ACM::Uaclt())<a href="?cot={{$row->id}}">edit</a>~if |
+        @if(ACM::Daclt())<a href="?dot={{$row->id}}">delete</a>~if
       ~if
     </td>
   </tr>

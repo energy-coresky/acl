@@ -23,6 +23,12 @@ class t_user extends \Model_t
         ];
     }
 
+    function get_user($id) {
+        if (!$user = $this->sqlf('>select * from $_users where id=%d', $id))
+            throw new Error("Wrong user ID=$id");
+        return $user;
+    }
+
     function users() {
         $profiles = ACM::usrProfiles();
         return [
@@ -34,6 +40,12 @@ class t_user extends \Model_t
                 $row->profile = $profiles[$row->pid];
             },
         ];
+    }
+
+    function state($id, $name) {
+        $m = new \Model_t('users');
+        $m->update(['state' => $name], (int)$id);
+        jump();
     }
 
     function register($post) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -87,10 +99,12 @@ class t_user extends \Model_t
         jump('acl?groups');
     }
 
-    function get_user($id) {
-        if (!$user = $this->sqlf('>select * from $_users where id=%d', $id))
-            throw new Error("Wrong user ID=$id");
-        return $user;
+    function groups() {
+        $sql = 'select * from $_
+            where is_grp=1';
+        return [
+            'query' => sql($sql),
+        ];
     }
 
     function user2grp($id, $post) {
@@ -110,7 +124,7 @@ class t_user extends \Model_t
         ];
     }
 
-    function groups(array $ids) {
+    function gnames(array $ids) {
         return $ids ? $this->sqlf('@select id,name from $_ where is_grp=1 and id in (%s)', $ids) : [];
     }
 }
