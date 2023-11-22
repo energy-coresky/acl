@@ -10,11 +10,11 @@ class c_acl extends Controller
         return parent::head_y($action);
     }
 
-    function a_log() {
-        return ACM::Racll() ? ['e_log' => $this->x_access->logging()] : 404;
+    function a_error() {
     }
 
-    function a_error() {
+    function a_log() {
+        return ACM::Racll() ? ['e_log' => $this->x_access->logging()] : 404;
     }
 
     function j_crud($x, $name, $mode) {
@@ -46,7 +46,7 @@ class c_acl extends Controller
     }
 
     function a_register($post) {
-        return ['form' => $this->x_user->register($post)];
+        return ACM::Raclv() ? ['form' => $this->x_user->register($post)] : 404;
     }
 
     function a_user2grp($id, $post) {

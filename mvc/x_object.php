@@ -70,15 +70,17 @@ class t_object extends \Model_t
     }
 
     function save_obj($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-        $types = $this->all(['is_typ=' => 1], 'id,name');
+        $ary = $id && ACM::Raclo() ? $this->one(['id=' => $id]) : [];
         $form = new Form([
             '+name' => ['Name'],
             'comment' => ['Comment'],
-            'typ_id' => ['Type', 'select', $types],
+            'typ_id' => ['Type', 'select', $this->all(['is_typ=' => 1], 'id, name')],
             ['Submit', 'submit', 'onclick="return sky.f.submit()"'],
-        ], $id ? $this->one(['id=' => $id]) : []);
-        if (!$post || $this->busy($_POST['name'], $id))
+        ], $ary);
+
+        if (!$post || $id && !ACM::Uaclo() || !$id && !ACM::Caclo() || $this->busy($_POST['name'], $id))
             return $form;
+
         $ary = $form->validate() + ['is_typ' => 0, '!dt' => '$now'];
         $id ? $this->update($ary, ['id=' => $id]) : $this->insert($ary);
         $this->log("Object `$post->name` " . ($id ? ", ID=$id modified" : 'added'));
@@ -96,13 +98,16 @@ class t_object extends \Model_t
     }
 
     function save_typ($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+        $ary = $id && ACM::Raclt() ? $this->one(['id=' => $id]) : [];
         $form = new Form([
             '+name' => ['Name'],
             '+comment' => ['Comment'],
             ['Submit', 'submit', 'onclick="return sky.f.submit()"'],
-        ], $id ? $this->one(['id=' => $id]) : []);
-        if (!$post)
+        ], $ary);
+
+        if (!$post || $id && !ACM::Uaclt() || !$id && !ACM::Caclt())
             return $form;
+
         $ary = $form->validate() + ['is_typ' => 1, '!dt' => '$now'];
         $id ? $this->update($ary, ['id=' => $id]) : $this->insert($ary);
         $this->log("Object Type `$post->name` " . ($id ? ", ID=$id modified" : 'added'));

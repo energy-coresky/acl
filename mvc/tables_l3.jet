@@ -41,7 +41,7 @@ INSERT INTO "{{$dd->pref . $tt}}_object" values (6, 'aclo', 1, 0, 'ACL objects',
 INSERT INTO "{{$dd->pref . $tt}}_object" values (7, 'aclp', 1, 0, 'Users profiles X=change access', '1971-01-01 01:01:01');
 INSERT INTO "{{$dd->pref . $tt}}_object" values (8, 'aclt', 1, 0, 'ACL object types', '1971-01-01 01:01:01');
 INSERT INTO "{{$dd->pref . $tt}}_object" values (9, 'aclu', 1, 0, 'ACL users X=change access', '1971-01-01 01:01:01');
-INSERT INTO "{{$dd->pref . $tt}}_object" values (10, 'aclv', 1, 0, 'ACL users X-emulate D-lock', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (10, 'aclv', 1, 0, 'ACL users R-register D-lock X-emulate', '1971-01-01 01:01:01');
 ~~
 CREATE TABLE "{{$dd->pref . $tt}}_user" ( -- profiles & user groups
   "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
