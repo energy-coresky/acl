@@ -23,9 +23,10 @@ class t_access extends \Model_t
         return $ok & $x;
     }
 
-    function user($name, $user, $obj_id) {
+    function user($name, $user, $obj_id) { # 2do: $obj_id
         $where = qp('obj=$+ and (pid=$. or uid=$.', $name, $user->pid, $user->id);
         ($groups = ACM::usrGroups($user->id)) ? $where->append(' or gid in ($@))', $groups) : $where->append(')');
+        $obj_id ? $where->append(' and obj_id in (0, $.)', $obj_id) : $where->append(' and obj_id=0');
         $ok = $deny = $allow = 0;
         $list = $this->all($where, 'id as q, id, is_deny, crud, uid');
         foreach ($list as $one) {

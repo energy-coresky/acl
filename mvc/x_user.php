@@ -1,7 +1,7 @@
 <?php
 
 namespace acl;
-use ACM, Form;
+use SKY, ACM, Form;
 use function jump;
 
 class t_user extends \Model_t
@@ -42,10 +42,20 @@ class t_user extends \Model_t
         ];
     }
 
+    function emulate($id) {
+        global $user;
+        if (!ACM::Xaclv() && !$user->v_emulate || !$id)
+            return 404;
+        if (($self = $user->v_emulate == $id) || !$user->v_emulate)
+            SKY::v('emulate', $self ? null : $user->id);
+        SKY::v(null, ['uid' => $id]);
+        jump(LINK);
+    }
+
     function state($id, $name) {
         $m = new \Model_t('users');
         $m->update(['state' => $name], (int)$id);
-        jump();
+        jump(LINK);
     }
 
     function register($post) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -75,7 +85,7 @@ class t_user extends \Model_t
     }
 
     function dpid($id) {
-        if (ACM::Daclp() && $this->delete(['id=' => $id, 'id>' => 4, 'is_grp=' => 0])) {
+        if (ACM::Daclp() && $this->delete(['id=' => $id, 'id>' => 3, 'is_grp=' => 0])) {
             $this->sqlf('update $_users set pid=2 where pid=%d', $id);
             $this->log("Profile ID=$id deleted");
         }

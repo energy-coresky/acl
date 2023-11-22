@@ -1,7 +1,7 @@
 <?php
 
 namespace acl;
-use SKY, Plan, SQL;
+use SKY, SQL;
 
 trait common
 {

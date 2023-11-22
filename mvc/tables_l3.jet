@@ -24,7 +24,7 @@ CREATE TABLE "{{$dd->pref . $tt}}_user2grp" ( -- user's groups
   "grp_id" INTEGER NOT NULL
 )
 ~~
-CREATE TABLE "{{$dd->pref . $tt}}_object" ( -- objects for access & its groups
+CREATE TABLE "{{$dd->pref . $tt}}_object" ( -- objects for access & its types
   "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   "name" VARCHAR(55) DEFAULT '-',
   "typ_id" INTEGER DEFAULT 0,
@@ -34,13 +34,14 @@ CREATE TABLE "{{$dd->pref . $tt}}_object" ( -- objects for access & its groups
 );
 INSERT INTO "{{$dd->pref . $tt}}_object" values (1, 'ACL self', 0, 1, '', '1971-01-01 01:01:01');
 INSERT INTO "{{$dd->pref . $tt}}_object" values (2, 'zzz', 0, 0, 'Fictitious object', '1971-01-01 01:01:01');
-INSERT INTO "{{$dd->pref . $tt}}_object" values (3, 'acla', 1, 0, 'Overall access to ACL pages', '1971-01-01 01:01:01');
-INSERT INTO "{{$dd->pref . $tt}}_object" values (4, 'aclg', 1, 0, 'User Groups', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (3, 'acla', 1, 0, 'ACL access', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (4, 'aclg', 1, 0, 'User Groups X=change access', '1971-01-01 01:01:01');
 INSERT INTO "{{$dd->pref . $tt}}_object" values (5, 'acll', 1, 0, 'ACL action''s log', '1971-01-01 01:01:01');
 INSERT INTO "{{$dd->pref . $tt}}_object" values (6, 'aclo', 1, 0, 'ACL objects', '1971-01-01 01:01:01');
-INSERT INTO "{{$dd->pref . $tt}}_object" values (7, 'aclp', 1, 0, 'Users profiles', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (7, 'aclp', 1, 0, 'Users profiles X=change access', '1971-01-01 01:01:01');
 INSERT INTO "{{$dd->pref . $tt}}_object" values (8, 'aclt', 1, 0, 'ACL object types', '1971-01-01 01:01:01');
-INSERT INTO "{{$dd->pref . $tt}}_object" values (9, 'aclu', 1, 0, 'ACL users', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (9, 'aclu', 1, 0, 'ACL users X=change access', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (10, 'aclv', 1, 0, 'ACL users X-emulate D-lock', '1971-01-01 01:01:01');
 ~~
 CREATE TABLE "{{$dd->pref . $tt}}_user" ( -- profiles & user groups
   "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -53,4 +54,3 @@ INSERT INTO "{{$dd->pref . $tt}}_user" values (0, 'Anonymous', 0, 'No auth at al
 INSERT INTO "{{$dd->pref . $tt}}_user" values (1, 'Root', 0, 'Undeniable full access', '1971-01-01 01:01:01');
 INSERT INTO "{{$dd->pref . $tt}}_user" values (2, 'Authed', 0, 'Minimal access', '1971-01-01 01:01:01');
 INSERT INTO "{{$dd->pref . $tt}}_user" values (3, 'Admin', 0, 'Default admin', '1971-01-01 01:01:01');
-INSERT INTO "{{$dd->pref . $tt}}_user" values (4, 'Locked', 0, 'Account locked', '1971-01-01 01:01:01');

@@ -3,7 +3,9 @@
 class c_acl extends Controller
 {
     function head_y($action) {
+        $acl = explode('/', array_flip(SKY::$plans['main']['ctrl'])['acl']);
         $this->k_acl = new stdClass;
+        $this->k_acl->jact = 2 == count($acl) ? $acl[0] : 'main';
         MVC::body("ware." . substr($action, 2));
         return parent::head_y($action);
     }
@@ -33,6 +35,10 @@ class c_acl extends Controller
 
     function a_users() {
         return ACM::Raclu() ? ['e_users' => $this->x_user->users()] : 404;
+    }
+
+    function a_emulate($id) {
+        return $this->x_user->emulate($id);
     }
 
     function a_state($id, $name) {

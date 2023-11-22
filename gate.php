@@ -582,5 +582,27 @@ return array (
       array (
       ),
     ),
+    'a_emulate' => 
+    array (
+      0 => 1,
+      1 => 
+      array (
+        0 => 1,
+      ),
+      2 => 
+      array (
+        0 => 
+        array (
+          0 => '',
+          1 => 'emulate',
+          2 => '',
+          3 => '\\d+',
+          4 => 0,
+        ),
+      ),
+      3 => 
+      array (
+      ),
+    ),
   ),
 );

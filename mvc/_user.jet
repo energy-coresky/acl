@@ -9,7 +9,7 @@
     <th>ID</th><th>Login</th><th>E-mail</th><th>Profile, Groups, State</th><th width="17%">Date Registered</th><th width="17%">Action <a href="?register">register new</a></th>
   </tr>
 @loop($e_users)
-  <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
+  <tr style="background:{{'act' != $row->state ? 'pink' : ($_ % 2 ? '#eee' : '')}}">
     <td>{{$row->id}}</td>
     <td><a style="color:{{1==$row->pid?'green;font-weight:bold':''}}" href="?uid={{$row->id}}">{{$row->login}}</a></td>
     <td>{{$row->email}}</td>
@@ -47,7 +47,7 @@
     <td>{{$one->comment}}</td>
     <td>{{$one->dt}}</td>
     <td>
-      @if($id>4)
+      @if($id > 3)
         @if(ACM::Uaclp())<a href="?cpid={{$id}}">edit</a>~if |
         @if(ACM::Daclp())<a href="?dpid={{$id}}">delete</a>~if
       @else@eat()Cannot change~if

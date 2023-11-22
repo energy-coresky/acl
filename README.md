@@ -6,20 +6,20 @@ Production ware. Use this product if your application need access control manage
 This ACL ware support simple and extended mode for manage access for
 CRUD operations. CUD operation logging configurable at the ware installation stage.
 
-**Simple mode**: Create/Read/Update/Delete for users profile <span style="color:green">allow</span> objects types.
+**Simple mode**: Create/Read/Update/Delete for users profile <span style="color:green">allow</span> objects.
 User's groups and single _user\_id_ do not used for ACL.
 
 **Extended mode**:
 Create/Read/Update/Delete = C/R/U/D for
-user_profile, user_group, user_id
+user_profile, user_groups, user_id
 <span style="color:green">allow</span>/<span style="color:red">deny</span> for
-object_group, object_type, object_ID
+objects OR object_ID
 
 User to Profiles is one to many relation. Users to Groups is many to many relation.
 
 Essence | Brief Info
 :----- | :-----
-Current status | _UNDER DEVELOPMENT_
+Version | 0.888
 Installer class | present (**acl\\ware**)
 _w3_ classes | 2 (**Acl** (console), **ACM**)
 Controllers | 1, has optional tune
@@ -30,8 +30,9 @@ dd drivers support | 2 (**sqlite3**, **mysqli**) for now
 SKY::$vars | 1 (**$k_acl**)
 _Asset_ files | 0
 
-## Rewrite for a_.. actions if "tune" used:
+## Tuning the ware:
 ```php
+# Rewrite for a_ actions:
 if ($cnt && 'ctrl' == $surl[0]) { # Where 'ctrl' - tuning value (any of `/^[\w+\-]+$/`)
     common_c::$tune = array_shift($surl);
     $cnt--;
@@ -49,8 +50,14 @@ if (!ACM::Ressence())
 ```
 
 Where **Ressence**:
-* R - char one of C/R/U/D or X/Y/Z. R - access for reading
+* R - char one of C/R/U/D or X. R - access for reading
 * essence - object (essence) name from acl_object database table
+
+You also can use selected object ID: (2do)
+```php
+# Access for selected `topic` object ID
+ACM::Rtopic($topic_id); # where $topic_id is ID numeric value
+```
 
 ## Replacing Jet templates
 See the root templates call:
