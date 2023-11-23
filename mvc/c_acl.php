@@ -17,8 +17,8 @@ class c_acl extends Controller
         return ACM::Racll() ? ['e_log' => $this->x_access->logging()] : 404;
     }
 
-    function j_crud($x, $name, $mode) {
-        $this->x_access->crud($x, $name, $mode);
+    function j_set($x, $name, $mode) {
+        $this->x_access->set($x, $name, $mode);
     }
 
     function a_uid($id) {
@@ -57,7 +57,7 @@ class c_acl extends Controller
         return ACM::Raclp() ? ['list' => $this->x_user->all(['is_grp=' => 0])] : 404;
     }
 
-    function a_cpid($id, $post) {
+    function a_spid($id, $post) {
         return ['form' => $this->x_user->profile($post, $id)];
     }
 
@@ -69,19 +69,19 @@ class c_acl extends Controller
         return ACM::Raclg() ? ['e_grp' => $this->x_user->groups()] : 404;
     }
 
-    function a_cgu($id, $post) {
+    function a_sgrp($id, $post) {
         return ['form' => $this->x_user->group($post, $id)];
     }
 
-    function a_dgu($id) {
-        $this->x_user->dgu($id);
+    function a_dgrp($id) {
+        $this->x_user->dgrp($id);
     }
 
     function a_objects() { # -=-=-=-=-=-= OBJECTS =-=-=-=-=-=-=-=-=-=-=-=
         return ACM::Raclo() ? ['e_obj' => $this->x_object->listing(0)] : 404;
     }
 
-    function a_cobj($id, $post) {
+    function a_sobj($id, $post) {
         return ['form' => $this->x_object->save_obj($post, $id)];
     }
 
@@ -93,11 +93,16 @@ class c_acl extends Controller
         return ACM::Raclt() ? ['e_obj' => $this->x_object->listing(1)] : 404;
     }
 
-    function a_cot($id, $post) {
+    function x_filter() {
+        MVC::body('object.filter');
+        return ['list' => $this->x_object->types(true)];
+    }
+
+    function a_styp($id, $post) {
         return ['form' => $this->x_object->save_typ($post, $id)];
     }
 
-    function a_dot($id) {
-        $this->x_object->dot($id);
+    function a_dtyp($id) {
+        $this->x_object->dtyp($id);
     }
 }

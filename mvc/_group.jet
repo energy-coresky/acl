@@ -8,7 +8,7 @@
   <tr style="background:skyblue">
     <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Added at</th>
     <th width="17%">Action
-      @if(ACM::Caclg())<a href="?cgu">add new</a>~if
+      @if(ACM::Caclg())<a href="?sgrp">add new</a>~if
     </th>
   </tr>
 @loop($e_grp)
@@ -19,8 +19,8 @@
     <td>{{$row->dt}}</td>
     <td>
       @if($row->id > 2)
-        @if(ACM::Uaclg())<a href="?cgu={{$row->id}}">edit</a>~if |
-        @if(ACM::Daclg())<a href="?dgu={{$row->id}}">delete</a>~if
+        @if(ACM::Uaclg())<a href="?sgrp={{$row->id}}">edit</a>~if |
+        @if(ACM::Daclg())<a href="?dgrp={{$row->id}}">delete</a>~if
       ~if
     </td>
   </tr>
@@ -32,9 +32,9 @@
 </table>
 #.groups
 
-#.cgu --------------------------------------------------------------------------------------------
+#.sgrp --------------------------------------------------------------------------------------------
 <h1>{{$sky->_2 ? 'Edit' : 'Add'}} User Group</h1>{!$form!}
-#.cgu
+#.sgrp
 
 #.user2grp
 <h1>Edit User Groups for user_id={{$e_grp->usr->id}}, {{$e_grp->usr->email}}</h1>

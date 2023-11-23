@@ -41,7 +41,7 @@ return array (
       array (
       ),
     ),
-    'a_cpid' => 
+    'a_spid' => 
     array (
       0 => 65,
       1 => 
@@ -54,7 +54,7 @@ return array (
         0 => 
         array (
           0 => '',
-          1 => 'cpid',
+          1 => 'spid',
           2 => '',
           3 => '(|\\d+)',
           4 => 0,
@@ -80,7 +80,7 @@ return array (
         ),
       ),
     ),
-    'a_cgu' => 
+    'a_sgrp' => 
     array (
       0 => 65,
       1 => 
@@ -93,7 +93,7 @@ return array (
         0 => 
         array (
           0 => '',
-          1 => 'cgu',
+          1 => 'sgrp',
           2 => '',
           3 => '(|\\d+)',
           4 => 0,
@@ -119,7 +119,7 @@ return array (
         ),
       ),
     ),
-    'a_dgu' => 
+    'a_dgrp' => 
     array (
       0 => 1,
       1 => 
@@ -131,7 +131,7 @@ return array (
         0 => 
         array (
           0 => '',
-          1 => 'dgu',
+          1 => 'dgrp',
           2 => '',
           3 => '\\d+',
           4 => 0,
@@ -233,7 +233,7 @@ return array (
       array (
       ),
     ),
-    'a_cobj' => 
+    'a_sobj' => 
     array (
       0 => 65,
       1 => 
@@ -246,7 +246,7 @@ return array (
         0 => 
         array (
           0 => '',
-          1 => 'cobj',
+          1 => 'sobj',
           2 => '',
           3 => '(|\\d+)',
           4 => 0,
@@ -280,7 +280,7 @@ return array (
         ),
       ),
     ),
-    'a_cot' => 
+    'a_styp' => 
     array (
       0 => 65,
       1 => 
@@ -293,7 +293,7 @@ return array (
         0 => 
         array (
           0 => '',
-          1 => 'cot',
+          1 => 'styp',
           2 => '',
           3 => '(|\\d+)',
           4 => 0,
@@ -457,7 +457,7 @@ return array (
         ),
       ),
     ),
-    'j_crud' => 
+    'j_set' => 
     array (
       0 => 0,
       1 => 
@@ -530,7 +530,7 @@ return array (
       array (
       ),
     ),
-    'a_dot' => 
+    'a_dtyp' => 
     array (
       0 => 1,
       1 => 
@@ -542,7 +542,7 @@ return array (
         0 => 
         array (
           0 => '',
-          1 => 'dot',
+          1 => 'dtyp',
           2 => '',
           3 => '\\d+',
           4 => 0,

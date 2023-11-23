@@ -74,7 +74,7 @@ class t_object extends \Model_t
         $form = new Form([
             '+name' => ['Name'],
             'comment' => ['Comment'],
-            'typ_id' => ['Type', 'select', $this->all(['is_typ=' => 1], 'id, name')],
+            'typ_id' => ['Type', 'select', $this->types()],
             ['Submit', 'submit', 'onclick="return sky.f.submit()"'],
         ], $ary);
 
@@ -114,7 +114,7 @@ class t_object extends \Model_t
         jump('acl?types');
     }
 
-    function dot($id) {
+    function dtyp($id) {
         if (ACM::Daclt()) {
             if ($this->one(['typ_id=' => $id]))
                 jump('acl?error=2');
@@ -122,6 +122,11 @@ class t_object extends \Model_t
                 && $this->log("Object Type ID=$id deleted");
         }
         jump('acl?types');
+    }
+
+    function types($all = false) {
+        $list = $this->all(['is_typ=' => 1], 'id, name');
+        return ($all ? ['--ALL--'] : []) + $list;
     }
 
     function listing($is_typ) {

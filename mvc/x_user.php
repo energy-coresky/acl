@@ -101,7 +101,7 @@ class t_user extends \Model_t
         jump('acl?groups');
     }
 
-    function dgu($id) {
+    function dgrp($id) {
         if (ACM::Daclg() && $this->delete(['id=' => $id, 'id>' => 2, 'is_grp=' => 1])) {
             $this->t_user2grp->delete(['grp_id=' => $id]);
             $this->log("User Group ID=$id deleted");

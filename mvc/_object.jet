@@ -2,13 +2,28 @@
 @inc(_user.)
 #._
 
+#.filter
+<tr>
+  <td colspan="2" align="right">Filter:</td>
+  <td>
+    <select>
+    @loop($list as $id => $name)
+      @if(ACM::Raclt())<option value="{{$id}}">{{$name}}</option>~if
+    ~loop
+    </select>
+  </td>
+  <td></td>
+</tr>
+#.filter
+
 #.objects --------------------------------------------------------------------------------------------
 <h1>Objects</h1>
 <table width="80%">
+  @view(filter)
   <tr style="background:skyblue">
     <th>ID</th><th>Name</th><th>Type</th><th>Comment</th><th width="17%">Added at</th>
     <th width="17%">Action
-      @if(ACM::Caclo())<a href="?cobj">add new</a>~if
+      @if(ACM::Caclo())<a href="?sobj">add new</a>~if
     </th>
   </tr>
 @loop($e_obj)
@@ -20,7 +35,7 @@
     <td>{{$row->dt}}</td>
     <td>
       @if($row->id>1)
-        @if(ACM::Uaclo())<a href="?cobj={{$row->id}}">edit</a>~if |
+        @if(ACM::Uaclo())<a href="?sobj={{$row->id}}">edit</a>~if |
         @if(ACM::Daclo())<a href="?dobj={{$row->id}}">delete</a>~if
       ~if
     </td>
@@ -33,10 +48,10 @@
 </table>
 #.objects <pre>{!ACM::busy()!}</pre>
 
-#.cobj
+#.sobj
 <h1>{{$sky->_2 ? 'Edit' : 'Add'}} Object</h1>{!$form!}
 @if($k_acl->busy ?? false)<h1 style="color:red">This Object name is busy!</h1>~if
-#.cobj
+#.sobj
 
 #.types --------------------------------------------------------------------------------------------
 <h1>Object Types</h1>
@@ -44,7 +59,7 @@
   <tr style="background:skyblue">
     <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Added at</th>
     <th width="17%">Action
-      @if(ACM::Caclt())<a href="?cot">add new</a>~if
+      @if(ACM::Caclt())<a href="?styp">add new</a>~if
     </th>
   </tr>
 @loop($e_obj)
@@ -55,8 +70,8 @@
     <td>{{$row->dt}}</td>
     <td>
       @if($row->id > 1)
-        @if(ACM::Uaclt())<a href="?cot={{$row->id}}">edit</a>~if |
-        @if(ACM::Daclt())<a href="?dot={{$row->id}}">delete</a>~if
+        @if(ACM::Uaclt())<a href="?styp={{$row->id}}">edit</a>~if |
+        @if(ACM::Daclt())<a href="?dtyp={{$row->id}}">delete</a>~if
       ~if
     </td>
   </tr>
@@ -68,7 +83,7 @@
 </table>
 #.types
 
-#.cot
+#.styp
 <h1>{{$sky->_2 ? 'Edit' : 'Add'}} Object Type</h1>{!$form!}
-#.cot
+#.styp
 

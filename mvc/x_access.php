@@ -10,6 +10,7 @@ class t_access extends \Model_t
 
     function allow($user, $x, $name, $obj_id) {
         static $cache = [];
+
         if (isset($cache[$name][$obj_id])) {
             $ok = $cache[$name][$obj_id];
             if (SKY::$debug > 1)
@@ -27,9 +28,9 @@ class t_access extends \Model_t
         $where = qp('obj=$+ and (pid=$. or uid=$.', $name, $user->pid, $user->id);
         ($groups = ACM::usrGroups($user->id)) ? $where->append(' or gid in ($@))', $groups) : $where->append(')');
         $obj_id ? $where->append(' and obj_id in (0, $.)', $obj_id) : $where->append(' and obj_id=0');
+
         $ok = $deny = $allow = 0;
-        $list = $this->all($where, 'id as q, id, is_deny, crud, uid');
-        foreach ($list as $one) {
+        foreach ($this->all($where, 'id as q, id, is_deny, crud, uid') as $one) {
             if ($one->uid) {
                 $one->is_deny ? ($deny = $one) : ($allow = $one);
             } else {
@@ -37,6 +38,7 @@ class t_access extends \Model_t
             }
         }
         $_ok = $ok;
+
         if ($allow)
             $ok |= $allow->crud;
         if ($deny)
@@ -56,7 +58,7 @@ class t_access extends \Model_t
         ]);
     }
 
-    function crud($x, $name, $mode) { # sample: 3 acla gid7
+    function set($x, $name, $mode) { # sample: 3 acla gid7
         $x = 1 << $x;
         $id = substr($mode, 3);
         $mode = $mode[0]; # u or p or g
