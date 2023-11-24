@@ -93,16 +93,20 @@ class c_acl extends Controller
         return ACM::Raclt() ? ['e_obj' => $this->x_object->listing(1)] : 404;
     }
 
-    function x_filter() {
-        MVC::body('object.filter');
-        return ['list' => $this->x_object->types(true)];
-    }
-
     function a_styp($id, $post) {
         return ['form' => $this->x_object->save_typ($post, $id)];
     }
 
     function a_dtyp($id) {
         $this->x_object->dtyp($id);
+    }
+
+    function x_filter() {
+        MVC::body('object.filter');
+        return [
+            'list' => $this->x_object->types(true),
+            't' => $_GET['t'] ?? 0,
+            's' => $_GET['s'] ?? '',
+        ];
     }
 }

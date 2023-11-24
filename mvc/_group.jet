@@ -2,7 +2,7 @@
 @inc(_object.)
 #._
 
-#.groups --------------------------------------------------------------------------------------------
+#.groups ========================================================================================
 <h1>User Groups</h1>
 <table width="80%">
   <tr style="background:skyblue">
@@ -32,11 +32,11 @@
 </table>
 #.groups
 
-#.sgrp --------------------------------------------------------------------------------------------
+#.sgrp
 <h1>{{$sky->_2 ? 'Edit' : 'Add'}} User Group</h1>{!$form!}
 #.sgrp
 
-#.user2grp
+#.user2grp ========================================================================================
 <h1>Edit User Groups for user_id={{$e_grp->usr->id}}, {{$e_grp->usr->email}}</h1>
 <form method="post" id="f2"><input type="hidden" name="is_add"><input type="hidden" name="grp_id">@csrf
 <table width="80%">

@@ -36,8 +36,17 @@ class t_object extends \Model_t
         $p = [$_];
     }
 
+    function filter($is_typ) {
+        $end = qp(' where o.is_typ=$.', $is_typ);
+        if ($_GET['t'] ?? false)
+            $end->append(' and o.typ_id=$.', $_GET['t']);
+        if (($_GET['s'] ?? false) && is_string($_GET['s']))
+            $end->append(' and (o.name like $+ or o.comment like \1)', "%$_GET[s]%");
+        return $is_typ ? $end->append(' order by o.id desc') : $end->append(' order by o.name');
+    }
+
     function access($uid, $pid, $gid) {
-        $end = ' where o.is_typ=0 order by name';
+        $end = $this->filter(0);
         $sql = 'select o.*, t.name as type,
                   a.is_deny as deny, a.crud, a.obj_id
                     from $_ o
@@ -132,10 +141,9 @@ class t_object extends \Model_t
     function listing($is_typ) {
         $sql = 'select o.*, t.name as type
             from $_ o
-            left join $_ t on t.id=o.typ_id
-            where o.is_typ=%d order by o.name';
+            left join $_ t on t.id=o.typ_id';
         return [
-            'query' => $this->sqlf($sql, $is_typ),
+            'query' => $this->sqlf($sql . $this->filter($is_typ)),
         ];
     }
 }

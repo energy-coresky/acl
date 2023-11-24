@@ -2,21 +2,34 @@
 @inc(_user.)
 #._
 
-#.filter
+#.filter ========================================================================================
 <tr>
-  <td colspan="2" align="right">Filter:</td>
-  <td>
-    <select>
+  <td colspan="2" align="right">Type:</td>
+  <td colspan="2" align="left">
+    <select onchange="acl_filter(this.value)">
     @loop($list as $id => $name)
-      @if(ACM::Raclt())<option value="{{$id}}">{{$name}}</option>~if
+      @if(ACM::Raclt())<option@selected($id == $t) value="{{$id}}">{{$name}}</option>~if
     ~loop
     </select>
+    <input value="{{$s}}" placeholder="text to search" id="acl-s">
+    <input type="button" value="Search" onclick="acl_filter(null, getElementById('acl-s').value)">
+    <script>
+    function acl_filter(t, s) {
+        let url = location.href;
+        if (null === t) {
+            url = url.match(/&s=[^&]*/) ? url.replace(/&s=[^&]*/, "&s=" + s) : url + '&s=' + s;
+        } else {
+            url = url.match(/&t=\d+/) ? url.replace(/&t=\d+/, "&t=" + t) : url + '&t=' + t;
+        }
+        location.href = url;
+    }
+    </script>
   </td>
   <td></td>
 </tr>
 #.filter
 
-#.objects --------------------------------------------------------------------------------------------
+#.objects ========================================================================================
 <h1>Objects</h1>
 <table width="80%">
   @view(filter)
@@ -53,7 +66,7 @@
 @if($k_acl->busy ?? false)<h1 style="color:red">This Object name is busy!</h1>~if
 #.sobj
 
-#.types --------------------------------------------------------------------------------------------
+#.types ========================================================================================
 <h1>Object Types</h1>
 <table width="80%">
   <tr style="background:skyblue">
