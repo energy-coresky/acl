@@ -99,9 +99,10 @@ class t_access extends \Model_t
     }
 
     function logging($page = 1) {
-        $sql = "select l.*, u.login as user from \$_$this->t_log l left join \$_users u on u.id=l.user_id order by id desc";
+        $limit = $ipp = 17;
         return [
-            'query' => $this->sqlf($sql),
+            'ps' => pages($limit, qp($sql = "from \$_$this->t_log l left join \$_users u on u.id=l.user_id")),
+            'query' => $this->sqlf("select l.*, u.login as user $sql order by id desc limit %d, %d", $limit, $ipp),
             'row_c' => function ($row) {
                 $row->user = $row->user ?? 'Anonymous';
             },

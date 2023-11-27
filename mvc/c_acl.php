@@ -14,7 +14,12 @@ class c_acl extends Controller
     }
 
     function a_log() {
-        return ACM::Racll() ? ['e_log' => $this->x_access->logging()] : 404;
+        if (!ACM::Racll())
+            return 404;
+        return [
+            'e_log' => $x = $this->x_access->logging(),
+            'page' => $x['ps'],
+        ];
     }
 
     function j_set($x, $name, $mode) {

@@ -1,6 +1,19 @@
 
 #.pagination ========================================================================================
-
+<div style="font-size:12px;margin-top:3px;">
+  Items: <span id="loaded-items">{{$page->item[0]}}{{$page->item[1] and '..' . $page->item[1]}}</span> of {{$page->cnt}}
+  <ul class="pagination">
+    <li><a href="{{($page->url)(1)}}">first</a></li>
+    @loop(($page->rng)() as $one)
+      @if($page->current == $one)
+        <li><span>{!$one!}</span></li>
+      @else
+        <li><a href="{{($page->url)($one)}}">{!$one!}</a></li>
+      ~if
+    ~loop
+    <li><a href="{{($page->url)($page->last)}}">last</a></li>
+  </ul>
+</div>
 #.pagination
 
 #.users ========================================================================================

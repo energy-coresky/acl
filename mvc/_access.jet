@@ -102,6 +102,7 @@ $('td.crud').each(function (i) {
 
 #.log ========================================================================================
 <h1>User's Actions Log</h1>
+@inc(_user.pagination)
 <table width="80%">
   <tr style="background:skyblue">
     <th width="17%">Date</th>
@@ -120,6 +121,7 @@ $('td.crud').each(function (i) {
   </tr>
 ~loop
 </table>
+@inc(_user.pagination)
 #.log
 
 #.error ========================================================================================
