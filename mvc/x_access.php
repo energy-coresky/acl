@@ -2,7 +2,7 @@
 
 namespace acl;
 use SKY, ACM;
-use function qp;
+use function qp, pagination;
 
 class t_access extends \Model_t
 {
@@ -98,10 +98,11 @@ class t_access extends \Model_t
         json(['y' => $y ?? 'Y']);
     }
 
-    function logging($page = 1) {
+    function logging(&$page) {
         $limit = $ipp = 17;
+        $page = pagination($limit, qp($sql = "from \$_$this->t_log l left join \$_users u on u.id=l.user_id"), 'p');
+        $page->span = 3;
         return [
-            'ps' => pages($limit, qp($sql = "from \$_$this->t_log l left join \$_users u on u.id=l.user_id")),
             'query' => $this->sqlf("select l.*, u.login as user $sql order by id desc limit %d, %d", $limit, $ipp),
             'row_c' => function ($row) {
                 $row->user = $row->user ?? 'Anonymous';

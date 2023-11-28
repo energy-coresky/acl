@@ -119,9 +119,8 @@ $('td.crud').each(function (i) {
   <tr>
     <td colspan="4"><h1>No Log Records</h1></td>
   </tr>
-~loop
+~loop@inc(_user.items)
 </table>
-@inc(_user.pagination)
 #.log
 
 #.error ========================================================================================

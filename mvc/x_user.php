@@ -29,13 +29,16 @@ class t_user extends \Model_t
         return $user;
     }
 
-    function users() {
+    function users(&$page) {
+        $limit = $ipp = 17;
+        $page = pagination($limit, $this->dd()->pref . 'users', 'p');
+        $page->span = 6;
         $profiles = ACM::usrProfiles();
         return [
             'query' => $this->sqlf('select u.*, count(g.user_id) as cnt from $_users u
                 left join $_' . $this->t_user2grp . ' g on (g.user_id=u.id)
                 group by u.id
-                order by u.id desc'),
+                order by u.id desc limit %d, %d', $limit, $ipp),
             'row_c' => function ($row) use (&$profiles) {
                 $row->profile = $profiles[$row->pid];
             },
@@ -109,12 +112,11 @@ class t_user extends \Model_t
         jump('acl?groups');
     }
 
-    function groups() {
-        $sql = 'select * from $_
-            where is_grp=1';
-        return [
-            'query' => sql($sql),
-        ];
+    function groups(&$page) {
+        $limit = $ipp = 17;
+        $page = pagination($limit, $sql = qp('from $_ where is_grp=1'), 'p');
+        $page->span = 5;
+        return ['query' => sql('select * $$ limit $., $.', $sql, $limit, $ipp)];
     }
 
     function user2grp($id, $post) {

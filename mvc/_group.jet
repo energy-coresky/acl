@@ -4,6 +4,7 @@
 
 #.groups ========================================================================================
 <h1>User Groups</h1>
+@inc(_user.pagination)
 <table width="80%">
   <tr style="background:skyblue">
     <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Added at</th>
@@ -28,7 +29,7 @@
   <tr>
     <td colspan="5"><h1>No Defined User Groups</h1></td>
   </tr>
-~loop
+~loop@inc(_user.items)
 </table>
 #.groups
 

@@ -1,23 +1,31 @@
 
 #.pagination ========================================================================================
 <div style="font-size:12px;margin-top:3px;">
-  Items: <span id="loaded-items">{{$page->item[0]}}{{$page->item[1] and '..' . $page->item[1]}}</span> of {{$page->cnt}}
   <ul class="pagination">
-    <li><a href="{{($page->url)(1)}}">first</a></li>
-    @loop(($page->rng)() as $one)
+    @loop(($page->ary)(7,2) as $one)
       @if($page->current == $one)
-        <li><span>{!$one!}</span></li>
+        <li><span>{!1==$one ? 'first' : ($page->last==$one ? 'last' : $one)!}</span></li>
+      @elseif($one)
+        <li><a href="{{($page->url)($one)}}">{!1==$one ? 'first' : ($page->last==$one ? 'last' : $one)!}</a></li>
       @else
-        <li><a href="{{($page->url)($one)}}">{!$one!}</a></li>
+        <li>..</li>
       ~if
     ~loop
-    <li><a href="{{($page->url)($page->last)}}">last</a></li>
   </ul>
 </div>
-#.pagination
+#.pagination.items
+<tr>
+  <td colspan="{{$page->span}}" style="border-top:2px solid black" align="right">
+    Item@if($page->item[1] || !$page->item[0])s~if:
+    <span id="loaded-items">{{$page->item[0]}}{{$page->item[1] and '..' . $page->item[1]}}</span>
+    @if($page->item[0])of {{$page->cnt}}~if
+  </td>
+</tr>
+#.items
 
 #.users ========================================================================================
 <h1>Users</h1>
+@inc(_user.pagination)
 <table width="80%">
   <tr style="background:skyblue">
     <th>ID</th><th>Login</th><th>E-mail</th><th>Profile, Groups, State</th><th width="17%">Date Registered</th>
@@ -44,7 +52,7 @@
     ~if
     </td>
   </tr>
-~loop
+~loop@inc(_user.items)
 </table>
 #.users
 

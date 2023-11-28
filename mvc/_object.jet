@@ -31,6 +31,7 @@
 
 #.objects ========================================================================================
 <h1>Objects</h1>
+@inc(_user.pagination)
 <table width="80%">
   @view(filter)
   <tr style="background:skyblue">
@@ -57,7 +58,7 @@
   <tr>
     <td colspan="6"><h1>No Defined Objects</h1></td>
   </tr>
-~loop
+~loop@inc(_user.items)
 </table>
 #.objects <pre>{!ACM::busy()!}</pre>
 

@@ -36,17 +36,17 @@ class t_object extends \Model_t
         $p = [$_];
     }
 
-    function filter($is_typ) {
-        $end = qp(' where o.is_typ=$.', $is_typ);
+    function filter() {
+        $end = qp(' where o.is_typ=0');
         if ($_GET['t'] ?? false)
             $end->append(' and o.typ_id=$.', $_GET['t']);
         if (($_GET['s'] ?? false) && is_string($_GET['s']))
             $end->append(' and (o.name like $+ or o.comment like \1)', "%$_GET[s]%");
-        return $is_typ ? $end->append(' order by o.id desc') : $end->append(' order by o.name');
+        return $end->append(' order by o.name');
     }
 
     function access($uid, $pid, $gid) {
-        $end = $this->filter(0);
+        $end = $this->filter();
         $sql = 'select o.*, t.name as type,
                   a.is_deny as deny, a.crud, a.obj_id
                     from $_ o
@@ -138,12 +138,16 @@ class t_object extends \Model_t
         return ($all ? ['--ALL--'] : []) + $list;
     }
 
-    function listing($is_typ) {
-        $sql = 'select o.*, t.name as type
-            from $_ o
-            left join $_ t on t.id=o.typ_id';
-        return [
-            'query' => $this->sqlf($sql . $this->filter($is_typ)),
-        ];
+    function listing($is_typ, &$page = null) {
+        $from = 'from $_ o left join $_ t on t.id=o.typ_id';
+        if ($is_typ) {
+            $from .= ' where o.is_typ=1 order by o.id desc';
+        } else {
+            $limit = $ipp = 8;
+            $page = pagination($limit, qp($from .= $this->filter()), 'p');
+            $page->span = 6;
+            $from .= " limit $limit, $ipp";
+        }
+        return ['query' => $this->sqlf("select o.*, t.name as type $from")];
     }
 }

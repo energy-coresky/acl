@@ -17,8 +17,8 @@ class c_acl extends Controller
         if (!ACM::Racll())
             return 404;
         return [
-            'e_log' => $x = $this->x_access->logging(),
-            'page' => $x['ps'],
+            'e_log' => $this->x_access->logging($page),
+            'page' => $page,
         ];
     }
 
@@ -39,7 +39,10 @@ class c_acl extends Controller
     }
 
     function a_users() {
-        return ACM::Raclu() ? ['e_users' => $this->x_user->users()] : 404;
+        return !ACM::Raclu() ? 404 : [
+            'e_users' => $this->x_user->users($page),
+            'page' => $page,
+        ];
     }
 
     function a_emulate($id) {
@@ -71,7 +74,10 @@ class c_acl extends Controller
     }
 
     function a_groups() { # -=-=-=-=- USER GRUOPS -=-=-=-=-=-=-=-=-=-=-=
-        return ACM::Raclg() ? ['e_grp' => $this->x_user->groups()] : 404;
+        return !ACM::Raclg() ? 404 : [
+            'e_grp' => $this->x_user->groups($page),
+            'page' => $page,
+        ];
     }
 
     function a_sgrp($id, $post) {
@@ -83,7 +89,10 @@ class c_acl extends Controller
     }
 
     function a_objects() { # -=-=-=-=-=-= OBJECTS =-=-=-=-=-=-=-=-=-=-=-=
-        return ACM::Raclo() ? ['e_obj' => $this->x_object->listing(0)] : 404;
+        return !ACM::Raclo() ? 404 : [
+            'e_obj' => $this->x_object->listing(0, $page),
+            'page' => $page,
+        ];
     }
 
     function a_sobj($id, $post) {
