@@ -1,9 +1,8 @@
 <?php
 
 namespace acl;
-use ACM, SQL;
-use Form;
-use function qp;
+use ACM, SQL, Form;
+use function qp, pagination, jump;
 
 class t_object extends \Model_t
 {

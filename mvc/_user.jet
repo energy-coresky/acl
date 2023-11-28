@@ -13,7 +13,7 @@
     ~loop
   </ul>
 </div>
-#.pagination.items
+#.pagination.items ---------------------------------------
 <tr>
   <td colspan="{{$page->span}}" style="border-top:2px solid black" align="right">
     Item@if($page->item[1] || !$page->item[0])s~if:
@@ -25,7 +25,7 @@
 
 #.users ========================================================================================
 <h1>Users</h1>
-@inc(_user.pagination)
+@inc(.pagination)
 <table width="80%">
   <tr style="background:skyblue">
     <th>ID</th><th>Login</th><th>E-mail</th><th>Profile, Groups, State</th><th width="17%">Date Registered</th>
@@ -52,7 +52,7 @@
     ~if
     </td>
   </tr>
-~loop@inc(_user.items)
+~loop@inc(.items)
 </table>
 #.users
 

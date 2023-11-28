@@ -2,7 +2,7 @@
 
 namespace acl;
 use SKY, ACM, Form;
-use function jump;
+use function qp, pagination, jump;
 
 class t_user extends \Model_t
 {
