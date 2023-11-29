@@ -4,8 +4,7 @@
 
 #.groups ========================================================================================
 <h1>User Groups</h1>
-@inc(_user.pagination)
-<table width="80%">
+<table width="80%">@inc(_user.pagination)
   <tr style="background:skyblue">
     <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Added at</th>
     <th width="17%">Action
@@ -27,7 +26,7 @@
   </tr>
   @empty
   <tr>
-    <td colspan="5"><h1>No Defined User Groups</h1></td>
+    <td colspan="5"><h1>User Groups Not Found</h1></td>
   </tr>
 ~loop@inc(_user.items)
 </table>
@@ -40,7 +39,7 @@
 #.user2grp ========================================================================================
 <h1>Edit User Groups for user_id={{$e_grp->usr->id}}, {{$e_grp->usr->email}}</h1>
 <form method="post" id="f2"><input type="hidden" name="is_add"><input type="hidden" name="grp_id">@csrf
-<table width="80%">
+<table width="80%">@inc(_user.pagination)
   <tr style="background:skyblue">
     <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Action</th>
   </tr>
@@ -55,8 +54,11 @@
     </td>
   </tr>
   @empty
-  <h1>User Groups Not Found</h1>
+  <tr>
+    <td colspan="4"><h1>User Groups Not Found</h1></td>
+  </tr>
 ~loop
+@inc(_user.items)
 </table>
 </form><script>
 function acl_u2g(is_add, id) {

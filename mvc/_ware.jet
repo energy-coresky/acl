@@ -20,6 +20,26 @@
   background:blue;
   color:#fff;
 }
+td.pages {
+  padding-bottom: 5px;
+  border-bottom: 2px solid black;
+  text-align: right;
+}
+td.pages a, td.pages span {
+  text-decoration: none;
+  border-radius: 999px;
+  padding: 0 6px;
+  margin: 0 1px;
+}
+td.pages a {
+  border: 1px solid skyblue;
+}
+td.pages a:hover {
+  background: skyblue;
+}
+td.pages span {
+  background: lightgreen;
+}
 </style>
 #.menu
 

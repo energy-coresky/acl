@@ -32,7 +32,7 @@ class t_user extends \Model_t
     function users(&$page) {
         $limit = $ipp = 17;
         $page = pagination($limit, $this->dd()->pref . 'users', 'p');
-        $page->span = 6;
+        $page->cs = [4, 2];
         $profiles = ACM::usrProfiles();
         return [
             'query' => $this->sqlf('select u.*, count(g.user_id) as cnt from $_users u
@@ -115,11 +115,14 @@ class t_user extends \Model_t
     function groups(&$page) {
         $limit = $ipp = 17;
         $page = pagination($limit, $sql = qp('from $_ where is_grp=1'), 'p');
-        $page->span = 5;
+        $page->cs = [3, 2];
         return ['query' => sql('select * $$ limit $., $.', $sql, $limit, $ipp)];
     }
 
-    function user2grp($id, $post) {
+    function user2grp($id, $post, &$page) {
+        $limit = $ipp = 17;
+        $page = pagination($limit, qp('from $_ where is_grp=1'), 'p');
+        $page->cs = [2, 2];
         $user = $this->get_user($id);
         if ($post && $post->is_add) {
             in_array($post->grp_id, ACM::usrGroups($id))

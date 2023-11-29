@@ -1,32 +1,41 @@
 
 #.pagination ========================================================================================
-<div style="font-size:12px;margin-top:3px;">
-  <ul class="pagination">
-    @loop(($page->ary)(7,2) as $one)
-      @if($page->current == $one)
-        <li><span>{!1==$one ? 'first' : ($page->last==$one ? 'last' : $one)!}</span></li>
-      @elseif($one)
-        <li><a href="{{($page->url)($one)}}">{!1==$one ? 'first' : ($page->last==$one ? 'last' : $one)!}</a></li>
-      @else
-        <li>..</li>
-      ~if
-    ~loop
-  </ul>
-</div>
-#.pagination.items ---------------------------------------
 <tr>
-  <td colspan="{{$page->span}}" style="border-top:2px solid black" align="right">
-    Item@if($page->item[1] || !$page->item[0])s~if:
-    <span id="loaded-items">{{$page->item[0]}}{{$page->item[1] and '..' . $page->item[1]}}</span>
-    @if($page->item[0])of {{$page->cnt}}~if
+  @block(filter)<td colspan="{{$page->cs[0]}}" class="pages"></td>~block
+  <td colspan="{{$page->cs[1]}}" class="pages">Pages:
+  @loop(($page->ary)(3) as $one)
+    @if($page->current == $one)
+      <span>{!$one!}</span>
+    @elseif($one)
+      <a href="{{($page->url)($one)}}">{!$one!}</a>
+    @else
+      ..
+    ~if
+  ~loop
   </td>
 </tr>
-#.items
+#.pagination.items ---------------------------------------
+<tr>
+  <td colspan="{{$page->cs[0]}}" style="border-top:2px solid black" align="left">
+    @if($page->last>1)Displayed {{$_}} item@if(1!=$_)s~if~if
+  </td>
+  <td colspan="{{$page->cs[1]}}" style="border-top:2px solid black" align="right">
+    @if(1==$page->last)
+      @inc(.total)
+    @else
+      Item@if($page->item[1] || !$page->item[0])s~if:
+      <span id="loaded-items">{{$page->item[0]}}{{$page->item[1] and '..' . $page->item[1]}}</span>
+      @if($page->item[0])of {{$page->cnt}}~if
+    ~if
+  </td>
+</tr>
+#.items.total ---------------------------------------
+Total: {{$_}} item@if(1!=$_)s~if
+#.total
 
 #.users ========================================================================================
 <h1>Users</h1>
-@inc(.pagination)
-<table width="80%">
+<table width="80%">@inc(.pagination)
   <tr style="background:skyblue">
     <th>ID</th><th>Login</th><th>E-mail</th><th>Profile, Groups, State</th><th width="17%">Date Registered</th>
     <th width="17%">Action
@@ -84,6 +93,9 @@
     </td>
   </tr>
 ~loop
+<tr>
+  <td colspan="5" style="border-top:2px solid black" align="right">@inc(.total)</td>
+</tr>
 </table>
 #.profiles
 

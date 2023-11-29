@@ -7,6 +7,7 @@ use function qp, pagination, jump;
 class t_object extends \Model_t
 {
     use common;
+    private $limit;
 
     function busy(&$name, $id = 0) {
         $acm = new \ReflectionClass('ACM');
@@ -18,7 +19,10 @@ class t_object extends \Model_t
     }
 
     function row_c(&$row) {
-        static $p = [];
+        static $p = [], $cur = -1;
+        [$from, $to] = $this->limit;
+        $to += $from - 1;
+
         if (!$row->__i || $p[0]->name == $row->name) {
             $p[] = $row;
             return true;
@@ -33,18 +37,24 @@ class t_object extends \Model_t
             return $crud & $x ? 'Y' : '';
         };
         $p = [$_];
+        if (++$cur < $from || $cur > $to)
+            return true;
     }
 
-    function filter() {
+    function filter($order = true) {
         $end = qp(' where o.is_typ=0');
         if ($_GET['t'] ?? false)
             $end->append(' and o.typ_id=$.', $_GET['t']);
         if (($_GET['s'] ?? false) && is_string($_GET['s']))
             $end->append(' and (o.name like $+ or o.comment like \1)', "%$_GET[s]%");
-        return $end->append(' order by o.name');
+        return $order ? $end->append(' order by o.name') : $end->append(' and o.name!="zzz"');
     }
 
-    function access($uid, $pid, $gid) {
+    function access($uid, $pid, $gid, &$page) {
+        $limit = $ipp = 2;
+        $page = pagination($limit, qp('from $_ o' . $this->filter(false)), 'p');
+        $page->cs = [4, 6];
+        $this->limit = [$limit, $ipp];
         $end = $this->filter();
         $sql = 'select o.*, t.name as type,
                   a.is_deny as deny, a.crud, a.obj_id
@@ -144,7 +154,7 @@ class t_object extends \Model_t
         } else {
             $limit = $ipp = 8;
             $page = pagination($limit, qp($from .= $this->filter()), 'p');
-            $page->span = 6;
+            $page->cs = [4, 2];
             $from .= " limit $limit, $ipp";
         }
         return ['query' => $this->sqlf("select o.*, t.name as type $from")];

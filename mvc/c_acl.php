@@ -14,9 +14,7 @@ class c_acl extends Controller
     }
 
     function a_log() {
-        if (!ACM::Racll())
-            return 404;
-        return [
+        return !ACM::Racll() ? 404 : [
             'e_log' => $this->x_access->logging($page),
             'page' => $page,
         ];
@@ -27,15 +25,24 @@ class c_acl extends Controller
     }
 
     function a_uid($id) {
-        return ACM::Racla() ? ['e_obj' => $this->x_object->access($id, 0, 0)] : 404;
+        return !ACM::Racla() ? 404 : [
+            'e_obj' => $this->x_object->access($id, 0, 0, $page),
+            'page' => $page,
+        ];
     }
 
     function a_pid($id) {
-        return ACM::Racla() ? ['e_obj' => $this->x_object->access(0, $id, 0)] : 404;
+        return !ACM::Racla() ? 404 : [
+            'e_obj' => $this->x_object->access(0, $id, 0, $page),
+            'page' => $page,
+        ];
     }
 
     function a_gid($id) {
-        return ACM::Racla() ? ['e_obj' => $this->x_object->access(0, 0, $id)] : 404;
+        return !ACM::Racla() ? 404 : [
+            'e_obj' => $this->x_object->access(0, 0, $id, $page),
+            'page' => $page,
+        ];
     }
 
     function a_users() {
@@ -58,7 +65,10 @@ class c_acl extends Controller
     }
 
     function a_user2grp($id, $post) {
-        return ['e_grp' => $this->x_user->user2grp($id, $post)];
+        return !ACM::Caclv() ? 404 : [
+            'e_grp' => $this->x_user->user2grp($id, $post, $page),
+            'page' => $page,
+        ];
     }
 
     function a_profiles() { # -=-=-=-=-=-=-= PROFILE =-=-=-=-=-=-=-=-=-=-=

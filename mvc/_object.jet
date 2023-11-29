@@ -3,37 +3,35 @@
 #._
 
 #.filter ========================================================================================
-<tr>
-  <td colspan="2" align="right">Type:</td>
-  <td colspan="2" align="left">
-    <select onchange="acl_filter(this.value)">
-    @loop($list as $id => $name)
-      @if(ACM::Raclt())<option@selected($id == $t) value="{{$id}}">{{$name}}</option>~if
-    ~loop
-    </select>
-    <input value="{{$s}}" placeholder="text to search" id="acl-s">
-    <input type="button" value="Search" onclick="acl_filter(null, getElementById('acl-s').value)">
-    <script>
-    function acl_filter(t, s) {
-        let url = location.href;
-        if (null === t) {
-            url = url.match(/&s=[^&]*/) ? url.replace(/&s=[^&]*/, "&s=" + s) : url + '&s=' + s;
-        } else {
-            url = url.match(/&t=\d+/) ? url.replace(/&t=\d+/, "&t=" + t) : url + '&t=' + t;
-        }
-        location.href = url;
-    }
-    </script>
-  </td>
-  <td></td>
-</tr>
+<td colspan="2" class="pages">Type:</td>
+<td class="pages">
+  <select onchange="acl_filter(this.value)" style="width:100%">
+  @loop($list as $id => $name)
+    @if(ACM::Raclt())<option@selected($id == $t) value="{{$id}}">{{$name}}</option>~if
+  ~loop
+  </select>
+</td>
+<td class="pages" style="text-align:left">
+  <input value="{{$s}}" placeholder="text to search" id="acl-s">
+  <input type="button" value="Search" onclick="acl_filter(null, getElementById('acl-s').value)">
+  <script>
+  function acl_filter(t, s) {
+      let url = location.href;
+      if (null === t) {
+          url = url.match(/&s=[^&]*/) ? url.replace(/&s=[^&]*/, "&s=" + s) : url + '&s=' + s;
+      } else {
+          url = url.match(/&t=\d+/) ? url.replace(/&t=\d+/, "&t=" + t) : url + '&t=' + t;
+      }
+      location.href = url;
+  }
+  </script>
+</td>
 #.filter
 
 #.objects ========================================================================================
+#use(`@view(filter)` as filter)
 <h1>Objects</h1>
-@inc(_user.pagination)
-<table width="80%">
-  @view(filter)
+<table width="80%">@inc(_user.pagination)
   <tr style="background:skyblue">
     <th>ID</th><th>Name</th><th>Type</th><th>Comment</th><th width="17%">Added at</th>
     <th width="17%">Action
@@ -56,9 +54,10 @@
   </tr>
   @empty
   <tr>
-    <td colspan="6"><h1>No Defined Objects</h1></td>
+    <td colspan="6"><h1>No Objects Found!</h1></td>
   </tr>
-~loop@inc(_user.items)
+~loop
+@inc(_user.items)
 </table>
 #.objects <pre>{!ACM::busy()!}</pre>
 
@@ -94,6 +93,9 @@
     <td colspan="5"><h1>No Defined Object Types</h1></td>
   </tr>
 ~loop
+<tr>
+  <td colspan="5" style="border-top:2px solid black" align="right">@inc(.total)</td>
+</tr>
 </table>
 #.types
 

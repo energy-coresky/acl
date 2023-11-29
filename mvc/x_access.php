@@ -99,9 +99,9 @@ class t_access extends \Model_t
     }
 
     function logging(&$page) {
-        $limit = $ipp = 17;
+        $limit = $ipp = 7;
         $page = pagination($limit, qp($sql = "from \$_$this->t_log l left join \$_users u on u.id=l.user_id"), 'p');
-        $page->span = 3;
+        $page->cs = [2, 1];
         return [
             'query' => $this->sqlf("select l.*, u.login as user $sql order by id desc limit %d, %d", $limit, $ipp),
             'row_c' => function ($row) {
