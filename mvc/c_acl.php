@@ -10,16 +10,21 @@ class c_acl extends Controller
         return parent::head_y($action);
     }
 
+    function a_error() {
+    }
+
+    function x_filter() {
+        MVC::body('ware.filter');
+        return ['s' => $_GET['s'] ?? ''];
+    }
+
     function x_filter_obj() {
-        MVC::body('object.filter');
+        MVC::body('ware.filter_obj');
         return [
             'list' => $this->x_object->types(true),
             't' => $_GET['t'] ?? 0,
             's' => $_GET['s'] ?? '',
         ];
-    }
-
-    function a_error() {
     }
 
     function a_log() {
@@ -92,7 +97,7 @@ class c_acl extends Controller
         $this->x_user->dpid($id);
     }
 
-    function a_groups() { # -=-=-=-=- USER GRUOPS -=-=-=-=-=-=-=-=-=-=-=
+    function a_groups() { # -=-=-=-=- USER GROUPS -=-=-=-=-=-=-=-=-=-=-=
         return !ACM::Raclg() ? 404 : [
             'e_grp' => $this->x_user->groups($page),
             'page' => $page,

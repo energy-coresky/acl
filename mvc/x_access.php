@@ -99,11 +99,19 @@ class t_access extends \Model_t
     }
 
     function logging(&$page) {
+        $filter = function ($join = false) {
+            $from = qp("from \$_$this->t_log l");
+            $join AND $from->append(' left join $_users u on u.id=l.user_id');
+            return ($_GET['s'] ?? false) && is_string($_GET['s'])
+                ? $from->append(' where l.comment like $+', "%$_GET[s]%")
+                : $from;
+        };
         $limit = $ipp = 17;
-        $page = pagination($limit, qp($sql = "from \$_$this->t_log l left join \$_users u on u.id=l.user_id"), 'p');
+        $page = pagination($limit, $filter(), 'p');
         $page->cs = [2, 1];
+        $sql = 'select l.*, u.login as user $$ order by id desc limit $., $.';
         return [
-            'query' => $this->sqlf("select l.*, u.login as user $sql order by id desc limit %d, %d", $limit, $ipp),
+            'query' => $this->sql($sql, $filter(true), $limit, $ipp),
             'row_c' => function ($row) {
                 $row->user = $row->user ?? 'Anonymous';
             },

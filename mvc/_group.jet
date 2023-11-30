@@ -2,7 +2,26 @@
 @inc(_object.)
 #._
 
+#.filter ========================================================================================
+@if(!$g = 'log' == $sky->_1)
+<td class="pages" colspan="2">Filter:</td>
+~if
+<td class="pages" colspan="{{$g || 'users' == $sky->_1 ? 2 : 1}}" style="text-align:left">
+  @if($g)Filter:~if
+  <input value="{{$s}}" placeholder="text to search" id="acl-s">
+  <input type="button" value="Search" onclick="acl_filter(getElementById('acl-s').value)">
+  <script>
+  function acl_filter(s) {
+      let url = location.href;
+      url = url.match(/&s=[^&]*/) ? url.replace(/&s=[^&]*/, "&s=" + s) : url + '&s=' + s;
+      location.href = url;
+  }
+  </script>
+</td>
+#.filter
+
 #.groups ========================================================================================
+#use(`@view(filter)` as filter)
 @inc(_ware.menu)
 <h1>User Groups</h1>
 <table width="80%">@inc(_ware.pagination)
@@ -39,6 +58,7 @@
 #.sgrp
 
 #.user2grp ========================================================================================
+#use(`@view(filter)` as filter)
 @inc(_ware.menu)
 <h1>Edit User Groups for user_id={{$e_grp->usr->id}}, {{$e_grp->usr->email}}</h1>
 <form method="post" id="f2"><input type="hidden" name="is_add"><input type="hidden" name="grp_id">@csrf

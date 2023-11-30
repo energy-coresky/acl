@@ -104,6 +104,7 @@ $('td.crud').each(function (i) {
 #.jscss
 
 #.log ========================================================================================
+#use(`@view(filter)` as filter)
 @inc(_ware.menu)
 <h1>User's Actions Log</h1>
 <table width="80%">@inc(_ware.pagination)
