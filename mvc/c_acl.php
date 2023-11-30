@@ -10,6 +10,15 @@ class c_acl extends Controller
         return parent::head_y($action);
     }
 
+    function x_filter_obj() {
+        MVC::body('object.filter');
+        return [
+            'list' => $this->x_object->types(true),
+            't' => $_GET['t'] ?? 0,
+            's' => $_GET['s'] ?? '',
+        ];
+    }
+
     function a_error() {
     }
 
@@ -123,14 +132,5 @@ class c_acl extends Controller
 
     function a_dtyp($id) {
         $this->x_object->dtyp($id);
-    }
-
-    function x_filter() {
-        MVC::body('object.filter');
-        return [
-            'list' => $this->x_object->types(true),
-            't' => $_GET['t'] ?? 0,
-            's' => $_GET['s'] ?? '',
-        ];
     }
 }

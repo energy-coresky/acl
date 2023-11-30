@@ -20,6 +20,7 @@
   {!option($e_obj->usr->state, ACM::$user_states)!}
 </select>
 #.uid.us
+@inc(_ware.menu)
 <h1>User: <u>{{$e_obj->usr->login}}</u>, ID={{$e_obj->usr->id}}</h1>
 <table width="80%">
   <tr><td align="right" width="50%">User State</td><td align="left">@inc(.us)</td></tr>
@@ -32,9 +33,9 @@
 @else
 <h1>Integrated access to objects</h1>
 #.objlist -----------------------------------
-#use(`@view(filter)` as filter)
+#use(`@view(filter_obj)` as filter)
 @if(ACM::Racla())
-<table width="80%">@inc(_user.pagination)
+<table width="80%">@inc(_ware.pagination)
   <tr style="background:skyblue">
     <th>##</th><th>Name</th><th>Type</th><th colspan="2">Object Description</th>
     <th width="1">&nbsp;C&nbsp;</th><th width="1">&nbsp;R&nbsp;</th><th width="1">&nbsp;U&nbsp;</th><th width="1">&nbsp;D&nbsp;</th><th width="1">&nbsp;X&nbsp;</th>
@@ -53,24 +54,26 @@
   <tr>
     <td colspan="10"><h1>No Objects Found!</h1></td>
   </tr>
-  ~loop@inc(_user.items)
-</table>@inc(.jscss)
+  ~loop@inc(_ware.items)
+</table>@inc(_ware.jscss)
 ~if
 #.objlist -----------------------------------
 ~if
 #.uid
 
 #.pid ========================================================================================
+@inc(_ware.menu)
 <h1>Access to objects for <u>{{$e_obj->rw['name']}}</u> Profile</h1>
 @if(0 == $sky->_2)<h1 style="color:red">Anonymous Profile do not has access to all Objects and cannot tune</h1>
 @elseif(1 == $sky->_2)<h1 style="color:green">Root Profile has untunable access to all Objects</h1>
-@else@inc(.objlist)
+@else@inc(_ware.objlist)
 ~if
 #.pid
 
 #.gid ========================================================================================
+@inc(_ware.menu)
 <h1>Access to objects for <u>{{$e_obj->rw['name']}}</u> User Group</h1>
-@inc(.objlist)
+@inc(_ware.objlist)
 #.gid
 
 #.jscss ========================================================================================
@@ -101,8 +104,9 @@ $('td.crud').each(function (i) {
 #.jscss
 
 #.log ========================================================================================
+@inc(_ware.menu)
 <h1>User's Actions Log</h1>
-<table width="80%">@inc(_user.pagination)
+<table width="80%">@inc(_ware.pagination)
   <tr style="background:skyblue">
     <th width="17%">Date</th>
     <th width="17%">User</th>
@@ -118,11 +122,12 @@ $('td.crud').each(function (i) {
   <tr>
     <td colspan="4"><h1>No Log Records</h1></td>
   </tr>
-~loop@inc(_user.items)
+~loop@inc(_ware.items)
 </table>
 #.log
 
 #.error ========================================================================================
+@inc(_ware.menu)
 <h1>Error</h1>
 @if(1 == $sky->_2)<h1>This Object in Usage!</h1>
 @elseif(2 == $sky->_2)<h1>This Object Type in Usage!</h1>

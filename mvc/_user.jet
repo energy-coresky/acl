@@ -21,7 +21,7 @@
   </td>
   <td colspan="{{$page->cs[1]}}" style="border-top:2px solid black" align="right">
     @if(1==$page->last)
-      @inc(.total)
+      @inc(_ware.total)
     @else
       Item@if($page->item[1] || !$page->item[0])s~if:
       <span id="loaded-items">{{$page->item[0]}}{{$page->item[1] and '..' . $page->item[1]}}</span>
@@ -34,8 +34,9 @@ Total: {{$_}} item@if(1!=$_)s~if
 #.total
 
 #.users ========================================================================================
+@inc(_ware.menu)
 <h1>Users</h1>
-<table width="80%">@inc(.pagination)
+<table width="80%">@inc(_ware.pagination)
   <tr style="background:skyblue">
     <th>ID</th><th>Login</th><th>E-mail</th><th>Profile, Groups, State</th><th width="17%">Date Registered</th>
     <th width="17%">Action
@@ -61,16 +62,18 @@ Total: {{$_}} item@if(1!=$_)s~if
     ~if
     </td>
   </tr>
-~loop@inc(.items)
+~loop@inc(_ware.items)
 </table>
 #.users
 
 #.register
+@inc(_ware.menu)
 <h1>Register new user</h1>{!$form!}
 #.register
 
 
 #.profiles ========================================================================================
+@inc(_ware.menu)
 <h1>Profiles</h1>
 <table width="80%">
   <tr style="background:skyblue">
@@ -94,11 +97,12 @@ Total: {{$_}} item@if(1!=$_)s~if
   </tr>
 ~loop
 <tr>
-  <td colspan="5" style="border-top:2px solid black" align="right">@inc(.total)</td>
+  <td colspan="5" style="border-top:2px solid black" align="right">@inc(_ware.total)</td>
 </tr>
 </table>
 #.profiles
 
 #.spid
+@inc(_ware.menu)
 <h1>{{$sky->_2 ? 'Edit' : 'Add'}} profile</h1>{!$form!}
 #.spid

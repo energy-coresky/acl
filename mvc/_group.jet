@@ -3,8 +3,9 @@
 #._
 
 #.groups ========================================================================================
+@inc(_ware.menu)
 <h1>User Groups</h1>
-<table width="80%">@inc(_user.pagination)
+<table width="80%">@inc(_ware.pagination)
   <tr style="background:skyblue">
     <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Added at</th>
     <th width="17%">Action
@@ -28,18 +29,20 @@
   <tr>
     <td colspan="5"><h1>User Groups Not Found</h1></td>
   </tr>
-~loop@inc(_user.items)
+~loop@inc(_ware.items)
 </table>
 #.groups
 
 #.sgrp
+@inc(_ware.menu)
 <h1>{{$sky->_2 ? 'Edit' : 'Add'}} User Group</h1>{!$form!}
 #.sgrp
 
 #.user2grp ========================================================================================
+@inc(_ware.menu)
 <h1>Edit User Groups for user_id={{$e_grp->usr->id}}, {{$e_grp->usr->email}}</h1>
 <form method="post" id="f2"><input type="hidden" name="is_add"><input type="hidden" name="grp_id">@csrf
-<table width="80%">@inc(_user.pagination)
+<table width="80%">@inc(_ware.pagination)
   <tr style="background:skyblue">
     <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Action</th>
   </tr>
@@ -58,7 +61,7 @@
     <td colspan="4"><h1>User Groups Not Found</h1></td>
   </tr>
 ~loop
-@inc(_user.items)
+@inc(_ware.items)
 </table>
 </form><script>
 function acl_u2g(is_add, id) {

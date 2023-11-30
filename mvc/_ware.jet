@@ -4,7 +4,7 @@
 #if(Plan::view_t(['main', 'acl.jet']))
   @inc(acl.)
 #else
-  @inc(.menu)@inc(_access.)
+  @inc(_access.)
 #end
 #._
 

@@ -47,11 +47,11 @@ class t_object extends \Model_t
             $end->append(' and o.typ_id=$.', $_GET['t']);
         if (($_GET['s'] ?? false) && is_string($_GET['s']))
             $end->append(' and (o.name like $+ or o.comment like \1)', "%$_GET[s]%");
-        return $order ? $end->append(' order by o.name') : $end->append(' and o.name!="zzz"');
+        return $order ? $end->append(' or o.name="zzz" order by o.name') : $end->append(' and o.name!="zzz"');
     }
 
     function access($uid, $pid, $gid, &$page) {
-        $limit = $ipp = 2;
+        $limit = $ipp = 17;
         $page = pagination($limit, qp('from $_ o' . $this->filter(false)), 'p');
         $page->cs = [4, 6];
         $this->limit = [$limit, $ipp];
@@ -152,7 +152,7 @@ class t_object extends \Model_t
         if ($is_typ) {
             $from .= ' where o.is_typ=1 order by o.id desc';
         } else {
-            $limit = $ipp = 8;
+            $limit = $ipp = 17;
             $page = pagination($limit, qp($from .= $this->filter()), 'p');
             $page->cs = [4, 2];
             $from .= " limit $limit, $ipp";

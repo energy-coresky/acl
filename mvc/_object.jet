@@ -29,9 +29,10 @@
 #.filter
 
 #.objects ========================================================================================
-#use(`@view(filter)` as filter)
+#use(`@view(filter_obj)` as filter)
+@inc(_ware.menu)
 <h1>Objects</h1>
-<table width="80%">@inc(_user.pagination)
+<table width="80%">@inc(_ware.pagination)
   <tr style="background:skyblue">
     <th>ID</th><th>Name</th><th>Type</th><th>Comment</th><th width="17%">Added at</th>
     <th width="17%">Action
@@ -57,16 +58,18 @@
     <td colspan="6"><h1>No Objects Found!</h1></td>
   </tr>
 ~loop
-@inc(_user.items)
+@inc(_ware.items)
 </table>
 #.objects <pre>{!ACM::busy()!}</pre>
 
 #.sobj
+@inc(_ware.menu)
 <h1>{{$sky->_2 ? 'Edit' : 'Add'}} Object</h1>{!$form!}
 @if($k_acl->busy ?? false)<h1 style="color:red">This Object name is busy!</h1>~if
 #.sobj
 
 #.types ========================================================================================
+@inc(_ware.menu)
 <h1>Object Types</h1>
 <table width="80%">
   <tr style="background:skyblue">
@@ -94,12 +97,13 @@
   </tr>
 ~loop
 <tr>
-  <td colspan="5" style="border-top:2px solid black" align="right">@inc(.total)</td>
+  <td colspan="5" style="border-top:2px solid black" align="right">@inc(_ware.total)</td>
 </tr>
 </table>
 #.types
 
 #.styp
+@inc(_ware.menu)
 <h1>{{$sky->_2 ? 'Edit' : 'Add'}} Object Type</h1>{!$form!}
 #.styp
 
