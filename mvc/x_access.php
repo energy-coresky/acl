@@ -2,7 +2,7 @@
 
 namespace acl;
 use SKY, ACM;
-use function qp, pagination;
+use function pagination;
 
 class t_access extends \Model_t
 {
@@ -25,7 +25,7 @@ class t_access extends \Model_t
     }
 
     function user($name, $user, $obj_id) { # 2do: $obj_id
-        $where = qp('obj=$+ and (pid=$. or uid=$.', $name, $user->pid, $user->id);
+        $where = $this->qp('obj=$+ and (pid=$. or uid=$.', $name, $user->pid, $user->id);
         ($groups = ACM::usrGroups($user->id)) ? $where->append(' or gid in ($@))', $groups) : $where->append(')');
         $obj_id ? $where->append(' and obj_id in (0, $.)', $obj_id) : $where->append(' and obj_id=0');
 
@@ -100,15 +100,14 @@ class t_access extends \Model_t
 
     function logging(&$page) {
         $filter = function ($join = false) {
-            $from = qp("from \$_$this->t_log l");
+            $from = $this->qp("from \$_$this->t_log l");
             $join AND $from->append(' left join $_users u on u.id=l.user_id');
             return ($_GET['s'] ?? false) && is_string($_GET['s'])
                 ? $from->append(' where l.comment like $+', "%$_GET[s]%")
                 : $from;
         };
         $limit = $ipp = 17;
-        $page = pagination($limit, $filter(), 'p');
-        $page->cs = [2, 1];
+        $page = pagination($limit, $filter(), 'p', [2, 1]);
         $sql = 'select l.*, u.login as user $$ order by id desc limit $., $.';
         return [
             'query' => $this->sql($sql, $filter(true), $limit, $ipp),

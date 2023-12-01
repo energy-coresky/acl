@@ -14,7 +14,7 @@
   function acl_filter(s) {
       let url = location.href;
       url = url.match(/&s=[^&]*/) ? url.replace(/&s=[^&]*/, "&s=" + s) : url + '&s=' + s;
-      location.href = url;
+      location.href = url.replace(/&p=\d+/, "");
   }
   </script>
 </td>

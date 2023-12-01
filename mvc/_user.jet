@@ -1,8 +1,8 @@
 
 #.pagination ========================================================================================
 <tr>
-  @block(filter)<td colspan="{{$page->cs[0]}}" class="pages"></td>~block
-  <td colspan="{{$page->cs[1]}}" class="pages">Pages:
+  @block(filter)<td colspan="{{$page->v[0]}}" class="pages"></td>~block
+  <td colspan="{{$page->v[1]}}" class="pages">Pages:
   @loop(($page->ary)(3) as $one)
     @if($page->current == $one)
       <span>{!$one!}</span>
@@ -16,10 +16,10 @@
 </tr>
 #.pagination.items ---------------------------------------
 <tr>
-  <td colspan="{{$page->cs[0]}}" style="border-top:2px solid black" align="left">
+  <td colspan="{{$page->v[0]}}" style="border-top:2px solid black" align="left">
     @if($page->last>1)Displayed {{$_}} item@if(1!=$_)s~if~if
   </td>
-  <td colspan="{{$page->cs[1]}}" style="border-top:2px solid black" align="right">
+  <td colspan="{{$page->v[1]}}" style="border-top:2px solid black" align="right">
     @if(1==$page->last)
       @inc(.total)
     @else
@@ -63,6 +63,10 @@ Total: {{$_}} item@if(1!=$_)s~if
       ~if
     ~if
     </td>
+  </tr>
+  @empty
+  <tr>
+    <td colspan="6"><h1>Users Not Found!</h1></td>
   </tr>
 ~loop
 @inc(_ware.items)

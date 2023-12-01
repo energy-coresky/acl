@@ -1,8 +1,8 @@
 <?php
 
 namespace acl;
-use ACM, SQL, Form;
-use function qp, pagination, jump;
+use ACM, Form;
+use function pagination, jump;
 
 class t_object extends \Model_t
 {
@@ -41,21 +41,24 @@ class t_object extends \Model_t
             return true;
     }
 
-    function filter($order = true) {
-        $end = qp(' where o.is_typ=0');
+    function filter($order = false) {
+        $end = $this->qp(' where o.is_typ=0');
         if ($_GET['t'] ?? false)
             $end->append(' and o.typ_id=$.', $_GET['t']);
         if (($_GET['s'] ?? false) && is_string($_GET['s']))
             $end->append(' and (o.name like $+ or o.comment like \1)', "%$_GET[s]%");
-        return $order ? $end->append(' or o.name="zzz" order by o.name') : $end->append(' and o.name!="zzz"');
+        if (!$order)
+            $end->append(' and o.name!="zzz"');
+        if (1 !== $order)
+            $end->append(' or o.name="zzz"');
+        return $end->append(' order by o.name');
     }
 
     function access($uid, $pid, $gid, &$page) {
         $limit = $ipp = 17;
-        $page = pagination($limit, qp('from $_ o' . $this->filter(false)), 'p');
-        $page->cs = [4, 6];
+        $page = pagination($limit, $this->qp('from $_ o' . $this->filter()), 'p', [4, 6]);
         $this->limit = [$limit, $ipp];
-        $end = $this->filter();
+        $end = $this->filter(true);
         $sql = 'select o.*, t.name as type,
                   a.is_deny as deny, a.crud, a.obj_id
                     from $_ o
@@ -153,8 +156,7 @@ class t_object extends \Model_t
             $from .= ' where o.is_typ=1 order by o.id desc';
         } else {
             $limit = $ipp = 17;
-            $page = pagination($limit, qp($from .= $this->filter()), 'p');
-            $page->cs = [4, 2];
+            $page = pagination($limit, $this->qp($from .= $this->filter(1)), 'p', [4, 2]);
             $from .= " limit $limit, $ipp";
         }
         return ['query' => $this->sqlf("select o.*, t.name as type $from")];

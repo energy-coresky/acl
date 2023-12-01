@@ -116,7 +116,7 @@ $('td.crud').each(function (i) {
 @loop($e_log)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
     <td>{{$row->dt}}</td>
-    <td>{{$row->user}}</td>
+    <td><a href="?uid={{$row->user_id}}">{{$row->user}}</a></td>
     <td align="left">{{$row->comment}}</td>
   </tr>
   @empty

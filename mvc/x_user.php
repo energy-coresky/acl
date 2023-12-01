@@ -1,8 +1,8 @@
 <?php
 
 namespace acl;
-use SKY, ACM, Form;
-use function qp, pagination, jump;
+use SKY, ACM, Form, Error;
+use function pagination, jump;
 
 class t_user extends \Model_t
 {
@@ -32,18 +32,18 @@ class t_user extends \Model_t
     function users(&$page) {
         $filter = function ($s = 'from $_users u ') {
             return ($_GET['s'] ?? false) && is_string($_GET['s'])
-                ? qp($s . 'where u.login like $+ or u.email like \1 or u.uname like \1', "%$_GET[s]%")
-                : qp($s);
+                ? $this->qp($s . 'where u.login like $+ or u.email like \1 or u.uname like \1', "%$_GET[s]%")
+                : $this->qp($s);
         };
         $limit = $ipp = 17;
-        $page = pagination($limit, $filter(), 'p');
-        $page->cs = [4, 2];
+        $page = pagination($limit, $filter(), 'p', [4, 2]);
         $profiles = ACM::usrProfiles();
+        $sql = 'select u.*, count(g.user_id) as cnt from $_users u
+            left join $_' . $this->t_user2grp . ' g on (g.user_id=u.id) $$
+            group by u.id
+            order by u.id desc limit $., $.';
         return [
-            'query' => $this->sql('select u.*, count(g.user_id) as cnt from $_users u
-                left join $_' . $this->t_user2grp . ' g on (g.user_id=u.id) $$
-                group by u.id
-                order by u.id desc limit $., $.', $filter(''), $limit, $ipp),
+            'query' => $this->sql($sql, $filter(''), $limit, $ipp),
             'row_c' => function ($row) use (&$profiles) {
                 $row->profile = $profiles[$row->pid];
             },
@@ -117,24 +117,21 @@ class t_user extends \Model_t
         jump('acl?groups');
     }
 
-    function filter($s = '') {
-        $end = qp($s . ' where g.is_grp=1');
+    function filter($s = 'from $_ g') {
+        $qp = $this->qp($s . ' where g.is_grp=1');
         if (($_GET['s'] ?? false) && is_string($_GET['s']))
-            $end->append(' and (g.name like $+ or g.comment like \1)', "%$_GET[s]%");
-        return $s ? $end : $end->append(' order by g.name');
+            $qp->append(' and (g.name like $+ or g.comment like \1)', "%$_GET[s]%");
+        return $s ? $qp : $qp->append(' order by g.name');
     }
 
     function groups(&$page) {
         $limit = $ipp = 17;
-        $page = pagination($limit, $sql = $this->filter('from $_ g'), 'p');
-        $page->cs = [3, 2];
-        return ['query' => sql('select * $$ limit $., $.', $sql, $limit, $ipp)];
+        $page = pagination($limit, $this->filter(), 'p', [3, 2]);
+        $q = $this->sql('select * from $_ g $$ limit $., $.', $this->filter(''), $limit, $ipp);
+        return ['query' => $q];
     }
 
     function user2grp($id, $post, &$page) {
-        $limit = $ipp = 17;
-        $page = pagination($limit, $this->filter('from $_ g'), 'p');
-        $page->cs = [2, 2];
         $user = $this->get_user($id);
         if ($post && $post->is_add) {
             in_array($post->grp_id, ACM::usrGroups($id))
@@ -142,10 +139,12 @@ class t_user extends \Model_t
         } elseif ($post) {
             $this->t_user2grp->delete(['.user_id=' => $id, '.grp_id=' => $post->grp_id]);
         }
+        $limit = $ipp = 17;
+        $page = pagination($limit, $this->filter(), 'p', [2, 2]);
         $sql = 'select g.*, u2g.grp_id as ok from $_ g
-            left join $_` u2g on (u2g.user_id=$. and u2g.grp_id=g.id) $$';
+            left join $_` u2g on (u2g.user_id=$. and u2g.grp_id=g.id) $$ limit $., $.';
         return [
-            'query' => sql($sql, (string)$this->t_user2grp, $id, $this->filter()),
+            'query' => $this->sql($sql, (string)$this->t_user2grp, $id, $this->filter(''), $limit, $ipp),
             'usr' => $user,
         ];
     }
