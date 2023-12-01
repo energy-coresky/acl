@@ -106,6 +106,7 @@ class t_access extends \Model_t
                 ? $from->append(' where l.comment like $+', "%$_GET[s]%")
                 : $from;
         };
+
         $limit = $ipp = 17;
         $page = pagination($limit, $filter(), 'p', [2, 1]);
         $sql = 'select l.*, u.login as user $$ order by id desc limit $., $.';

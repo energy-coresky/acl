@@ -7,7 +7,6 @@ use function pagination, jump;
 class t_object extends \Model_t
 {
     use common;
-    private $limit;
 
     function busy(&$name, $id = 0) {
         $acm = new \ReflectionClass('ACM');
@@ -16,29 +15,6 @@ class t_object extends \Model_t
         if (in_array($name = strtolower($name), array_map(fn($v) => substr($v, 1), $ary)))
             return $this->k_acl->busy = true;
         return $this->k_acl->busy = $this->one(['is_typ=' => 0, 'id!=' => $id, 'name=' => $name]);
-    }
-
-    function row_c(&$row) {
-        static $p = [], $cur = -1;
-        [$from, $to] = $this->limit;
-        $to += $from - 1;
-
-        if (!$row->__i || $p[0]->name == $row->name) {
-            $p[] = $row;
-            return true;
-        }
-        $_ = $row;
-        $crud = $deny = 0;
-        foreach ($p as $one)
-            $one->deny ? ($deny |= $one->crud) : ($crud |= $one->crud);
-        $row = $p[0];
-        $crud &= ~$deny;
-        $row->crud = function ($x) use ($crud) {
-            return $crud & $x ? 'Y' : '';
-        };
-        $p = [$_];
-        if (++$cur < $from || $cur > $to)
-            return true;
     }
 
     function filter($order = false) {
@@ -55,9 +31,28 @@ class t_object extends \Model_t
     }
 
     function access($uid, $pid, $gid, &$page) {
-        $limit = $ipp = 17;
-        $page = pagination($limit, $this->qp('from $_ o' . $this->filter()), 'p', [4, 6]);
-        $this->limit = [$limit, $ipp];
+        $from = $to = 17;
+        $page = pagination($from, $this->qp('from $_ o' . $this->filter()), 'p', [4, 6]);
+        $to += $from - 1;
+        $row_c = function (&$row) use ($from, $to) {
+            static $p = [], $cur = -1;
+            if (!$row->__i || $p[0]->name == $row->name) {
+                $p[] = $row;
+                return true;
+            }
+
+            $_ = $row;
+            $crud = $deny = 0;
+            foreach ($p as $one)
+                $one->deny ? ($deny |= $one->crud) : ($crud |= $one->crud);
+            $row = $p[0];
+            $crud &= ~$deny;
+            $row->crud = fn($x) => $crud & $x ? 'Y' : '';
+            $p = [$_];
+            if (++$cur < $from || $cur > $to)
+                return true;
+        };
+
         $end = $this->filter(true);
         $sql = 'select o.*, t.name as type,
                   a.is_deny as deny, a.crud, a.obj_id
@@ -73,7 +68,7 @@ class t_object extends \Model_t
                 : $this->sql($sql . '(a.uid=$. or a.pid=$.))' . $end, $access, $uid, $user->pid);
             return [
                 'query' => $q,
-                'row_c' => [$this, 'row_c'],
+                'row_c' => $row_c,
                 'usr' => $user,
             ];
         } elseif ($gid) { # groupID
@@ -85,7 +80,7 @@ class t_object extends \Model_t
         }
         return [
             'query' => $q,
-            'row_c' => [$this, 'row_c'],
+            'row_c' => $row_c,
             'rw' => $row,
         ];
     }
@@ -108,7 +103,7 @@ class t_object extends \Model_t
         jump('acl?objects');
     }
 
-    function dobj($id) {
+    function drop_obj($id) {
         if (ACM::Daclo()) {
             $obj = $this->one(['id=' => $id, 'id>' => 10, 'is_typ=' => 0]);
             if (!$obj || $this->x_access->one(['obj=' => $obj['name']]))
@@ -135,7 +130,7 @@ class t_object extends \Model_t
         jump('acl?types');
     }
 
-    function dtyp($id) {
+    function drop_typ($id) {
         if (ACM::Daclt()) {
             if ($this->one(['typ_id=' => $id]))
                 jump('acl?error=2');

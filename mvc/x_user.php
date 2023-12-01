@@ -35,6 +35,7 @@ class t_user extends \Model_t
                 ? $this->qp($s . 'where u.login like $+ or u.email like \1 or u.uname like \1', "%$_GET[s]%")
                 : $this->qp($s);
         };
+
         $limit = $ipp = 17;
         $page = pagination($limit, $filter(), 'p', [4, 2]);
         $profiles = ACM::usrProfiles();

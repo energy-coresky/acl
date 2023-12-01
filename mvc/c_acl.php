@@ -124,7 +124,7 @@ class c_acl extends Controller
     }
 
     function a_dobj($id) {
-        $this->x_object->dobj($id);
+        $this->x_object->drop_obj($id);
     }
 
     function a_types() { # -=-=-=-=-=- OBJECT TYPES =-=-=-=-=-=-=-=-=-=
@@ -136,6 +136,6 @@ class c_acl extends Controller
     }
 
     function a_dtyp($id) {
-        $this->x_object->dtyp($id);
+        $this->x_object->drop_typ($id);
     }
 }
