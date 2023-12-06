@@ -102,29 +102,23 @@ class t_access extends \Model_t
         json(['y' => $y ?? 'Y']);
     }
 
-    function crud($oid, &$in, $uid, $pid, $gid) {
-        $ary = $id0 = $or = [];
-        $where = $oid
-            ? qp('where obj=$+ and obj_id in (0, $@) and (', $oid, array_keys($in))
-            : qp('where obj in ($@) and obj_id=0 and (', array_keys($in));
-        $mem = ['', 0];
-        $crud = function ($ary = []) use (&$in, &$id0, $oid) {
+    function crud($oid, &$in, \SQL $or) {
+        $ary = $id0 = [];
+        $crud = function ($ary = []) use (&$in, &$id0) {
             $allow = $deny = 0;
-            foreach (array_merge($id0, $ary) as $one)
-                $one->is_deny ? ($deny |= $one->crud) : ($allow |= $one->crud);//////////???
+            foreach ($id0 as $v)
+                $v->is_deny ? ($deny |= $v->crud) : ($allow |= $v->crud);
             $allow &= ~$deny;
-            $fn = fn($x) => $allow & $x ? 'Y' : '';
-            if (!$ary)
-                return $fn;
-            $in[$oid ? $one->obj_id : $one->obj]->crud = $fn;
+            foreach ($ary as $v)
+                $v->is_deny ? ($deny |= $v->crud) : ($allow |= $v->crud);
+            $fn = fn($x) => $allow & ~$deny & $x ? 'Y' : '';
+            return $ary ? ($in[$v->k]->crud = $fn) : $fn;
         };
-        if ($uid)
-            $or[] = qp('uid=$.', $uid);
-        if ($pid)
-            $or[] = qp('pid=$.', $pid);
-        if ($gid)
-            $or[] = qp('gid in ($@)', $gid);
-        $e = $this->sql('&select * from $_ $$ order by obj, obj_id', $where->append(implode(' or ', $or) . ')'));
+        $e = $this->sql('&select *, obj!! as k from $_ where $$ order by obj, obj_id', $oid ? '_id' : '', $oid
+            ? qp('obj=$+ and obj_id in (0, $@) and $$', $oid, array_keys($in), $or)
+            : qp('obj in ($@) and obj_id=0 and $$', array_keys($in), $or)
+        );
+        $mem = ['', 0];
         foreach ($e as $row) {
             if ($oid && !$row->obj_id) {
                 $id0[] = $row;
@@ -140,11 +134,11 @@ class t_access extends \Model_t
         if ($ary)
             $crud($ary);
         $crud = $id0 ? $crud() : fn($x) => '';
-        foreach ($in as &$std) {
-            property_exists($std, 'crud') or $std->crud = $crud;
-            $std->a = $oid
-                ? "$oid.$std->obj_id"
-                : (!isset(ACM::$byId[$std->name]) ? $std->name : a($std->name, "?$this->_1=$this->_2&obj=$std->id"));
+        foreach ($in as &$v) {
+            property_exists($v, 'crud') or $v->crud = $crud;
+            $v->a = $oid
+                ? "$oid.$v->obj_id"
+                : (!isset(ACM::$byId[$v->name]) ? $v->name : a($v->name, "?$this->_1=$this->_2&obj=$v->id"));
         }
     }
 

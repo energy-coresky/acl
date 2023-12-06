@@ -2,7 +2,7 @@
 
 namespace acl;
 use ACM, Form;
-use function pagination, jump;
+use function qp, pagination, jump;
 
 class t_object extends \Model_t
 {
@@ -30,7 +30,6 @@ class t_object extends \Model_t
         if (!ACM::Racla())
             return 404;
         $limit = $ipp = 17;
-        $uid = $pid = $gid = 0;
         if ($oid) {
             if (!$obj = $this->one($oid) or !$func = ACM::$byId[$obj['name']] ?? false)
                 return 404;
@@ -49,19 +48,20 @@ class t_object extends \Model_t
         switch ($this->_1) {
             case 'uid': # userID (integrated)
                 $row = $this->x_user->get_user($id);
-                $pid = $row->pid;
-                $row->groups = $this->x_user->gnames($gid = ACM::usrGroups($uid = $id));
+                $or = qp('(uid=$. or pid=$.', $id, $row->pid);
+                if ($row->groups = $this->x_user->gnames($groups = ACM::usrGroups($id)))
+                    $or->append(' or gid in ($@)', $groups);
+                $this->x_access->crud($oid, $in, $or->append(')'));
             break;
             case 'pid': # profileID
                 $row = $this->x_user->one(['.id=' => $id, 'is_grp=' => 0]);
-                $pid = $id;
+                $this->x_access->crud($oid, $in, qp('pid=$.', $id));
             break;
             case 'gid': # groupID
                 $row = $this->x_user->one(['.id=' => $id, 'is_grp=' => 1]);
-                $gid = [$id];
+                $this->x_access->crud($oid, $in, qp('gid=$.', $id));
             break;
         }
-        $this->x_access->crud($oid, $in, $uid, $pid, $gid);
         return [
             'page' => $page,
             'oid' => $oid,
