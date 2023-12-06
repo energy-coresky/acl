@@ -102,9 +102,12 @@ class t_access extends \Model_t
         json(['y' => $y ?? 'Y']);
     }
 
-    function crud($oid, &$in, \SQL $or) {
+    function crud($oid, &$list, \SQL $or) {
+        if (!$list)
+            return;
         $ary = $id0 = [];
-        $crud = function ($ary = []) use (&$in, &$id0) {
+
+        $crud = function ($ary = []) use (&$list, &$id0) {
             $allow = $deny = 0;
             foreach ($id0 as $v)
                 $v->is_deny ? ($deny |= $v->crud) : ($allow |= $v->crud);
@@ -112,14 +115,14 @@ class t_access extends \Model_t
             foreach ($ary as $v)
                 $v->is_deny ? ($deny |= $v->crud) : ($allow |= $v->crud);
             $fn = fn($x) => $allow & ~$deny & $x ? 'Y' : '';
-            return $ary ? ($in[$v->k]->crud = $fn) : $fn;
+            return $ary ? ($list[$v->k]->crud = $fn) : $fn;
         };
-        $e = $this->sql('&select *, obj!! as k from $_ where $$ order by obj, obj_id', $oid ? '_id' : '', $oid
-            ? qp('obj=$+ and obj_id in (0, $@) and $$', $oid, array_keys($in), $or)
-            : qp('obj in ($@) and obj_id=0 and $$', array_keys($in), $or)
-        );
+
+        $sql = '&select *, obj' . ($oid ? '_id' : '') . ' as k from $_ where $$ and $$ order by obj, obj_id';
+        $keys = array_keys($list);
+        $qp = $oid ? qp('obj=$+ and obj_id in (0, $@)', $oid, $keys) : qp('obj in ($@) and obj_id=0', $keys);
         $mem = ['', 0];
-        foreach ($e as $row) {
+        foreach ($this->sql($sql, $qp, $or) as $row) {
             if ($oid && !$row->obj_id) {
                 $id0[] = $row;
                 $row->obj = '';
@@ -133,12 +136,13 @@ class t_access extends \Model_t
         }
         if ($ary)
             $crud($ary);
+
         $crud = $id0 ? $crud() : fn($x) => '';
-        foreach ($in as &$v) {
+        foreach ($list as &$v) {
             property_exists($v, 'crud') or $v->crud = $crud;
-            $v->a = $oid
-                ? "$oid.$v->obj_id"
-                : (!isset(ACM::$byId[$v->name]) ? $v->name : a($v->name, "?$this->_1=$this->_2&obj=$v->id"));
+            $v->a = $oid ? "$oid.$v->obj_id" : (!isset(ACM::$byId[$v->name])
+                ? $v->name
+                : a("<b>$v->name</b>", "?$this->_1=$this->_2&obj=$v->id"));
         }
     }
 

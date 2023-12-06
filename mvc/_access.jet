@@ -3,33 +3,33 @@
 #._
 
 #.ug ========================================================================================
-@loop($r->groups as $gid => $gname)
+@loop($row->groups as $gid => $gname)
   <b>{{$gname}}</b><br>
   @empty
   <span style="color:red;font-weight:bold">the user does not belong to groups</span><br>
 ~loop
-<a href="?user2grp={{$r->id}}">edit user groups</a>
+<a href="?user2grp={{$row->id}}">edit user groups</a>
 #.ue.ug
-<b>{{$r->email}}</b>
+<b>{{$row->email}}</b>
 #.up.ue
 <select style="width:100px">
-  {!option($r->pid, ACM::usrProfiles())!}
+  {!option($row->pid, ACM::usrProfiles())!}
 </select>
 #.us.up
 <select style="width:100px">
-  {!option($r->state, ACM::$user_states)!}
+  {!option($row->state, ACM::$user_states)!}
 </select>
 #.uid.us
 @inc(_ware.menu)
-<h1>User login: <u>{{$r->login}}</u>, ID={{$r->id}}</h1>
+<h1>User login: <u>{{$row->login}}</u>, ID={{$row->id}}</h1>
 <table width="80%">
-  <tr><td align="right" width="50%">User Name</td><td align="left"><b>{{$r->uname}}</b></td></tr>
+  <tr><td align="right" width="50%">User Name</td><td align="left"><b>{{$row->uname}}</b></td></tr>
   <tr><td align="right" width="50%">User State</td><td align="left">@inc(.us)</td></tr>
   <tr><td align="right" width="50%">Profile</td><td align="left">@inc(.up)</td></tr>
   <tr><td align="right">E-mail</td><td align="left">@inc(.ue)</td></tr>
   <tr><td align="right" valign="top">User Groups</td><td align="left">@inc(.ug)</td></tr>
 </table>
-@if(1 == $r->pid)
+@if(1 == $row->pid)
   <h1 style="color:green">Root Profile has untunable access to all Objects</h1>
 @else
 <h1>Integrated access to objects</h1>
@@ -41,7 +41,7 @@
     <th>##</th><th>Name</th><th>Type</th><th colspan="2">Object Description</th>
     <th width="1">&nbsp;C&nbsp;</th><th width="1">&nbsp;R&nbsp;</th><th width="1">&nbsp;U&nbsp;</th><th width="1">&nbsp;D&nbsp;</th><th width="1">&nbsp;X&nbsp;</th>
   </tr>
-  @loop($e_obj)
+  @loop($list as $row)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}" n="{{$row->name}}">
     <td>{{1 + $_}}</td>
     <td>{!$row->a!}</td>
@@ -64,7 +64,7 @@
 
 #.pid ========================================================================================
 @inc(_ware.menu)
-<h1>Access to objects for <u>{{$r['name']}}</u> Profile</h1>
+<h1>Access to objects for <u>{{$row['name']}}</u> Profile</h1>
 @if(0 == $sky->_2)<h1 style="color:red">Anonymous Profile do not has access to all Objects and cannot tune</h1>
 @elseif(1 == $sky->_2)<h1 style="color:green">Root Profile has untunable access to all Objects</h1>
 @else@inc(_ware.objlist)
@@ -73,7 +73,7 @@
 
 #.gid ========================================================================================
 @inc(_ware.menu)
-<h1>Access to objects for <u>{{$r['name']}}</u> User Group</h1>
+<h1>Access to objects for <u>{{$row['name']}}</u> User Group</h1>
 @inc(_ware.objlist)
 #.gid
 

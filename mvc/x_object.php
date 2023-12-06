@@ -35,15 +35,15 @@ class t_object extends \Model_t
                 return 404;
             $n = (object)call_user_func($func);
             $page = pagination($limit, $n->from, 'p', [4, 6]);
-            $in = $this->sqlf("#$n->select" . ', t.name as type,
+            $list = $this->sqlf("#$n->select" . ', t.name as type,
                 "' . $obj['name'] . '" as name ' . $n->from . '
                 left join $_ t on t.id=' . "$obj[typ_id] $n->order limit %d, %d", $limit, $ipp);
             $oid = $obj['name'];
         } else {
-            $page = pagination($limit, $this->qp('from $_ o' . $this->filter()), 'p', [4, 6]);
-            $in = $this->sqlf('#select o.name as q, o.id, o.name, o.comment, t.name as type
-                from $_ o
-                left join $_ t on t.id=o.typ_id' . $this->filter() . ' order by o.name limit %d, %d', $limit, $ipp);
+            $filter = $this->filter(); # o.id, o.name, o.comment
+            $page = pagination($limit, $this->qp("from \$_ o $filter"), 'p', [4, 6]);
+            $list = $this->sql("#select o.name as q, o.*, t.name as type from \$_ o
+                left join \$_ t on t.id=o.typ_id$filter order by o.name limit $limit, $ipp");
         }
         switch ($this->_1) {
             case 'uid': # userID (integrated)
@@ -51,25 +51,18 @@ class t_object extends \Model_t
                 $or = qp('(uid=$. or pid=$.', $id, $row->pid);
                 if ($row->groups = $this->x_user->gnames($groups = ACM::usrGroups($id)))
                     $or->append(' or gid in ($@)', $groups);
-                $this->x_access->crud($oid, $in, $or->append(')'));
+                $this->x_access->crud($oid, $list, $or->append(')'));
             break;
             case 'pid': # profileID
                 $row = $this->x_user->one(['.id=' => $id, 'is_grp=' => 0]);
-                $this->x_access->crud($oid, $in, qp('pid=$.', $id));
+                $this->x_access->crud($oid, $list, qp('pid=$.', $id));
             break;
             case 'gid': # groupID
                 $row = $this->x_user->one(['.id=' => $id, 'is_grp=' => 1]);
-                $this->x_access->crud($oid, $in, qp('gid=$.', $id));
+                $this->x_access->crud($oid, $list, qp('gid=$.', $id));
             break;
         }
-        return [
-            'page' => $page,
-            'oid' => $oid,
-            'r' => $row,
-            'e_obj' => function () use (&$in) {
-                return $in ? array_shift($in) : false;
-            },
-        ];
+        return get_defined_vars();
     }
 
     function save_obj($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

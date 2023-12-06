@@ -33,15 +33,14 @@ CREATE TABLE "{{$dd->pref . $tt}}_object" ( -- objects for access & its types
   "dt" DATETIME NOT NULL
 );
 INSERT INTO "{{$dd->pref . $tt}}_object" values (1, 'ACL self', 0, 1, '', '1971-01-01 01:01:01');
-INSERT INTO "{{$dd->pref . $tt}}_object" values (2, 'zzz', 0, 0, 'Fictitious object', '1971-01-01 01:01:01');
-INSERT INTO "{{$dd->pref . $tt}}_object" values (3, 'acla', 1, 0, 'ACL access', '1971-01-01 01:01:01');
-INSERT INTO "{{$dd->pref . $tt}}_object" values (4, 'aclg', 1, 0, 'User Groups X=change access', '1971-01-01 01:01:01');
-INSERT INTO "{{$dd->pref . $tt}}_object" values (5, 'acll', 1, 0, 'ACL action''s log', '1971-01-01 01:01:01');
-INSERT INTO "{{$dd->pref . $tt}}_object" values (6, 'aclo', 1, 0, 'ACL objects', '1971-01-01 01:01:01');
-INSERT INTO "{{$dd->pref . $tt}}_object" values (7, 'aclp', 1, 0, 'Users profiles X=change access', '1971-01-01 01:01:01');
-INSERT INTO "{{$dd->pref . $tt}}_object" values (8, 'aclt', 1, 0, 'ACL object types', '1971-01-01 01:01:01');
-INSERT INTO "{{$dd->pref . $tt}}_object" values (9, 'aclu', 1, 0, 'ACL users X=change access', '1971-01-01 01:01:01');
-INSERT INTO "{{$dd->pref . $tt}}_object" values (10, 'aclv', 1, 0, 'ACL users R-register D-lock X-emulate', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (2, 'acla', 1, 0, 'ACL access', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (3, 'aclg', 1, 0, 'User Groups X=change access', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (4, 'acll', 1, 0, 'ACL action''s log', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (5, 'aclo', 1, 0, 'ACL objects', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (6, 'aclp', 1, 0, 'Users profiles X=change access', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (7, 'aclt', 1, 0, 'ACL object types', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (8, 'aclu', 1, 0, 'ACL users X=change access', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_object" values (9, 'aclv', 1, 0, 'ACL users R-register D-lock X-emulate', '1971-01-01 01:01:01');
 ~~
 CREATE TABLE "{{$dd->pref . $tt}}_user" ( -- profiles & user groups
   "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
