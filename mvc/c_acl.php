@@ -38,25 +38,16 @@ class c_acl extends Controller
         $this->x_access->set($x, $name, $mode);
     }
 
-    function a_uid($id) {
-        return !ACM::Racla() ? 404 : [
-            'e_obj' => $this->x_object->access($id, 0, 0, $page),
-            'page' => $page,
-        ];
+    function a_uid($id, $oid) {
+        return $this->x_object->access($id, $oid);
     }
 
-    function a_pid($id) {
-        return !ACM::Racla() ? 404 : [
-            'e_obj' => $this->x_object->access(0, $id, 0, $page),
-            'page' => $page,
-        ];
+    function a_pid($id, $oid) {
+        return $this->x_object->access($id, $oid);
     }
 
-    function a_gid($id) {
-        return !ACM::Racla() ? 404 : [
-            'e_obj' => $this->x_object->access(0, 0, $id, $page),
-            'page' => $page,
-        ];
+    function a_gid($id, $oid) {
+        return $this->x_object->access($id, $oid);
     }
 
     function a_users() {
@@ -90,11 +81,11 @@ class c_acl extends Controller
     }
 
     function a_spid($id, $post) {
-        return ['form' => $this->x_user->profile($post, $id)];
+        return ['form' => $this->x_user->save_pid($post, $id)];
     }
 
     function a_dpid($id) {
-        $this->x_user->dpid($id);
+        $this->x_user->drop_pid($id);
     }
 
     function a_groups() { # -=-=-=-=- USER GROUPS -=-=-=-=-=-=-=-=-=-=-=
@@ -105,11 +96,11 @@ class c_acl extends Controller
     }
 
     function a_sgrp($id, $post) {
-        return ['form' => $this->x_user->group($post, $id)];
+        return ['form' => $this->x_user->save_grp($post, $id)];
     }
 
     function a_dgrp($id) {
-        $this->x_user->dgrp($id);
+        $this->x_user->drop_grp($id);
     }
 
     function a_objects() { # -=-=-=-=-=-= OBJECTS =-=-=-=-=-=-=-=-=-=-=-=

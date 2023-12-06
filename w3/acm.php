@@ -3,6 +3,7 @@
 class ACM extends Model_t # Access control manager
 {
     use acl\common;
+    static $byId = [];
 
     static $user_states = [
         'ini' => 'Pre-registration passed',
@@ -20,6 +21,15 @@ class ACM extends Model_t # Access control manager
         return $acm ?? ($acm = new self);
     }
 
+    static function set(array $ary) {
+        self::$byId = $ary;
+    }
+
+    static function access($obj, $obj_id) {
+        $acm = self::instance();
+        $acm->x_object->add($obj, $obj_id, $desc);
+    }
+
     static function logging($desc) {
         $acm = self::instance();
         $acm->log($desc);
@@ -33,7 +43,7 @@ class ACM extends Model_t # Access control manager
             $acm = self::instance();
             return $user->pid < 2
                 ? (bool)$user->pid
-                : $acm->x_access->allow($user, self::$cr[$name[0]], substr($name, 1), $args ? $args[0] : 0);
+                : $acm->x_access->allow($user, self::$cr[$name[0]], substr($name, 1), $args[0] ?? 0);
         });
     }
 

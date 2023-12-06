@@ -2,7 +2,7 @@
 
 namespace acl;
 use SKY, ACM, Form, Error;
-use function pagination, jump;
+use function qp, pagination, jump;
 
 class t_user extends \Model_t
 {
@@ -17,10 +17,10 @@ class t_user extends \Model_t
     }
 
     function validate($is_grp) {
-        return $this->form()->validate() + [
+        return $this->form()->validate([
             '.is_grp' => $is_grp,
             '!dt' => '$now',
-        ];
+        ]);
     }
 
     function get_user($id) {
@@ -69,22 +69,23 @@ class t_user extends \Model_t
 
     function register($post) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         $form = new Form([
-            '+login' => ['Login'],
-            '+passw' => ['Password'],
-            '+email' => ['E-mail'],
-            '+pid' => ['Profile', 'select', ACM::usrProfiles(0), '', 2],
+            '.login' => ['Login'],
+            '*passw' => ['Password'],
+            '-email' => ['E-mail'],
+            '#pid' => ['Profile', 'select', ACM::usrProfiles(0), '', 2],
             '+uname' => ['User Name'],
             ['Submit', 'submit', 'onclick="return sky.f.submit()"'],
         ]);
-        if (!$post)
-            return $form;
         $user = new \Model_t('users');
-        $id = $user->insert($form->validate() + ['!dt_r' => '$now']);
+        $busy = fn($qp) => $this->k_acl->busy = $user->one($qp);
+        if (!$post || $busy(qp('login=$+ or email=$+', $post->login, $post->email)))
+            return $form;
+        $user->insert($form->validate(['!dt_r' => '$now']));
         $this->log("Register new user `$post->login`");
         jump('acl?users');
     }
 
-    function profile($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    function save_pid($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         if (!$post || $id && !ACM::Uaclp() || !$id && !ACM::Caclp())
             return $this->form($id && ACM::Raclp() ? $id : 0);
         $ary = $this->validate(0);
@@ -93,7 +94,7 @@ class t_user extends \Model_t
         jump('acl?profiles');
     }
 
-    function dpid($id) {
+    function drop_pid($id) {
         if (ACM::Daclp() && $this->delete(['id=' => $id, 'id>' => 3, 'is_grp=' => 0])) {
             $this->sqlf('update $_users set pid=2 where pid=%d', $id);
             $this->log("Profile ID=$id deleted");
@@ -101,7 +102,7 @@ class t_user extends \Model_t
         jump('acl?profiles');
     }
 
-    function group($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    function save_grp($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         if (!$post || $id && !ACM::Uaclg() || !$id && !ACM::Caclg())
             return $this->form($id && ACM::Raclg() ? $id : 0);
         $ary = $this->validate(1);
@@ -110,7 +111,7 @@ class t_user extends \Model_t
         jump('acl?groups');
     }
 
-    function dgrp($id) {
+    function drop_grp($id) {
         if (ACM::Daclg() && $this->delete(['id=' => $id, 'id>' => 2, 'is_grp=' => 1])) {
             $this->t_user2grp->delete(['grp_id=' => $id]);
             $this->log("User Group ID=$id deleted");

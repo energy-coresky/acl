@@ -73,9 +73,17 @@ Total: {{$_}} item@if(1!=$_)s~if
 </table>
 #.users
 
-#.register
+#.register ---------------------------------------
 @inc(_ware.menu)
 <h1>Register new user</h1>{!$form!}
+@if($k_acl->busy ?? false)<h1 style="color:red">
+  @if($_POST['login'] == $k_acl->busy['login'])
+    Login name `{{$_POST['login']}}`
+  @else
+    E-mail `{{$_POST['email']}}`
+  ~if
+  is busy!</h1>
+~if
 #.register
 
 
@@ -109,7 +117,7 @@ Total: {{$_}} item@if(1!=$_)s~if
 </table>
 #.profiles
 
-#.spid
+#.spid ---------------------------------------
 @inc(_ware.menu)
-<h1>{{$sky->_2 ? 'Edit' : 'Add'}} profile</h1>{!$form!}
+<h1>{{$sky->_2 ? 'Edit' : 'Create'}} profile</h1>{!$form!}
 #.spid

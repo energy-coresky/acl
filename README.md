@@ -53,10 +53,22 @@ Where **Ressence**:
 * R - char one of C/R/U/D or X. R - access for reading
 * essence - object (essence) name from acl_object database table
 
-You also can use selected object ID: (2do)
+You also can use selected object ID:
 ```php
 # Access for selected `topic` object ID
-ACM::Rtopic($topic_id); # where $topic_id is ID numeric value
+ACM::Rtopic($private ? $topic_id : 0);
+# where $topic_id is ID numeric value
+# if ID is 0 then general access apply
+```
+Objects for selected ID you can create using call:
+```php
+ACM::object($obj, $obj_id, $desc) : `object record ID`
+# where $obj - object name, example: "topic"
+# where $desc - description
+# object type_id will taken from $obj/0
+# you can give access after object created:
+ACM::access($id, $crud, $uid = 0, $pid = 0, $gid = 0)
+# where $id is `object record ID`
 ```
 
 ## Replacing Jet templates
@@ -71,7 +83,7 @@ See the root templates call:
 #._ magic marker
 ```
 All templates can be changed with application code in file **acl.jet**.
-You can also use parts of original ACL Jet files using back `@inc(_user.profile)` for example
+You can also use parts of original ACL Jet files using back call: `@inc(_user.profiles)` for example
 
 
 ## Improvement for MySQL

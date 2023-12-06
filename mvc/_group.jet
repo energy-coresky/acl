@@ -54,7 +54,7 @@
 
 #.sgrp
 @inc(_ware.menu)
-<h1>{{$sky->_2 ? 'Edit' : 'Add'}} User Group</h1>{!$form!}
+<h1>{{$sky->_2 ? 'Edit' : 'Create'}} User Group</h1>{!$form!}
 #.sgrp
 
 #.user2grp ========================================================================================

@@ -2,7 +2,7 @@
 
 namespace acl;
 use SKY, ACM;
-use function pagination;
+use function qp, pagination, trace;
 
 class t_access extends \Model_t
 {
@@ -14,23 +14,27 @@ class t_access extends \Model_t
         if (isset($cache[$name][$obj_id])) {
             $ok = $cache[$name][$obj_id];
             if (SKY::$debug > 1)
-                \trace(array_flip(ACM::$cr)[$x] . $name, $ok & $x ? 'ACL ALLOW' : 'ACL DENY');
+                trace(array_flip(ACM::$cr)[$x] . $name, $ok & $x ? 'ACL ALLOW' : 'ACL DENY');
         } else {
-            [$ok] = $this->user($name, $user, $obj_id);
+            [$ok] = $this->access($user, $name, $obj_id);
             $cache[$name][$obj_id] = $ok;
             if (SKY::$debug)
-                \trace(array_flip(ACM::$cr)[$x] . $name, $ok & $x ? 'ACL ALLOW' : 'ACL DENY');
+                trace(array_flip(ACM::$cr)[$x] . $name, $ok & $x ? 'ACL ALLOW' : 'ACL DENY');
         }
         return $ok & $x;
     }
 
-    function user($name, $user, $obj_id) { # 2do: $obj_id
-        $where = $this->qp('obj=$+ and (pid=$. or uid=$.', $name, $user->pid, $user->id);
-        ($groups = ACM::usrGroups($user->id)) ? $where->append(' or gid in ($@))', $groups) : $where->append(')');
-        $obj_id ? $where->append(' and obj_id in (0, $.)', $obj_id) : $where->append(' and obj_id=0');
+    function access($user, $name, $obj_id) {
+        $qp = $this->qp('obj=$+ and ', $name);
+        $obj_id ? $qp->append('obj_id in (0, $.)', $obj_id) : $qp->append('obj_id=0');
+        if ($groups = ACM::usrGroups($user->id)) {
+            $qp->append(' and (pid=$. or uid=$. or gid in ($@))', $user->pid, $user->id, $groups);
+        } else {
+            $qp->append(' and (pid=$. or uid=$.)', $user->pid, $user->id);
+        }
 
         $ok = $deny = $allow = 0;
-        foreach ($this->all($where, 'id as q, id, is_deny, crud, uid') as $one) {
+        foreach ($this->all($qp, 'id as q, id, is_deny, crud, uid') as $one) {
             if ($one->uid) {
                 $one->is_deny ? ($deny = $one) : ($allow = $one);
             } else {
@@ -67,7 +71,7 @@ class t_access extends \Model_t
             if (!ACM::Xaclu())
                 return json(['y' => 'X']);
             $user = $this->x_user->get_user($id);
-            [$ok, $_ok, $deny, $allow] = $this->user($name, $user, $obj_id);
+            [$ok, $_ok, $deny, $allow] = $this->access($user, $name, $obj_id);
             if ($on = $ok & $x) { # allow change to deny
                 if ($allow)
                     $x == $allow->crud ? $this->delete($allow->id) : $this->update(['.crud' => $allow->crud & ~$x], $allow->id);
@@ -96,6 +100,52 @@ class t_access extends \Model_t
             }
         }
         json(['y' => $y ?? 'Y']);
+    }
+
+    function crud($oid, &$in, $uid, $pid, $gid) {
+        $ary = $id0 = $or = [];
+        $where = $oid
+            ? qp('where obj=$+ and obj_id in (0, $@) and (', $oid, array_keys($in))
+            : qp('where obj in ($@) and obj_id=0 and (', array_keys($in));
+        $mem = ['', 0];
+        $crud = function ($ary = []) use (&$in, &$id0, $oid) {
+            $allow = $deny = 0;
+            foreach (array_merge($id0, $ary) as $one)
+                $one->is_deny ? ($deny |= $one->crud) : ($allow |= $one->crud);//////////???
+            $allow &= ~$deny;
+            $fn = fn($x) => $allow & $x ? 'Y' : '';
+            if (!$ary)
+                return $fn;
+            $in[$oid ? $one->obj_id : $one->obj]->crud = $fn;
+        };
+        if ($uid)
+            $or[] = qp('uid=$.', $uid);
+        if ($pid)
+            $or[] = qp('pid=$.', $pid);
+        if ($gid)
+            $or[] = qp('gid in ($@)', $gid);
+        $e = $this->sql('&select * from $_ $$ order by obj, obj_id', $where->append(implode(' or ', $or) . ')'));
+        foreach ($e as $row) {
+            if ($oid && !$row->obj_id) {
+                $id0[] = $row;
+                $row->obj = '';
+            } elseif ('' === $mem[0] || $mem[0] == $row->obj && $mem[1] == $row->obj_id) {
+                $ary[] = $row;
+            } else {
+                $crud($ary);
+                $ary = [$row];
+            }
+            $mem = [$row->obj, $row->obj_id];
+        }
+        if ($ary)
+            $crud($ary);
+        $crud = $id0 ? $crud() : fn($x) => '';
+        foreach ($in as &$std) {
+            property_exists($std, 'crud') or $std->crud = $crud;
+            $std->a = $oid
+                ? "$oid.$std->obj_id"
+                : (!isset(ACM::$byId[$std->name]) ? $std->name : a($std->name, "?$this->_1=$this->_2&obj=$std->id"));
+        }
     }
 
     function logging(&$page) {

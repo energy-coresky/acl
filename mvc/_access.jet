@@ -3,32 +3,33 @@
 #._
 
 #.ug ========================================================================================
-@loop($e_obj->usr->groups as $gid => $gname)
+@loop($r->groups as $gid => $gname)
   <b>{{$gname}}</b><br>
   @empty
   <span style="color:red;font-weight:bold">the user does not belong to groups</span><br>
 ~loop
-<a href="?user2grp={{$e_obj->usr->id}}">edit user groups</a>
+<a href="?user2grp={{$r->id}}">edit user groups</a>
 #.ue.ug
-<b>{{$e_obj->usr->email}}</b>
+<b>{{$r->email}}</b>
 #.up.ue
 <select style="width:100px">
-  {!option($e_obj->usr->pid, ACM::usrProfiles())!}
+  {!option($r->pid, ACM::usrProfiles())!}
 </select>
 #.us.up
 <select style="width:100px">
-  {!option($e_obj->usr->state, ACM::$user_states)!}
+  {!option($r->state, ACM::$user_states)!}
 </select>
 #.uid.us
 @inc(_ware.menu)
-<h1>User: <u>{{$e_obj->usr->login}}</u>, ID={{$e_obj->usr->id}}</h1>
+<h1>User login: <u>{{$r->login}}</u>, ID={{$r->id}}</h1>
 <table width="80%">
+  <tr><td align="right" width="50%">User Name</td><td align="left"><b>{{$r->uname}}</b></td></tr>
   <tr><td align="right" width="50%">User State</td><td align="left">@inc(.us)</td></tr>
   <tr><td align="right" width="50%">Profile</td><td align="left">@inc(.up)</td></tr>
   <tr><td align="right">E-mail</td><td align="left">@inc(.ue)</td></tr>
   <tr><td align="right" valign="top">User Groups</td><td align="left">@inc(.ug)</td></tr>
 </table>
-@if(1 == $e_obj->usr->pid)
+@if(1 == $r->pid)
   <h1 style="color:green">Root Profile has untunable access to all Objects</h1>
 @else
 <h1>Integrated access to objects</h1>
@@ -43,9 +44,9 @@
   @loop($e_obj)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}" n="{{$row->name}}">
     <td>{{1 + $_}}</td>
-    <td>{{$row->name}}</td>
+    <td>{!$row->a!}</td>
     <td>{{$row->type}}</td>
-    <td colspan="2">{{$row->comment}}</td>
+    <td colspan="2" align="left">{{$row->comment}}</td>
     <td class="crud">{{($row->crud)(1)}}</td><td class="crud">{{($row->crud)(2)}}</td>
     <td class="crud">{{($row->crud)(4)}}</td><td class="crud">{{($row->crud)(8)}}</td>
     <td class="crud">{{($row->crud)(16)}}</td>
@@ -63,7 +64,7 @@
 
 #.pid ========================================================================================
 @inc(_ware.menu)
-<h1>Access to objects for <u>{{$e_obj->rw['name']}}</u> Profile</h1>
+<h1>Access to objects for <u>{{$r['name']}}</u> Profile</h1>
 @if(0 == $sky->_2)<h1 style="color:red">Anonymous Profile do not has access to all Objects and cannot tune</h1>
 @elseif(1 == $sky->_2)<h1 style="color:green">Root Profile has untunable access to all Objects</h1>
 @else@inc(_ware.objlist)
@@ -72,7 +73,7 @@
 
 #.gid ========================================================================================
 @inc(_ware.menu)
-<h1>Access to objects for <u>{{$e_obj->rw['name']}}</u> User Group</h1>
+<h1>Access to objects for <u>{{$r['name']}}</u> User Group</h1>
 @inc(_ware.objlist)
 #.gid
 
@@ -102,6 +103,10 @@ $('td.crud').each(function (i) {
 });
 </script>
 #.jscss
+
+#.obj ========================================================================================
+
+#.obj
 
 #.log ========================================================================================
 #use(`@view(filter)` as filter)

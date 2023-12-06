@@ -17,90 +17,82 @@ class t_object extends \Model_t
         return $this->k_acl->busy = $this->one(['is_typ=' => 0, 'id!=' => $id, 'name=' => $name]);
     }
 
-    function filter($order = false) {
-        $end = $this->qp(' where o.is_typ=0');
+    function filter() {
+        $qp = $this->qp(' where o.is_typ=0');
         if ($_GET['t'] ?? false)
-            $end->append(' and o.typ_id=$.', $_GET['t']);
+            $qp->append(' and o.typ_id=$.', $_GET['t']);
         if (($_GET['s'] ?? false) && is_string($_GET['s']))
-            $end->append(' and (o.name like $+ or o.comment like \1)', "%$_GET[s]%");
-        if (!$order)
-            $end->append(' and o.name!="zzz"');
-        if (1 !== $order)
-            $end->append(' or o.name="zzz"');
-        return $end->append(' order by o.name');
+            $qp->append(' and (o.name like $+ or o.comment like \1)', "%$_GET[s]%");
+        return $qp;
     }
 
-    function access($uid, $pid, $gid, &$page) {
-        $from = $to = 17;
-        $page = pagination($from, $this->qp('from $_ o' . $this->filter()), 'p', [4, 6]);
-        $to += $from - 1;
-        $row_c = function (&$row) use ($from, $to) {
-            static $p = [], $cur = -1;
-            if (!$row->__i || $p[0]->name == $row->name) {
-                $p[] = $row;
-                return true;
-            }
-
-            $_ = $row;
-            $crud = $deny = 0;
-            foreach ($p as $one)
-                $one->deny ? ($deny |= $one->crud) : ($crud |= $one->crud);
-            $row = $p[0];
-            $crud &= ~$deny;
-            $row->crud = fn($x) => $crud & $x ? 'Y' : '';
-            $p = [$_];
-            if (++$cur < $from || $cur > $to)
-                return true;
-        };
-
-        $end = $this->filter(true);
-        $sql = 'select o.*, t.name as type,
-                  a.is_deny as deny, a.crud, a.obj_id
-                    from $_ o
-                    left join $_ t on t.id=o.typ_id
-                    left join $_` a on (a.obj=o.name and ';
-        $access = (string)$this->x_access;
-        if ($uid) { # userID
-            $user = $this->x_user->get_user($uid);
-            $user->groups = $this->x_user->gnames($groups = ACM::usrGroups($uid));
-            $q = $groups
-                ? $this->sql($sql . '(a.uid=$. or a.pid=$. or a.gid in ($@)))' . $end, $access, $uid, $user->pid, $groups)
-                : $this->sql($sql . '(a.uid=$. or a.pid=$.))' . $end, $access, $uid, $user->pid);
-            return [
-                'query' => $q,
-                'row_c' => $row_c,
-                'usr' => $user,
-            ];
-        } elseif ($gid) { # groupID
-            $row = $this->x_user->one(['.id=' => $gid, 'is_grp=' => 1]);
-            $q = $this->sql($sql . 'a.gid=$.)' . $end, $access, $gid);
-        } else { # profileID
-            $row = $this->x_user->one(['.id=' => $pid, 'is_grp=' => 0]);
-            $q = $this->sql($sql . 'a.pid=$.)' . $end, $access, $pid);
+    function access($id, $oid) {
+        if (!ACM::Racla())
+            return 404;
+        $limit = $ipp = 17;
+        $uid = $pid = $gid = 0;
+        if ($oid) {
+            if (!$obj = $this->one($oid) or !$func = ACM::$byId[$obj['name']] ?? false)
+                return 404;
+            $n = (object)call_user_func($func);
+            $page = pagination($limit, $n->from, 'p', [4, 6]);
+            $in = $this->sqlf("#$n->select" . ', t.name as type,
+                "' . $obj['name'] . '" as name ' . $n->from . '
+                left join $_ t on t.id=' . "$obj[typ_id] $n->order limit %d, %d", $limit, $ipp);
+            $oid = $obj['name'];
+        } else {
+            $page = pagination($limit, $this->qp('from $_ o' . $this->filter()), 'p', [4, 6]);
+            $in = $this->sqlf('#select o.name as q, o.id, o.name, o.comment, t.name as type
+                from $_ o
+                left join $_ t on t.id=o.typ_id' . $this->filter() . ' order by o.name limit %d, %d', $limit, $ipp);
         }
+        switch ($this->_1) {
+            case 'uid': # userID (integrated)
+                $row = $this->x_user->get_user($id);
+                $pid = $row->pid;
+                $row->groups = $this->x_user->gnames($gid = ACM::usrGroups($uid = $id));
+            break;
+            case 'pid': # profileID
+                $row = $this->x_user->one(['.id=' => $id, 'is_grp=' => 0]);
+                $pid = $id;
+            break;
+            case 'gid': # groupID
+                $row = $this->x_user->one(['.id=' => $id, 'is_grp=' => 1]);
+                $gid = [$id];
+            break;
+        }
+        $this->x_access->crud($oid, $in, $uid, $pid, $gid);
         return [
-            'query' => $q,
-            'row_c' => $row_c,
-            'rw' => $row,
+            'page' => $page,
+            'oid' => $oid,
+            'r' => $row,
+            'e_obj' => function () use (&$in) {
+                return $in ? array_shift($in) : false;
+            },
         ];
     }
 
     function save_obj($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         $ary = $id && ACM::Raclo() ? $this->one(['id=' => $id]) : [];
         $form = new Form([
-            '+name' => ['Name'],
-            'comment' => ['Comment'],
-            'typ_id' => ['Type', 'select', $this->types()],
+            -1 => ['name' => ['Must match regexp: [a-z][a-z\\d]+', '/^[a-z][a-z\d]+$/']],
+            '/name' => ['Name'],
+            '+comment' => ['Comment'],
+            '#typ_id' => ['Type', 'select', $this->types()],
             ['Submit', 'submit', 'onclick="return sky.f.submit()"'],
         ], $ary);
 
         if (!$post || $id && !ACM::Uaclo() || !$id && !ACM::Caclo() || $this->busy($_POST['name'], $id))
             return $form;
 
-        $ary = $form->validate() + ['is_typ' => 0, '!dt' => '$now'];
+        $ary = $form->validate(['is_typ' => 0, '!dt' => '$now']);
         $id ? $this->update($ary, ['id=' => $id]) : $this->insert($ary);
         $this->log("Object `$post->name` " . ($id ? ", ID=$id modified" : 'added'));
         jump('acl?objects');
+    }
+
+    function add($obj, $obj_id, $desc) {
+        //$typ_id
     }
 
     function drop_obj($id) {
@@ -124,7 +116,7 @@ class t_object extends \Model_t
         if (!$post || $id && !ACM::Uaclt() || !$id && !ACM::Caclt())
             return $form;
 
-        $ary = $form->validate() + ['is_typ' => 1, '!dt' => '$now'];
+        $ary = $form->validate(['is_typ' => 1, '!dt' => '$now']);
         $id ? $this->update($ary, ['id=' => $id]) : $this->insert($ary);
         $this->log("Object Type `$post->name` " . ($id ? ", ID=$id modified" : 'added'));
         jump('acl?types');
@@ -151,8 +143,8 @@ class t_object extends \Model_t
             $from .= ' where o.is_typ=1 order by o.id desc';
         } else {
             $limit = $ipp = 17;
-            $page = pagination($limit, $this->qp($from .= $this->filter(1)), 'p', [4, 2]);
-            $from .= " limit $limit, $ipp";
+            $page = pagination($limit, $this->qp($from .= $this->filter()), 'p', [4, 2]);
+            $from .= " order by o.name limit $limit, $ipp";
         }
         return ['query' => $this->sqlf("select o.*, t.name as type $from")];
     }

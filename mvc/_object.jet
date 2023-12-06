@@ -64,7 +64,7 @@
 
 #.sobj
 @inc(_ware.menu)
-<h1>{{$sky->_2 ? 'Edit' : 'Add'}} Object</h1>{!$form!}
+<h1>{{$sky->_2 ? 'Edit' : 'Create'}} Object</h1>{!$form!}
 @if($k_acl->busy ?? false)<h1 style="color:red">This Object name is busy!</h1>~if
 #.sobj
 
@@ -104,6 +104,6 @@
 
 #.styp
 @inc(_ware.menu)
-<h1>{{$sky->_2 ? 'Edit' : 'Add'}} Object Type</h1>{!$form!}
+<h1>{{$sky->_2 ? 'Edit' : 'Create'}} Object Type</h1>{!$form!}
 #.styp
 
