@@ -16,7 +16,7 @@ class t_access extends \Model_t
             if (SKY::$debug > 1)
                 trace(array_flip(ACM::$cr)[$x] . $name, $ok & $x ? 'ACL ALLOW' : 'ACL DENY');
         } else {
-            [$ok] = $this->access($user, $name, $obj_id);
+            [$ok] = $this->user_access($user, $name, $obj_id);
             $cache[$name][$obj_id] = $ok;
             if (SKY::$debug)
                 trace(array_flip(ACM::$cr)[$x] . $name, $ok & $x ? 'ACL ALLOW' : 'ACL DENY');
@@ -24,7 +24,7 @@ class t_access extends \Model_t
         return $ok & $x;
     }
 
-    function access($user, $name, $obj_id) {
+    function user_access($user, $name, $obj_id) {
         $qp = $this->qp('obj=$+ and ', $name);
         $obj_id ? $qp->append('obj_id in (0, $.)', $obj_id) : $qp->append('obj_id=0');
         if ($groups = ACM::usrGroups($user->id)) {
@@ -34,11 +34,12 @@ class t_access extends \Model_t
         }
 
         $ok = $deny = $allow = 0;
-        foreach ($this->all($qp, 'id as q, id, is_deny, crud, uid') as $one) {
-            if ($one->uid) {
+        $what = 'id as q, id, is_deny, crud, uid, obj_id';
+        foreach ($this->all($qp->append(' order by obj_id, is_deny'), $what) as $one) {
+            if ($one->uid && (!$obj_id || $one->obj_id)) {
                 $one->is_deny ? ($deny = $one) : ($allow = $one);
             } else {
-                $ok |= $one->crud;
+                $one->is_deny ? ($ok &= ~$one->crud) : ($ok |= $one->crud);
             }
         }
         $_ok = $ok;
@@ -50,56 +51,51 @@ class t_access extends \Model_t
         return [$ok, $_ok, $deny, $allow];
     }
 
-    function add($crud, $name, $id, $mode = 'u', $deny = 0) {
-        global $user;
-        $this->insert([
-            '+obj' => $name,
-            '.crud' => $crud,
-            '.is_deny' => $deny,
-            ".{$mode}id" => $id,
-            '.user_id' => $user->id,
-            '!dt_c' => '$now',
-        ]);
-    }
-
-    function set($x, $name, $mode) { # sample: 3 acla gid7
+    function set($x, $name, $mode) { # sample: 3 acla.0 g.7
         $x = 1 << $x;
-        $id = substr($mode, 3);
-        $mode = $mode[0]; # u or p or g
-        $obj_id = 0;
+        [$name, $obj_id] = explode('.', $name);
+        [$mode, $id] = explode('.', $mode);
+        if (!call_user_func("ACM::Xacl$mode"))
+            return json(['y' => 'X']);
+        $on = false;
+
+        $insert = function ($mode = 'u', $deny = 0) use ($x, $name, $obj_id, $id) {
+            global $user;
+            $this->insert([
+                '+obj' => $name,
+                '.obj_id' => $obj_id,
+                '.crud' => $x,
+                '.is_deny' => $deny,
+                ".{$mode}id" => $id,
+                '.user_id' => $user->id,
+                '!dt_c' => '$now',
+            ]);
+        };
+
         if ('u' == $mode) { # user integrated
-            if (!ACM::Xaclu())
-                return json(['y' => 'X']);
             $user = $this->x_user->get_user($id);
-            [$ok, $_ok, $deny, $allow] = $this->access($user, $name, $obj_id);
+            [$ok, $_ok, $deny, $allow] = $this->user_access($user, $name, $obj_id);
             if ($on = $ok & $x) { # allow change to deny
                 if ($allow)
                     $x == $allow->crud ? $this->delete($allow->id) : $this->update(['.crud' => $allow->crud & ~$x], $allow->id);
                 if ($on === ($_ok & $x))
-                    $deny ? $this->update(['.crud' => $deny->crud | $x], $deny->id) : $this->add($x, $name, $id, 'u', 1);
-                $y = '';
+                    $deny ? $this->update(['.crud' => $deny->crud | $x], $deny->id) : $insert('u', 1);
             } else { # deny change to allow
                 if ($deny)
                     $x == $deny->crud ? $this->delete($deny->id) : $this->update(['.crud' => $deny->crud & ~$x], $deny->id);
                 if (!($_ok & $x))
-                    $allow ? $this->update(['.crud' => $allow->crud | $x], $allow->id) : $this->add($x, $name, $id);
+                    $allow ? $this->update(['.crud' => $allow->crud | $x], $allow->id) : $insert();
             }
         } else {
-            if ('p' == $mode && !ACM::Xaclp() || 'g' == $mode && !ACM::Xaclg())
-                return json(['y' => 'X']);
-            $row = $this->one(['obj=' => $name, $mode . 'id=' => $id]);
-            if (!$row) {
-                $this->add($x, $name, $id, $mode);
-            } elseif ($x & $row['crud']) {
-                $x == $row['crud']
-                    ? $this->delete($row['id'])
-                    : $this->update(['.crud' => $row['crud'] & ~$x], $row['id']);
-                $y = '';
+            if (!$row = $this->one(['obj=' => $name, 'obj_id=' => $obj_id, $mode . 'id=' => $id], '>')) {
+                $insert($mode);
+            } elseif ($on = $x & $row->crud) {
+                $x == $row->crud ? $this->delete($row->id) : $this->update(['.crud' => $row->crud & ~$x], $row->id);
             } else {
-                $this->update(['.crud' => $row['crud'] | $x], $row['id']);
+                $this->update(['.crud' => $row->crud | $x], $row->id);
             }
         }
-        json(['y' => $y ?? 'Y']);
+        json(['y' => $on ? '' : 'Y']);
     }
 
     function crud($oid, &$list, \SQL $or) {
@@ -112,6 +108,7 @@ class t_access extends \Model_t
             foreach ($id0 as $v)
                 $v->is_deny ? ($deny |= $v->crud) : ($allow |= $v->crud);
             $allow &= ~$deny;
+            $deny = 0;
             foreach ($ary as $v)
                 $v->is_deny ? ($deny |= $v->crud) : ($allow |= $v->crud);
             $fn = fn($x) => $allow & ~$deny & $x ? 'Y' : '';
@@ -134,15 +131,15 @@ class t_access extends \Model_t
             }
             $mem = [$row->obj, $row->obj_id];
         }
-        if ($ary)
-            $crud($ary);
-
+        $ary && $crud($ary);
         $crud = $id0 ? $crud() : fn($x) => '';
+        $types = $this->x_object->types();
         foreach ($list as &$v) {
             property_exists($v, 'crud') or $v->crud = $crud;
             $v->a = $oid ? "$oid.$v->obj_id" : (!isset(ACM::$byId[$v->name])
                 ? $v->name
                 : a("<b>$v->name</b>", "?$this->_1=$this->_2&obj=$v->id"));
+            $v->type = $types[$v->typ_id];
         }
     }
 

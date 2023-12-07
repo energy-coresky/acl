@@ -42,7 +42,7 @@
     <th width="1">&nbsp;C&nbsp;</th><th width="1">&nbsp;R&nbsp;</th><th width="1">&nbsp;U&nbsp;</th><th width="1">&nbsp;D&nbsp;</th><th width="1">&nbsp;X&nbsp;</th>
   </tr>
   @loop($list as $row)
-  <tr style="background:{{$_ % 2 ? '#eee' : ''}}" n="{{$row->name}}">
+  <tr style="background:{{$_ % 2 ? '#eee' : ''}}" n="{{$row->name . '.' . ($row->obj_id ?? 0)}}">
     <td>{{1 + $_}}</td>
     <td>{!$row->a!}</td>
     <td>{{$row->type}}</td>
@@ -93,8 +93,8 @@ $('td.crud').each(function (i) {
   $(this).attr('x', i % 5).click(function () {
     let el = $(this), hash = {
       x: el.attr('x'),
-      name: el.parent().find('td:eq(1)').html(),
-      mode: '{{$sky->_1 . $sky->_2}}'
+      name: el.parent().attr('n'),
+      mode: '{{$sky->_1[0] . '.' . $sky->_2}}'
     };
     ajax('set', hash, function (r) {
       el.html(r.y).css('background', r.y ? '#dfd' : '');
@@ -103,10 +103,6 @@ $('td.crud').each(function (i) {
 });
 </script>
 #.jscss
-
-#.obj ========================================================================================
-
-#.obj
 
 #.log ========================================================================================
 #use(`@view(filter)` as filter)

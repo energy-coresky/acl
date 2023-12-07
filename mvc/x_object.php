@@ -18,49 +18,44 @@ class t_object extends \Model_t
     }
 
     function filter() {
-        $qp = $this->qp(' where o.is_typ=0');
+        $qp = $this->qp(' where is_typ=0');
         if ($_GET['t'] ?? false)
-            $qp->append(' and o.typ_id=$.', $_GET['t']);
+            $qp->append(' and typ_id=$.', $_GET['t']);
         if (($_GET['s'] ?? false) && is_string($_GET['s']))
-            $qp->append(' and (o.name like $+ or o.comment like \1)', "%$_GET[s]%");
+            $qp->append(' and (name like $+ or comment like \1)', "%$_GET[s]%");
         return $qp;
     }
 
     function access($id, $oid) {
         if (!ACM::Racla())
             return 404;
+
         $limit = $ipp = 17;
         if ($oid) {
-            if (!$obj = $this->one($oid) or !$func = ACM::$byId[$obj['name']] ?? false)
+            if (!$row = $this->one($oid, '>') or !$func = ACM::$byId[$row->name] ?? false)
                 return 404;
-            $n = (object)call_user_func($func);
-            $page = pagination($limit, $n->from, 'p', [4, 6]);
-            $list = $this->sqlf("#$n->select" . ', t.name as type,
-                "' . $obj['name'] . '" as name ' . $n->from . '
-                left join $_ t on t.id=' . "$obj[typ_id] $n->order limit %d, %d", $limit, $ipp);
-            $oid = $obj['name'];
+            $m = $func();
+            $page = pagination($limit, $m->from, 'p', [4, 6]);
+            $etc = "$row->typ_id as typ_id, '$row->name' as name";
+            $list = $this->sqlf("#$m->select, $etc $m->from $m->order limit $limit, $ipp");
+            $oid = $row->name;
         } else {
-            $filter = $this->filter(); # o.id, o.name, o.comment
-            $page = pagination($limit, $this->qp("from \$_ o $filter"), 'p', [4, 6]);
-            $list = $this->sql("#select o.name as q, o.*, t.name as type from \$_ o
-                left join \$_ t on t.id=o.typ_id$filter order by o.name limit $limit, $ipp");
+            $page = pagination($limit, $this->qp('from $_' . ($flt = $this->filter())), 'p', [4, 6]);
+            $list = $this->sql("#select name as q, * from \$_$flt order by name limit $limit, $ipp");
         }
-        switch ($this->_1) {
-            case 'uid': # userID (integrated)
-                $row = $this->x_user->get_user($id);
-                $or = qp('(uid=$. or pid=$.', $id, $row->pid);
-                if ($row->groups = $this->x_user->gnames($groups = ACM::usrGroups($id)))
-                    $or->append(' or gid in ($@)', $groups);
-                $this->x_access->crud($oid, $list, $or->append(')'));
-            break;
-            case 'pid': # profileID
-                $row = $this->x_user->one(['.id=' => $id, 'is_grp=' => 0]);
-                $this->x_access->crud($oid, $list, qp('pid=$.', $id));
-            break;
-            case 'gid': # groupID
-                $row = $this->x_user->one(['.id=' => $id, 'is_grp=' => 1]);
-                $this->x_access->crud($oid, $list, qp('gid=$.', $id));
-            break;
+
+        if ('uid' == $this->_1) { # userID (integrated)
+            $row = $this->x_user->get_user($id);
+            $or = qp('(uid=$. or pid=$.', $id, $row->pid);
+            if ($row->groups = $this->x_user->gnames($groups = ACM::usrGroups($id)))
+                $or->append(' or gid in ($@)', $groups);
+            $this->x_access->crud($oid, $list, $or->append(')'));
+        } elseif ('pid' == $this->_1) {
+            $row = $this->x_user->one(['.id=' => $id, 'is_grp=' => 0]);
+            $this->x_access->crud($oid, $list, qp('pid=$.', $id));
+        } elseif ('gid' == $this->_1) {
+            $row = $this->x_user->one(['.id=' => $id, 'is_grp=' => 1]);
+            $this->x_access->crud($oid, $list, qp('gid=$.', $id));
         }
         return get_defined_vars();
     }

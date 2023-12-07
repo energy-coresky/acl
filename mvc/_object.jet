@@ -3,13 +3,19 @@
 #._
 
 #.filter_obj ========================================================================================
-<td colspan="2" class="pages">Type:</td>
+<td colspan="2" class="pages">
+  @if($so = 'obj'==$sky->_3)Filter@elseType:~if
+</td>
 <td class="pages">
-  <select onchange="acl_filter(this.value)" style="width:100%">
-  @loop($list as $id => $name)
-    @if(ACM::Raclt())<option@selected($id == $t) value="{{$id}}">{{$name}}</option>~if
-  ~loop
-  </select>
+  @if($so)
+    ID &gt; <input value="{{0}}" style="width:55px" type="number">
+  @else
+    <select onchange="acl_filter(this.value)" style="width:100%">
+    @loop($list as $id => $name)
+      @if(ACM::Raclt())<option@selected($id == $t) value="{{$id}}">{{$name}}</option>~if
+    ~loop
+    </select>
+  ~if
 </td>
 <td class="pages" style="text-align:left">
   <input value="{{$s}}" placeholder="text to search" id="acl-s">

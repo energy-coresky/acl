@@ -56,11 +56,14 @@ Where **Ressence**:
 You also can use selected object ID:
 ```php
 # Access for selected `topic` object ID
-ACM::Rtopic($private ? $topic_id : 0);
-# where $topic_id is ID numeric value
-# if ID is 0 then general access apply
+if (!$private || ACM::Rtopic($topic_id)) ..
+# where $topic_id is ID numeric value, $topic_id cannot be 0
+# Access records with obj_id=0 give access to any $topic_id
+# But you can tune access for defined $topic_id with access records where obj_id=$topic_id (!=0)
 ```
+
 Objects for selected ID you can create using call:
+
 ```php
 ACM::object($obj, $obj_id, $desc) : `object record ID`
 # where $obj - object name, example: "topic"
@@ -69,7 +72,20 @@ ACM::object($obj, $obj_id, $desc) : `object record ID`
 # you can give access after object created:
 ACM::access($id, $crud, $uid = 0, $pid = 0, $gid = 0)
 # where $id is `object record ID`
+
+# Must place in common_c::head_y($action) :
+ACM::set([
+    'topic' => fn() => (object)$this->t_topic->acl(),
+    'forum' => fn() => (object)$this->t_forum->acl(),
+    . . . other objects with own access for defined obj_ID
+]);
+# Where each `acl()` method return fields, see example:
+'select' => $this->qp('select id, id as obj_id, topic_name || " at " || dt_created as comment'),
+'from'   => $this->qp('from $_ where private=1'),
+'order'  => $this->qp('order by id desc'),
+
 ```
+
 
 ## Replacing Jet templates
 See the root templates call:
