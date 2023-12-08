@@ -8,7 +8,7 @@
 </td>
 <td class="pages">
   @if($so)
-    ID &gt; <input value="{{0}}" style="width:55px" type="number">
+    ID &lt; <input value="{{$_GET['t'] ?? ''}}" style="width:95px" type="number" id="acl-t">
   @else
     <select onchange="acl_filter(this.value)" style="width:100%">
     @loop($list as $id => $name)
@@ -19,7 +19,7 @@
 </td>
 <td class="pages" style="text-align:left">
   <input value="{{$s}}" placeholder="text to search" id="acl-s">
-  <input type="button" value="Search" onclick="acl_filter(null, getElementById('acl-s').value)">
+  <input type="button" value="Search" onclick="acl_filter({{$so ? "getElementById('acl-t').value" : 'null'}}, getElementById('acl-s').value)">
   <script>
   function acl_filter(t, s) {
       let url = location.href;
@@ -45,11 +45,11 @@
       @if(ACM::Caclo())<a href="?sobj">add new</a>~if
     </th>
   </tr>
-@loop($e_obj)
+@loop($list as $row)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
     <td>{{$row->id}}</td>
     <td>{{$row->name}}</td>
-    <td>{{$row->type}}</td>
+    <td>{{$types[$row->typ_id]}}</td>
     <td>{{$row->comment}}</td>
     <td>{{$row->dt}}</td>
     <td>
@@ -84,7 +84,7 @@
       @if(ACM::Caclt())<a href="?styp">add new</a>~if
     </th>
   </tr>
-@loop($e_obj)
+@loop($list as $row)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
     <td>{{$row->id}}</td>
     <td>{{$row->name}}</td>

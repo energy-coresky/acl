@@ -104,10 +104,7 @@ class c_acl extends Controller
     }
 
     function a_objects() { # -=-=-=-=-=-= OBJECTS =-=-=-=-=-=-=-=-=-=-=-=
-        return !ACM::Raclo() ? 404 : [
-            'e_obj' => $this->x_object->listing(0, $page),
-            'page' => $page,
-        ];
+        return ACM::Raclo() ? $this->x_object->listing(0) : 404;
     }
 
     function a_sobj($id, $post) {
@@ -119,7 +116,7 @@ class c_acl extends Controller
     }
 
     function a_types() { # -=-=-=-=-=- OBJECT TYPES =-=-=-=-=-=-=-=-=-=
-        return ACM::Raclt() ? ['e_obj' => $this->x_object->listing(1)] : 404;
+        return ACM::Raclt() ? $this->x_object->listing(1) : 404;
     }
 
     function a_styp($id, $post) {

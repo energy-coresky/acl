@@ -7,6 +7,7 @@ trait common
 {
     protected $ext;
     protected $log;
+    protected $ipp;
 
     function cfg() {
         return (object)SKY::$plans['acl']['app']['options'];
@@ -34,6 +35,7 @@ trait common
         $this->table = $cfg->tt . '_' . $table;
         $this->ext = $cfg->ext;
         $this->log = $cfg->log;
+        $this->ipp = $cfg->ipp;
         return SQL::open($cfg->connection);
     }
 }

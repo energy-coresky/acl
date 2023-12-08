@@ -36,7 +36,7 @@ class t_user extends \Model_t
                 : $this->qp($s);
         };
 
-        $limit = $ipp = 17;
+        $limit = $this->ipp;
         $page = pagination($limit, $filter(), 'p', [4, 2]);
         $profiles = ACM::usrProfiles();
         $sql = 'select u.*, count(g.user_id) as cnt from $_users u
@@ -44,7 +44,7 @@ class t_user extends \Model_t
             group by u.id
             order by u.id desc limit $., $.';
         return [
-            'query' => $this->sql($sql, $filter(''), $limit, $ipp),
+            'query' => $this->sql($sql, $filter(''), $limit, $this->ipp),
             'row_c' => function ($row) use (&$profiles) {
                 $row->profile = $profiles[$row->pid];
             },
@@ -127,9 +127,9 @@ class t_user extends \Model_t
     }
 
     function groups(&$page) {
-        $limit = $ipp = 17;
+        $limit = $this->ipp;
         $page = pagination($limit, $this->filter(), 'p', [3, 2]);
-        $q = $this->sql('select * from $_ g $$ limit $., $.', $this->filter(''), $limit, $ipp);
+        $q = $this->sql('select * from $_ g $$ limit $., $.', $this->filter(''), $limit, $this->ipp);
         return ['query' => $q];
     }
 
@@ -141,12 +141,12 @@ class t_user extends \Model_t
         } elseif ($post) {
             $this->t_user2grp->delete(['.user_id=' => $id, '.grp_id=' => $post->grp_id]);
         }
-        $limit = $ipp = 17;
+        $limit = $this->ipp;
         $page = pagination($limit, $this->filter(), 'p', [2, 2]);
         $sql = 'select g.*, u2g.grp_id as ok from $_ g
             left join $_` u2g on (u2g.user_id=$. and u2g.grp_id=g.id) $$ limit $., $.';
         return [
-            'query' => $this->sql($sql, (string)$this->t_user2grp, $id, $this->filter(''), $limit, $ipp),
+            'query' => $this->sql($sql, (string)$this->t_user2grp, $id, $this->filter(''), $limit, $this->ipp),
             'usr' => $user,
         ];
     }

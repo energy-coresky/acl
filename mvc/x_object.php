@@ -18,7 +18,7 @@ class t_object extends \Model_t
     }
 
     function filter() {
-        $qp = $this->qp(' where is_typ=0');
+        $qp = $this->qp('from $_ where is_typ=0');
         if ($_GET['t'] ?? false)
             $qp->append(' and typ_id=$.', $_GET['t']);
         if (($_GET['s'] ?? false) && is_string($_GET['s']))
@@ -30,18 +30,26 @@ class t_object extends \Model_t
         if (!ACM::Racla())
             return 404;
 
-        $limit = $ipp = 17;
+        $limit = $this->ipp;
         if ($oid) {
             if (!$row = $this->one($oid, '>') or !$func = ACM::$byId[$row->name] ?? false)
                 return 404;
-            $m = $func();
-            $page = pagination($limit, $m->from, 'p', [4, 6]);
-            $etc = "$row->typ_id as typ_id, '$row->name' as name";
-            $list = $this->sqlf("#$m->select, $etc $m->from $m->order limit $limit, $ipp");
+            [$cn, $cc, $cs] = ($model = $func())->columns;
+            if ($_GET['t'] ?? false)
+                $model->from->append(" and $cn < $.", $_GET['t']);
+            if (($_GET['s'] ?? false) && is_string($_GET['s'])) {
+                $s = array_shift($cs) . ' like $+';
+                if ($cs)
+                    $s = "($s or " . implode(' or ', array_map(fn($v) => "$v like \\1", $cs)) . ')';
+                $model->from->append(" and $s", "%$_GET[s]%");
+            }
+            $page = pagination($limit, $model->from, 'p', [4, 6]);
+            $what = "$cn as q, $cn as obj_id, $cc as comment, $row->typ_id as typ_id, '$row->name' as name";
+            $list = $this->sql("#select $what $model->from $model->order limit $limit, $this->ipp");
             $oid = $row->name;
         } else {
-            $page = pagination($limit, $this->qp('from $_' . ($flt = $this->filter())), 'p', [4, 6]);
-            $list = $this->sql("#select name as q, * from \$_$flt order by name limit $limit, $ipp");
+            $page = pagination($limit, $from = $this->filter(), 'p', [4, 6]);
+            $list = $this->sql("#select name as q, * $from order by name limit $limit, $this->ipp");
         }
 
         if ('uid' == $this->_1) { # userID (integrated)
@@ -77,10 +85,6 @@ class t_object extends \Model_t
         $id ? $this->update($ary, ['id=' => $id]) : $this->insert($ary);
         $this->log("Object `$post->name` " . ($id ? ", ID=$id modified" : 'added'));
         jump('acl?objects');
-    }
-
-    function add($obj, $obj_id, $desc) {
-        //$typ_id
     }
 
     function drop_obj($id) {
@@ -125,15 +129,18 @@ class t_object extends \Model_t
         return ($all ? ['--ALL--'] : []) + $list;
     }
 
-    function listing($is_typ, &$page = null) {
-        $from = 'from $_ o left join $_ t on t.id=o.typ_id';
+    function listing($is_typ) {
         if ($is_typ) {
-            $from .= ' where o.is_typ=1 order by o.id desc';
+            $from = 'from $_ where is_typ=1 order by id desc';
         } else {
-            $limit = $ipp = 17;
-            $page = pagination($limit, $this->qp($from .= $this->filter()), 'p', [4, 2]);
-            $from .= " order by o.name limit $limit, $ipp";
+            $limit = $this->ipp;
+            $page = pagination($limit, $from = $this->filter(), 'p', [4, 2]);
+            $from .= " order by name limit $limit, $this->ipp";
         }
-        return ['query' => $this->sqlf("select o.*, t.name as type $from")];
+        return [
+            'page' => $page ?? 0,
+            'list' => $this->sql("#select id as q, * $from"),
+            'types' => $this->types(),
+        ];
     }
 }

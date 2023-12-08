@@ -1,7 +1,7 @@
 <?php
 
 namespace acl;
-use SKY, ACM;
+use SKY, SQL, ACM;
 use function qp, pagination, trace;
 
 class t_access extends \Model_t
@@ -16,7 +16,7 @@ class t_access extends \Model_t
             if (SKY::$debug > 1)
                 trace(array_flip(ACM::$cr)[$x] . $name, $ok & $x ? 'ACL ALLOW' : 'ACL DENY');
         } else {
-            [$ok] = $this->user_access($user, $name, $obj_id);
+            [$ok] = $this->aggregate($user, $name, $obj_id);
             $cache[$name][$obj_id] = $ok;
             if (SKY::$debug)
                 trace(array_flip(ACM::$cr)[$x] . $name, $ok & $x ? 'ACL ALLOW' : 'ACL DENY');
@@ -24,19 +24,20 @@ class t_access extends \Model_t
         return $ok & $x;
     }
 
-    function user_access($user, $name, $obj_id) {
+    function aggregate($at, $name, $obj_id) {
         $qp = $this->qp('obj=$+ and ', $name);
         $obj_id ? $qp->append('obj_id in (0, $.)', $obj_id) : $qp->append('obj_id=0');
-        if ($groups = ACM::usrGroups($user->id)) {
-            $qp->append(' and (pid=$. or uid=$. or gid in ($@))', $user->pid, $user->id, $groups);
+        if ($s = $at instanceof SQL) {
+            $qp->append(' and $$', $at);
+        } elseif ($groups = ACM::usrGroups($at->id)) { # user integrated
+            $qp->append(' and (pid=$. or uid=$. or gid in ($@))', $at->pid, $at->id, $groups);
         } else {
-            $qp->append(' and (pid=$. or uid=$.)', $user->pid, $user->id);
+            $qp->append(' and (pid=$. or uid=$.)', $at->pid, $at->id);
         }
 
         $ok = $deny = $allow = 0;
-        $what = 'id as q, id, is_deny, crud, uid, obj_id';
-        foreach ($this->all($qp->append(' order by obj_id, is_deny'), $what) as $one) {
-            if ($one->uid && (!$obj_id || $one->obj_id)) {
+        foreach ($this->all($qp->append(' order by obj_id, is_deny'), 'id as q, *') as $one) {
+            if ($one->uid && !$obj_id || $one->obj_id && ($one->uid || $s)) {
                 $one->is_deny ? ($deny = $one) : ($allow = $one);
             } else {
                 $one->is_deny ? ($ok &= ~$one->crud) : ($ok |= $one->crud);
@@ -52,14 +53,13 @@ class t_access extends \Model_t
     }
 
     function set($x, $name, $mode) { # sample: 3 acla.0 g.7
-        $x = 1 << $x;
         [$name, $obj_id] = explode('.', $name);
         [$mode, $id] = explode('.', $mode);
         if (!call_user_func("ACM::Xacl$mode"))
             return json(['y' => 'X']);
-        $on = false;
+        $x = 1 << $x; # 1-C 2-R 4-U 8-D 16-X
 
-        $insert = function ($mode = 'u', $deny = 0) use ($x, $name, $obj_id, $id) {
+        $insert = function ($deny) use ($mode, $x, $name, $obj_id, $id) {
             global $user;
             $this->insert([
                 '+obj' => $name,
@@ -72,33 +72,23 @@ class t_access extends \Model_t
             ]);
         };
 
-        if ('u' == $mode) { # user integrated
-            $user = $this->x_user->get_user($id);
-            [$ok, $_ok, $deny, $allow] = $this->user_access($user, $name, $obj_id);
-            if ($on = $ok & $x) { # allow change to deny
-                if ($allow)
-                    $x == $allow->crud ? $this->delete($allow->id) : $this->update(['.crud' => $allow->crud & ~$x], $allow->id);
-                if ($on === ($_ok & $x))
-                    $deny ? $this->update(['.crud' => $deny->crud | $x], $deny->id) : $insert('u', 1);
-            } else { # deny change to allow
-                if ($deny)
-                    $x == $deny->crud ? $this->delete($deny->id) : $this->update(['.crud' => $deny->crud & ~$x], $deny->id);
-                if (!($_ok & $x))
-                    $allow ? $this->update(['.crud' => $allow->crud | $x], $allow->id) : $insert();
-            }
-        } else {
-            if (!$row = $this->one(['obj=' => $name, 'obj_id=' => $obj_id, $mode . 'id=' => $id], '>')) {
-                $insert($mode);
-            } elseif ($on = $x & $row->crud) {
-                $x == $row->crud ? $this->delete($row->id) : $this->update(['.crud' => $row->crud & ~$x], $row->id);
-            } else {
-                $this->update(['.crud' => $row->crud | $x], $row->id);
-            }
+        $at = 'u' == $mode ? $this->x_user->get_user($id) : qp($mode . 'id=$.', $id);
+        [$ok, $_ok, $deny, $allow] = $this->aggregate($at, $name, $obj_id);
+        if ($on = $ok & $x) { # allow change to deny
+            if ($allow)
+                $x == $allow->crud ? $this->delete($allow->id) : $this->update(['.crud' => $allow->crud & ~$x], $allow->id);
+            if ($on === ($_ok & $x))
+                $deny ? $this->update(['.crud' => $deny->crud | $x], $deny->id) : $insert(1);
+        } else { # deny change to allow
+            if ($deny)
+                $x == $deny->crud ? $this->delete($deny->id) : $this->update(['.crud' => $deny->crud & ~$x], $deny->id);
+            if (!($_ok & $x))
+                $allow ? $this->update(['.crud' => $allow->crud | $x], $allow->id) : $insert(0);
         }
         json(['y' => $on ? '' : 'Y']);
     }
 
-    function crud($oid, &$list, \SQL $or) {
+    function crud($oid, &$list, SQL $or) {
         if (!$list)
             return;
         $ary = $id0 = [];
@@ -152,11 +142,11 @@ class t_access extends \Model_t
                 : $from;
         };
 
-        $limit = $ipp = 17;
+        $limit = $this->ipp;
         $page = pagination($limit, $filter(), 'p', [2, 1]);
         $sql = 'select l.*, u.login as user $$ order by id desc limit $., $.';
         return [
-            'query' => $this->sql($sql, $filter(true), $limit, $ipp),
+            'query' => $this->sql($sql, $filter(true), $limit, $this->ipp),
             'row_c' => function ($row) {
                 $row->user = $row->user ?? 'Anonymous';
             },

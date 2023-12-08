@@ -16,6 +16,7 @@ class ware extends \Wares
             'ext' => ['Ware\'s mode', 'radio', ['simple', 'extended'], 1],
             'log' => ['Logate C/U/D in ACL ware', 'radio', ['off', 'on'], 1],
             'ram' => ['Use `ram` plan for Redis cache', 'radio', ['off', 'on'], 0],
+            'ipp' => ['Items per page for paginations', 'number', '', 17],
         ];
     }
 

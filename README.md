@@ -39,7 +39,7 @@ if ($cnt && 'ctrl' == $surl[0]) { # Where 'ctrl' - tuning value (any of `/^[\w+\
 }
 ```
 
-## Ware usage in the application code
+## Simple usage in the application code
 You **must import** at least `\ACM` and controller's `c_acl` class into application namespace.
 ```php
 // in the controllers:
@@ -53,14 +53,35 @@ Where **Ressence**:
 * R - char one of C/R/U/D or X. R - access for reading
 * essence - object (essence) name from acl_object database table
 
-You also can use selected object ID:
+## Usage for selected object ID
+
+Access for selected object ID:
 ```php
-# Access for selected `topic` object ID
 if (!$private || ACM::Rtopic($topic_id)) ..
-# where $topic_id is ID numeric value, $topic_id cannot be 0
+# Where $topic_id is ID numeric value, $topic_id cannot be 0
 # Access records with obj_id=0 give access to any $topic_id
 # But you can tune access for defined $topic_id with access records where obj_id=$topic_id (!=0)
 ```
+
+You must place in `common_c::head_y($action)`:
+```php
+ACM::set([
+    'topic' => fn() => (object)$this->t_topic->acl(),
+    'forum' => fn() => (object)$this->t_forum->acl(),
+    # ...other objects with own access for defined obj_ID
+]);
+# Where each `acl()` method return fields, see example:
+return [
+    'from'    => $this->qp('from $_ where private=1'), # must be class SQL object
+    'order'   => 'order by id desc',
+    'columns' => ['id', 'topic_name || " " || dt', ['topic_name', 'dt']],
+];
+# Where columns[0] - column for obj_id
+# Where columns[1] - column for comment
+# Where columns[0] - array of columns for search filter
+```
+
+
 
 Objects for selected ID you can create using call:
 
@@ -72,17 +93,6 @@ ACM::object($obj, $obj_id, $desc) : `object record ID`
 # you can give access after object created:
 ACM::access($id, $crud, $uid = 0, $pid = 0, $gid = 0)
 # where $id is `object record ID`
-
-# Must place in common_c::head_y($action) :
-ACM::set([
-    'topic' => fn() => (object)$this->t_topic->acl(),
-    'forum' => fn() => (object)$this->t_forum->acl(),
-    . . . other objects with own access for defined obj_ID
-]);
-# Where each `acl()` method return fields, see example:
-'select' => $this->qp('select id, id as obj_id, topic_name || " at " || dt_created as comment'),
-'from'   => $this->qp('from $_ where private=1'),
-'order'  => $this->qp('order by id desc'),
 
 ```
 
