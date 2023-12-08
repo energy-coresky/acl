@@ -57,13 +57,13 @@ class t_object extends \Model_t
             $or = qp('(uid=$. or pid=$.', $id, $row->pid);
             if ($row->groups = $this->x_user->gnames($groups = ACM::usrGroups($id)))
                 $or->append(' or gid in ($@)', $groups);
-            $this->x_access->crud($oid, $list, $or->append(')'));
+            $list && $this->x_access->crud($oid, $list, $or->append(')'));
         } elseif ('pid' == $this->_1) {
             $row = $this->x_user->one(['.id=' => $id, 'is_grp=' => 0]);
-            $this->x_access->crud($oid, $list, qp('pid=$.', $id));
+            $list && $this->x_access->crud($oid, $list, qp('pid=$.', $id));
         } elseif ('gid' == $this->_1) {
             $row = $this->x_user->one(['.id=' => $id, 'is_grp=' => 1]);
-            $this->x_access->crud($oid, $list, qp('gid=$.', $id));
+            $list && $this->x_access->crud($oid, $list, qp('gid=$.', $id));
         }
         return get_defined_vars();
     }

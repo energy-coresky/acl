@@ -57,8 +57,8 @@ class t_access extends \Model_t
         [$mode, $id] = explode('.', $mode);
         if (!call_user_func("ACM::Xacl$mode"))
             return json(['y' => 'X']);
-        $x = 1 << $x; # 1-C 2-R 4-U 8-D 16-X
 
+        $x = 1 << $x; # 1-C 2-R 4-U 8-D 16-X
         $insert = function ($deny) use ($mode, $x, $name, $obj_id, $id) {
             global $user;
             $this->insert([
@@ -89,27 +89,27 @@ class t_access extends \Model_t
     }
 
     function crud($oid, &$list, SQL $or) {
-        if (!$list)
-            return;
         $ary = $id0 = [];
 
         $crud = function ($ary = []) use (&$list, &$id0) {
-            $allow = $deny = 0;
-            foreach ($id0 as $v)
-                $v->is_deny ? ($deny |= $v->crud) : ($allow |= $v->crud);
-            $allow &= ~$deny;
-            $deny = 0;
-            foreach ($ary as $v)
-                $v->is_deny ? ($deny |= $v->crud) : ($allow |= $v->crud);
-            $fn = fn($x) => $allow & ~$deny & $x ? 'Y' : '';
-            return $ary ? ($list[$v->k]->crud = $fn) : $fn;
+            static $_0;
+            if (null === $_0) {
+                $_0 = 0;
+                foreach ($id0 as $row)
+                    $row->is_deny ? ($_0 &= ~$row->crud) : ($_0 |= $row->crud);
+            }
+            $allow = $_0;
+            foreach ($ary as $row)
+                $row->is_deny ? ($allow &= ~$row->crud) : ($allow |= $row->crud);
+            $fn = fn($x) => $allow & $x ? 'Y' : '';
+            return $ary ? ($list[$row->key]->crud = $fn) : $fn;
         };
 
-        $sql = '&select *, obj' . ($oid ? '_id' : '') . ' as k from $_ where $$ and $$ order by obj, obj_id';
+        $select = '&select *, !! as key from $_ where $$ and $$ order by obj, obj_id, uid, is_deny';
         $keys = array_keys($list);
         $qp = $oid ? qp('obj=$+ and obj_id in (0, $@)', $oid, $keys) : qp('obj in ($@) and obj_id=0', $keys);
         $mem = ['', 0];
-        foreach ($this->sql($sql, $qp, $or) as $row) {
+        foreach ($this->sql($select, $oid ? 'obj_id' : 'obj', $qp, $or) as $row) {
             if ($oid && !$row->obj_id) {
                 $id0[] = $row;
                 $row->obj = '';
@@ -122,14 +122,14 @@ class t_access extends \Model_t
             $mem = [$row->obj, $row->obj_id];
         }
         $ary && $crud($ary);
-        $crud = $id0 ? $crud() : fn($x) => '';
+        $crud = $id0 ? $crud() : fn() => '';
         $types = $this->x_object->types();
-        foreach ($list as &$v) {
-            property_exists($v, 'crud') or $v->crud = $crud;
-            $v->a = $oid ? "$oid.$v->obj_id" : (!isset(ACM::$byId[$v->name])
-                ? $v->name
-                : a("<b>$v->name</b>", "?$this->_1=$this->_2&obj=$v->id"));
-            $v->type = $types[$v->typ_id];
+        foreach ($list as &$row) {
+            property_exists($row, 'crud') or $row->crud = $crud;
+            $row->a = $oid ? "$oid.$row->obj_id" : (!isset(ACM::$byId[$row->name])
+                ? $row->name
+                : a("<b>$row->name</b>", "?$this->_1=$this->_2&obj=$row->id"));
+            $row->type = $types[$row->typ_id];
         }
     }
 
