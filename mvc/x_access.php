@@ -25,7 +25,7 @@ class t_access extends \Model_t
     }
 
     function aggregate($at, $name, $obj_id) {
-        $qp = $this->qp('obj=$+ and ', $name);
+        $qp = $this->qp('from $_ where obj=$+ and ', $name);
         $obj_id ? $qp->append('obj_id in (0, $.)', $obj_id) : $qp->append('obj_id=0');
         if ($s = $at instanceof SQL) {
             $qp->append(' and $$', $at);
@@ -36,7 +36,7 @@ class t_access extends \Model_t
         }
 
         $ok = $deny = $allow = 0;
-        foreach ($this->all($qp->append(' order by obj_id, is_deny'), 'id as q, *') as $one) {
+        foreach ($this->sql('&select * $$ order by obj_id, is_deny', $qp) as $one) {
             if ($one->uid && !$obj_id || $one->obj_id && ($one->uid || $s)) {
                 $one->is_deny ? ($deny = $one) : ($allow = $one);
             } else {

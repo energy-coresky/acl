@@ -6,9 +6,9 @@
 <td colspan="2" class="pages">
   @if($so = 'obj'==$sky->_3)Filter@elseType:~if
 </td>
-<td class="pages">
+<td class="pages" style="width:150px">
   @if($so)
-    ID &lt; <input value="{{$_GET['t'] ?? ''}}" style="width:95px" type="number" id="acl-t">
+    ID &lt; <input value="{{$_GET['t'] ?? ''}}" style="width:95px" type="number" min="1" id="acl-t">
   @else
     <select onchange="acl_filter(this.value)" style="width:100%">
     @loop($list as $id => $name)
@@ -19,12 +19,14 @@
 </td>
 <td class="pages" style="text-align:left">
   <input value="{{$s}}" placeholder="text to search" id="acl-s">
-  <input type="button" value="Search" onclick="acl_filter({{$so ? "getElementById('acl-t').value" : 'null'}}, getElementById('acl-s').value)">
+  <input type="button" value="Search" onclick="acl_filter(null, getElementById('acl-s').value, {{$so ? "getElementById('acl-t').value" : 'null'}})">
   <script>
-  function acl_filter(t, s) {
+  function acl_filter(t, s, n) {
       let url = location.href;
       if (null === t) {
           url = url.match(/&s=[^&]*/) ? url.replace(/&s=[^&]*/, "&s=" + s) : url + '&s=' + s;
+          if (n)
+            url = url.match(/&t=[^&]*/) ? url.replace(/&t=[^&]*/, "&t=" + n) : url + '&t=' + n;
       } else {
           url = url.match(/&t=\d+/) ? url.replace(/&t=\d+/, "&t=" + t) : url + '&t=' + t;
       }

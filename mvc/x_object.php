@@ -125,7 +125,9 @@ class t_object extends \Model_t
     }
 
     function types($all = false) {
-        $list = $this->all(['is_typ=' => 1], 'id, name');
+        static $list;
+        if (null === $list)
+            $list = $this->all(['is_typ=' => 1], 'id, name');
         return ($all ? ['--ALL--'] : []) + $list;
     }
 

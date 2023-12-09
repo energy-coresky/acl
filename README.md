@@ -19,7 +19,7 @@ User to Profiles is one to many relation. Users to Groups is many to many relati
 
 Essence | Brief Info
 :----- | :-----
-Version | 0.888
+Version | 0.899
 Installer class | present (**acl\\ware**)
 _w3_ classes | 2 (**Acl** (console), **ACM**)
 Controllers | 1, has optional tune
