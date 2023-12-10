@@ -1,7 +1,7 @@
 
 # Access control list
 
-Production ware. Use this product if your application need access control manager.
+Production ware. Use this product if your application require access control manager.
 
 This ACL ware support simple and extended mode for manage access for
 CRUD operations. CUD operation logging configurable at the ware installation stage.

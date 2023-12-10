@@ -51,6 +51,8 @@ class t_object extends \Model_t
             $page = pagination($limit, $from = $this->filter(), 'p', [4, 6]);
             $list = $this->sql("#select name as q, * $from order by name limit $limit, $this->ipp");
         }
+        if (false !== \common_c::$page)
+            return 404;
 
         if ('uid' == $this->_1) { # userID (integrated)
             $row = $this->x_user->get_user($id);
@@ -137,11 +139,13 @@ class t_object extends \Model_t
         } else {
             $limit = $this->ipp;
             $page = pagination($limit, $from = $this->filter(), 'p', [4, 2]);
+            if (false !== \common_c::$page)
+                return 404;
             $from .= " order by name limit $limit, $this->ipp";
         }
         return [
             'page' => $page ?? 0,
-            'list' => $this->sql("#select id as q, * $from"),
+            'e_list' => $this->sql("select * $from"),
             'types' => $this->types(),
         ];
     }

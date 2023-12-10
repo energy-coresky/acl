@@ -28,10 +28,7 @@ class c_acl extends Controller
     }
 
     function a_log() {
-        return !ACM::Racll() ? 404 : [
-            'e_log' => $this->x_access->logging($page),
-            'page' => $page,
-        ];
+        return ACM::Racll() ? $this->x_access->logging() : 404;
     }
 
     function j_set($x, $name, $mode) {
@@ -51,10 +48,7 @@ class c_acl extends Controller
     }
 
     function a_users() {
-        return !ACM::Raclu() ? 404 : [
-            'e_users' => $this->x_user->users($page),
-            'page' => $page,
-        ];
+        return ACM::Raclu() ? $this->x_user->users() : 404;
     }
 
     function a_emulate($id) {
@@ -70,10 +64,7 @@ class c_acl extends Controller
     }
 
     function a_user2grp($id, $post) {
-        return !ACM::Caclv() ? 404 : [
-            'e_grp' => $this->x_user->user2grp($id, $post, $page),
-            'page' => $page,
-        ];
+        return ACM::Caclv() ? $this->x_user->user2grp($id, $post) : 404;
     }
 
     function a_profiles() { # -=-=-=-=-=-=-= PROFILE =-=-=-=-=-=-=-=-=-=-=
@@ -89,10 +80,7 @@ class c_acl extends Controller
     }
 
     function a_groups() { # -=-=-=-=- USER GROUPS -=-=-=-=-=-=-=-=-=-=-=
-        return !ACM::Raclg() ? 404 : [
-            'e_grp' => $this->x_user->groups($page),
-            'page' => $page,
-        ];
+        return ACM::Raclg() ? $this->x_user->groups() : 404;
     }
 
     function a_sgrp($id, $post) {

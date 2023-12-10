@@ -92,13 +92,13 @@ class t_access extends \Model_t
         $ary = $id0 = [];
 
         $crud = function ($ary = []) use (&$list, &$id0) {
-            static $_0;
-            if (null === $_0) {
-                $_0 = 0;
+            static $ok0;
+            if (null === $ok0) {
+                $ok0 = 0;
                 foreach ($id0 as $row)
-                    $row->is_deny ? ($_0 &= ~$row->crud) : ($_0 |= $row->crud);
+                    $row->is_deny ? ($ok0 &= ~$row->crud) : ($ok0 |= $row->crud);
             }
-            $allow = $_0;
+            $allow = $ok0;
             foreach ($ary as $row)
                 $row->is_deny ? ($allow &= ~$row->crud) : ($allow |= $row->crud);
             $fn = fn($x) => $allow & $x ? 'Y' : '';
@@ -133,23 +133,24 @@ class t_access extends \Model_t
         }
     }
 
-    function logging(&$page) {
-        $filter = function ($join = false) {
-            $from = $this->qp("from \$_$this->t_log l");
-            $join AND $from->append(' left join $_users u on u.id=l.user_id');
-            return ($_GET['s'] ?? false) && is_string($_GET['s'])
-                ? $from->append(' where l.comment like $+', "%$_GET[s]%")
-                : $from;
-        };
-
+    function logging() {
         $limit = $this->ipp;
-        $page = pagination($limit, $filter(), 'p', [2, 1]);
+        $from = $this->qp("from \$_$this->t_log l left join \$_users u on u.id=l.user_id");
+        if (($_GET['s'] ?? false) && is_string($_GET['s']))
+            $from->append(' where l.comment like $+', "%$_GET[s]%");
+
+        $page = pagination($limit, $from, 'p', [2, 1]);
+        if (false !== \common_c::$page)
+            return 404;
         $sql = 'select l.*, u.login as user $$ order by id desc limit $., $.';
         return [
-            'query' => $this->sql($sql, $filter(true), $limit, $this->ipp),
-            'row_c' => function ($row) {
-                $row->user = $row->user ?? 'Anonymous';
-            },
+            'page' => $page,
+            'e_log' => [
+                'query' => $this->sql($sql, $from, $limit, $this->ipp),
+                'row_c' => function ($row) {
+                    $row->user = $row->user ?? 'Anonymous';
+                },
+            ],
         ];
     }
 }

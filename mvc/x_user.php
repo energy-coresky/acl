@@ -29,7 +29,7 @@ class t_user extends \Model_t
         return $user;
     }
 
-    function users(&$page) {
+    function users() {
         $filter = function ($s = 'from $_users u ') {
             return ($_GET['s'] ?? false) && is_string($_GET['s'])
                 ? $this->qp($s . 'where u.login like $+ or u.email like \1 or u.uname like \1', "%$_GET[s]%")
@@ -38,16 +38,21 @@ class t_user extends \Model_t
 
         $limit = $this->ipp;
         $page = pagination($limit, $filter(), 'p', [4, 2]);
+        if (false !== \common_c::$page)
+            return 404;
         $profiles = ACM::usrProfiles();
         $sql = 'select u.*, count(g.user_id) as cnt from $_users u
             left join $_' . $this->t_user2grp . ' g on (g.user_id=u.id) $$
             group by u.id
             order by u.id desc limit $., $.';
         return [
-            'query' => $this->sql($sql, $filter(''), $limit, $this->ipp),
-            'row_c' => function ($row) use (&$profiles) {
-                $row->profile = $profiles[$row->pid];
-            },
+            'page' => $page,
+            'e_users' => [
+                'query' => $this->sql($sql, $filter(''), $limit, $this->ipp),
+                'row_c' => function ($row) use (&$profiles) {
+                    $row->profile = $profiles[$row->pid];
+                },
+            ],
         ];
     }
 
@@ -126,14 +131,18 @@ class t_user extends \Model_t
         return $s ? $qp : $qp->append(' order by g.name');
     }
 
-    function groups(&$page) {
+    function groups() {
         $limit = $this->ipp;
         $page = pagination($limit, $this->filter(), 'p', [3, 2]);
-        $q = $this->sql('select * from $_ g $$ limit $., $.', $this->filter(''), $limit, $this->ipp);
-        return ['query' => $q];
+        if (false !== \common_c::$page)
+            return 404;
+        return [
+            'page' => $page,
+            'e_grp' => $this->sql('select * from $_ g $$ limit $., $.', $this->filter(''), $limit, $this->ipp),
+        ];
     }
 
-    function user2grp($id, $post, &$page) {
+    function user2grp($id, $post) {
         $user = $this->get_user($id);
         if ($post && $post->is_add) {
             in_array($post->grp_id, ACM::usrGroups($id))
@@ -143,11 +152,14 @@ class t_user extends \Model_t
         }
         $limit = $this->ipp;
         $page = pagination($limit, $this->filter(), 'p', [2, 2]);
+        if (false !== \common_c::$page)
+            return 404;
         $sql = 'select g.*, u2g.grp_id as ok from $_ g
             left join $_` u2g on (u2g.user_id=$. and u2g.grp_id=g.id) $$ limit $., $.';
         return [
-            'query' => $this->sql($sql, (string)$this->t_user2grp, $id, $this->filter(''), $limit, $this->ipp),
+            'page' => $page,
             'usr' => $user,
+            'e_grp' => $this->sql($sql, (string)$this->t_user2grp, $id, $this->filter(''), $limit, $this->ipp),
         ];
     }
 

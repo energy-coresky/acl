@@ -47,7 +47,7 @@
       @if(ACM::Caclo())<a href="?sobj">add new</a>~if
     </th>
   </tr>
-@loop($list as $row)
+@loop($e_list)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
     <td>{{$row->id}}</td>
     <td>{{$row->name}}</td>
@@ -86,7 +86,7 @@
       @if(ACM::Caclt())<a href="?styp">add new</a>~if
     </th>
   </tr>
-@loop($list as $row)
+@loop($e_list)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
     <td>{{$row->id}}</td>
     <td>{{$row->name}}</td>
