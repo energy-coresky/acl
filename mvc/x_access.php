@@ -2,7 +2,7 @@
 
 namespace acl;
 use SKY, SQL, ACM;
-use function qp, pagination, trace;
+use function qp, trace;
 
 class t_access extends \Model_t
 {
@@ -134,19 +134,15 @@ class t_access extends \Model_t
     }
 
     function logging() {
-        $limit = $this->ipp;
         $from = $this->qp("from \$_$this->t_log l left join \$_users u on u.id=l.user_id");
         if (($_GET['s'] ?? false) && is_string($_GET['s']))
             $from->append(' where l.comment like $+', "%$_GET[s]%");
-
-        $page = pagination($limit, $from, 'p', [2, 1]);
-        if (false !== \common_c::$page)
-            return 404;
         $sql = 'select l.*, u.login as user $$ order by id desc limit $., $.';
-        return [
+        $page = $this->page($from, [2, 1]);
+        return !$page ? 404 : [
             'page' => $page,
             'e_log' => [
-                'query' => $this->sql($sql, $from, $limit, $this->ipp),
+                'query' => $this->sql($sql, $from, $this->x0, $this->ipp),
                 'row_c' => function ($row) {
                     $row->user = $row->user ?? 'Anonymous';
                 },

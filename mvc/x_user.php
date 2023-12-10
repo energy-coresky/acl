@@ -2,7 +2,7 @@
 
 namespace acl;
 use SKY, ACM, Form, Error;
-use function qp, pagination, jump;
+use function qp, jump;
 
 class t_user extends \Model_t
 {
@@ -36,19 +36,16 @@ class t_user extends \Model_t
                 : $this->qp($s);
         };
 
-        $limit = $this->ipp;
-        $page = pagination($limit, $filter(), 'p', [4, 2]);
-        if (false !== \common_c::$page)
-            return 404;
         $profiles = ACM::usrProfiles();
         $sql = 'select u.*, count(g.user_id) as cnt from $_users u
             left join $_' . $this->t_user2grp . ' g on (g.user_id=u.id) $$
             group by u.id
             order by u.id desc limit $., $.';
-        return [
+        $page = $this->page($filter(), [4, 2]);
+        return !$page ? 404 : [
             'page' => $page,
             'e_users' => [
-                'query' => $this->sql($sql, $filter(''), $limit, $this->ipp),
+                'query' => $this->sql($sql, $filter(''), $this->x0, $this->ipp),
                 'row_c' => function ($row) use (&$profiles) {
                     $row->profile = $profiles[$row->pid];
                 },
@@ -132,13 +129,10 @@ class t_user extends \Model_t
     }
 
     function groups() {
-        $limit = $this->ipp;
-        $page = pagination($limit, $this->filter(), 'p', [3, 2]);
-        if (false !== \common_c::$page)
-            return 404;
-        return [
+        $page = $this->page($this->filter(), [3, 2]);
+        return !$page ? 404 : [
             'page' => $page,
-            'e_grp' => $this->sql('select * from $_ g $$ limit $., $.', $this->filter(''), $limit, $this->ipp),
+            'e_grp' => $this->sql('select * from $_ g $$ limit $., $.', $this->filter(''), $this->x0, $this->ipp),
         ];
     }
 
@@ -150,16 +144,13 @@ class t_user extends \Model_t
         } elseif ($post) {
             $this->t_user2grp->delete(['.user_id=' => $id, '.grp_id=' => $post->grp_id]);
         }
-        $limit = $this->ipp;
-        $page = pagination($limit, $this->filter(), 'p', [2, 2]);
-        if (false !== \common_c::$page)
-            return 404;
         $sql = 'select g.*, u2g.grp_id as ok from $_ g
             left join $_` u2g on (u2g.user_id=$. and u2g.grp_id=g.id) $$ limit $., $.';
-        return [
+        $page = $this->page($this->filter(), [2, 2]);
+        return !$page ? 404 : [
             'page' => $page,
             'usr' => $user,
-            'e_grp' => $this->sql($sql, (string)$this->t_user2grp, $id, $this->filter(''), $limit, $this->ipp),
+            'e_grp' => $this->sql($sql, (string)$this->t_user2grp, $id, $this->filter(''), $this->x0, $this->ipp),
         ];
     }
 

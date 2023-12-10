@@ -2,7 +2,7 @@
 
 namespace acl;
 use ACM, Form;
-use function qp, pagination, jump;
+use function qp, jump;
 
 class t_object extends \Model_t
 {
@@ -30,7 +30,6 @@ class t_object extends \Model_t
         if (!ACM::Racla())
             return 404;
 
-        $limit = $this->ipp;
         if ($oid) {
             if (!$row = $this->one($oid, '>') or !$func = ACM::$byId[$row->name] ?? false)
                 return 404;
@@ -43,16 +42,16 @@ class t_object extends \Model_t
                     $s = "($s or " . implode(' or ', array_map(fn($v) => "$v like \\1", $cs)) . ')';
                 $model->from->append(" and $s", "%$_GET[s]%");
             }
-            $page = pagination($limit, $model->from, 'p', [4, 6]);
+            if (!$page = $this->page($model->from, [4, 6]))
+                return 404;
             $what = "$cn as q, $cn as obj_id, $cc as comment, $row->typ_id as typ_id, '$row->name' as name";
-            $list = $this->sql("#select $what $model->from $model->order limit $limit, $this->ipp");
+            $list = $this->sql("#select $what $model->from $model->order limit $this->x0, $this->ipp");
             $oid = $row->name;
         } else {
-            $page = pagination($limit, $from = $this->filter(), 'p', [4, 6]);
-            $list = $this->sql("#select name as q, * $from order by name limit $limit, $this->ipp");
+            if (!$page = $this->page($from = $this->filter(), [4, 6]))
+                return 404;
+            $list = $this->sql("#select name as q, * $from order by name limit $this->x0, $this->ipp");
         }
-        if (false !== \common_c::$page)
-            return 404;
 
         if ('uid' == $this->_1) { # userID (integrated)
             $row = $this->x_user->get_user($id);
@@ -134,18 +133,13 @@ class t_object extends \Model_t
     }
 
     function listing($is_typ) {
-        if ($is_typ) {
-            $from = 'from $_ where is_typ=1 order by id desc';
-        } else {
-            $limit = $this->ipp;
-            $page = pagination($limit, $from = $this->filter(), 'p', [4, 2]);
-            if (false !== \common_c::$page)
-                return 404;
-            $from .= " order by name limit $limit, $this->ipp";
-        }
-        return [
-            'page' => $page ?? 0,
-            'e_list' => $this->sql("select * $from"),
+        if ($is_typ)
+            return ['e_list' => $this->sql('select * from $_ where is_typ=1 order by id desc')];
+
+        $page = $this->page($from = $this->filter(), [4, 2]);
+        return !$page ? 404 : [
+            'page' => $page,
+            'e_list' => $this->sql("select * $from order by name limit $this->x0, $this->ipp"),
             'types' => $this->types(),
         ];
     }
