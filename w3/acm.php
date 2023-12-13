@@ -21,8 +21,9 @@ class ACM extends Model_t # Access control manager
         return $acm ?? ($acm = new self);
     }
 
-    static function set(array $ary) {
+    static function init(array $ary) {
         self::$byId = $ary;
+        return self::usrProfiles();
     }
 
     static function access($obj, $obj_id) {
@@ -71,5 +72,16 @@ class ACM extends Model_t # Access control manager
             return $groups;
         $acm = self::instance();
         return $groups = $acm->all(['user_id=' => $user_id = $id], 'grp_id');
+    }
+
+    static function grpNames(array $ids) {
+        return $ids ? self::instance()->x_user->sqlf('@select id, name from $_ where is_grp=1 and id in (%s)', $ids) : [];
+    }
+
+    static function typNames($all = false) {
+        static $list;
+        if (null === $list)
+            $list = self::instance()->x_object->all(['is_typ=' => 1], 'id, name');
+        return ($all ? ['--ALL--'] : []) + $list;
     }
 }

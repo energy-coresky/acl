@@ -123,7 +123,7 @@ class t_access extends \Model_t
         }
         $ary && $crud($ary);
         $crud = $id0 ? $crud() : fn() => '';
-        $types = $this->x_object->types();
+        $types = ACM::typNames();
         foreach ($list as &$row) {
             property_exists($row, 'crud') or $row->crud = $crud;
             $row->a = $oid ? "$oid.$row->obj_id" : (!isset(ACM::$byId[$row->name])

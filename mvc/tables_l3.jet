@@ -49,7 +49,7 @@ CREATE TABLE "{{$dd->pref . $tt}}_user" ( -- profiles & user groups
   "comment" VARCHAR(255) DEFAULT NULL,
   "dt" DATETIME NOT NULL
 );
-INSERT INTO "{{$dd->pref . $tt}}_user" values (0, 'Anonymous', 0, 'No auth at all', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_user" values (0, 'Anonymous', 0, 'Not authorized', '1971-01-01 01:01:01');
 INSERT INTO "{{$dd->pref . $tt}}_user" values (1, 'Root', 0, 'Undeniable full access', '1971-01-01 01:01:01');
-INSERT INTO "{{$dd->pref . $tt}}_user" values (2, 'Authed', 0, 'Minimal access', '1971-01-01 01:01:01');
+INSERT INTO "{{$dd->pref . $tt}}_user" values (2, 'Mia', 0, 'Minimal access', '1971-01-01 01:01:01');
 INSERT INTO "{{$dd->pref . $tt}}_user" values (3, 'Admin', 0, 'Default admin', '1971-01-01 01:01:01');

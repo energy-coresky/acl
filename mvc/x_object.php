@@ -8,15 +8,6 @@ class t_object extends \Model_t
 {
     use common;
 
-    function busy(&$name, $id = 0) {
-        $acm = new \ReflectionClass('ACM');
-        $ary = array_map(fn($v) => strtolower($v->name), $acm->getMethods());
-        $ary = array_filter($ary, fn($v) => in_array($v[0], ['c', 'r', 'u', 'd', 'x']));
-        if (in_array($name = strtolower($name), array_map(fn($v) => substr($v, 1), $ary)))
-            return $this->k_acl->busy = true;
-        return $this->k_acl->busy = $this->one(['is_typ=' => 0, 'id!=' => $id, 'name=' => $name]);
-    }
-
     function filter() {
         $qp = $this->qp('from $_ where is_typ=0');
         if ($_GET['t'] ?? false)
@@ -31,7 +22,7 @@ class t_object extends \Model_t
             return 404;
 
         if ($oid) {
-            if (!$row = $this->one($oid, '>') or !$func = ACM::$byId[$row->name] ?? false)
+            if (!$row = $this->one($oid, '>') or !$func = ACM::$byId[$oid = $row->name] ?? false)
                 return 404;
             [$cn, $cc, $cs] = ($model = $func())->columns;
             if ($_GET['t'] ?? false)
@@ -46,7 +37,6 @@ class t_object extends \Model_t
                 return 404;
             $what = "$cn as q, $cn as obj_id, $cc as comment, $row->typ_id as typ_id, '$row->name' as name";
             $list = $this->sql("#select $what $model->from $model->order limit $this->x0, $this->ipp");
-            $oid = $row->name;
         } else {
             if (!$page = $this->page($from = $this->filter(), [4, 6]))
                 return 404;
@@ -56,7 +46,7 @@ class t_object extends \Model_t
         if ('uid' == $this->_1) { # userID (integrated)
             $row = $this->x_user->get_user($id);
             $or = qp('(uid=$. or pid=$.', $id, $row->pid);
-            if ($row->groups = $this->x_user->gnames($groups = ACM::usrGroups($id)))
+            if ($row->groups = ACM::grpNames($groups = ACM::usrGroups($id)))
                 $or->append(' or gid in ($@)', $groups);
             $list && $this->x_access->crud($oid, $list, $or->append(')'));
         } elseif ('pid' == $this->_1) {
@@ -75,11 +65,20 @@ class t_object extends \Model_t
             -1 => ['name' => ['Must match regexp: [a-z][a-z\\d]+', '/^[a-z][a-z\d]+$/']],
             '/name' => ['Name'],
             '+comment' => ['Comment'],
-            '#typ_id' => ['Type', 'select', $this->types()],
+            '#typ_id' => ['Type', 'select', ACM::typNames()],
             ['Submit', 'submit', 'onclick="return sky.f.submit()"'],
         ], $ary);
 
-        if (!$post || $id && !ACM::Uaclo() || !$id && !ACM::Caclo() || $this->busy($_POST['name'], $id))
+        $busy = function ($id = 0) {
+            $acm = new \ReflectionClass('ACM');
+            $ary = array_map(fn($v) => strtolower($v->name), $acm->getMethods());
+            $ary = array_filter($ary, fn($v) => in_array($v[0], ['c', 'r', 'u', 'd', 'x']));
+            if (in_array($name = $_POST['name'], array_map(fn($v) => substr($v, 1), $ary)))
+                return $this->k_acl->busy = true;
+            return $this->k_acl->busy = $this->one(['is_typ=' => 0, 'id!=' => $id, 'name=' => $name]);
+        };
+
+        if (!$post || $id && !ACM::Uaclo() || !$id && !ACM::Caclo() || $busy($id))
             return $form;
 
         $ary = $form->validate(['is_typ' => 0, '!dt' => '$now']);
@@ -96,6 +95,15 @@ class t_object extends \Model_t
             $this->delete($id) && $this->log("Object `$obj[name]` ID=$id deleted");
         }
         jump('acl?objects');
+    }
+
+    function objects() {
+        $page = $this->page($from = $this->filter(), [4, 2]);
+        return !$page ? 404 : [
+            'page' => $page,
+            'e_list' => $this->sql("select * $from order by name limit $this->x0, $this->ipp"),
+            'types' => ACM::typNames(),
+        ];
     }
 
     function save_typ($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -125,22 +133,7 @@ class t_object extends \Model_t
         jump('acl?types');
     }
 
-    function types($all = false) {
-        static $list;
-        if (null === $list)
-            $list = $this->all(['is_typ=' => 1], 'id, name');
-        return ($all ? ['--ALL--'] : []) + $list;
-    }
-
-    function listing($is_typ) {
-        if ($is_typ)
-            return ['e_list' => $this->sql('select * from $_ where is_typ=1 order by id desc')];
-
-        $page = $this->page($from = $this->filter(), [4, 2]);
-        return !$page ? 404 : [
-            'page' => $page,
-            'e_list' => $this->sql("select * $from order by name limit $this->x0, $this->ipp"),
-            'types' => $this->types(),
-        ];
+    function types() {
+        return ['e_list' => $this->sqlf('select * from $_ where is_typ=1 order by id desc')];
     }
 }

@@ -96,7 +96,7 @@
       @if($row->id > 1)
         @if(ACM::Uaclt())<a href="?styp={{$row->id}}">edit</a>~if |
         @if(ACM::Daclt())<a href="?dtyp={{$row->id}}">delete</a>~if
-      ~if
+      @elseCannot change~if
     </td>
   </tr>
   @empty

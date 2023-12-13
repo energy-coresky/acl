@@ -54,7 +54,7 @@ Total: {{$_}} item@if(1!=$_)s~if
     <td>{{$row->dt_r}}</td>
     <td>
     @if($row->id == $y_user->id)
-      my <a href="?configure={{$row->id}}">configure</a>
+      Cannot change
     @else
       <a href="?emulate={{$row->id}}">emulate</a>
       @if(ACM::Daclv())
@@ -86,6 +86,18 @@ Total: {{$_}} item@if(1!=$_)s~if
 ~if
 #.register
 
+#.mail ---------------------------------------
+New account at {{_PUBLIC}}~
+<p>
+  Hello, {{$uname}}!<br>
+  We are glad to inform you that an account has been registered for you on the {{_PUBLIC}} website.<br>
+  Authorization data:<br>
+  Login: <b>{{$login}}</b><br>
+  Password: <b>{{$passw}}</b><br>
+  Change the password as soon as possible.<br><br>
+  Administration.<br>
+</p>
+#.mail
 
 #.profiles ========================================================================================
 @inc(_ware.menu)

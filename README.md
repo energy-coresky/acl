@@ -65,7 +65,7 @@ if (!$private || ACM::Rtopic($topic_id)) ..
 
 You must place in `common_c::head_y($action)`:
 ```php
-ACM::set([
+$sky->profiles = ACM::init([
     'topic' => fn() => (object)$this->t_topic->acl(),
     'forum' => fn() => (object)$this->t_forum->acl(),
     # ...other objects with own access for defined obj_ID

@@ -21,7 +21,7 @@ class c_acl extends Controller
     function x_filter_obj() {
         MVC::body('ware.filter_obj');
         return [
-            'list' => $this->x_object->types(true),
+            'list' => ACM::typNames(true),
             't' => $_GET['t'] ?? 0,
             's' => $_GET['s'] ?? '',
         ];
@@ -92,7 +92,7 @@ class c_acl extends Controller
     }
 
     function a_objects() { # -=-=-=-=-=-= OBJECTS =-=-=-=-=-=-=-=-=-=-=-=
-        return ACM::Raclo() ? $this->x_object->listing(0) : 404;
+        return ACM::Raclo() ? $this->x_object->objects() : 404;
     }
 
     function a_sobj($id, $post) {
@@ -104,7 +104,7 @@ class c_acl extends Controller
     }
 
     function a_types() { # -=-=-=-=-=- OBJECT TYPES =-=-=-=-=-=-=-=-=-=
-        return ACM::Raclt() ? $this->x_object->listing(1) : 404;
+        return ACM::Raclt() ? $this->x_object->types() : 404;
     }
 
     function a_styp($id, $post) {

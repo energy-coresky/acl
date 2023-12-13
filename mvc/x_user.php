@@ -76,13 +76,20 @@ class t_user extends \Model_t
             '-email' => ['E-mail'],
             '#pid' => ['Profile', 'select', ACM::usrProfiles(0), '', 2],
             '+uname' => ['User Name'],
+            '#x' => ['Try to send e-mail to user', 'chk', '', 1],
             ['Submit', 'submit', 'onclick="return sky.f.submit()"'],
         ]);
         $user = new \Model_t('users');
         $busy = fn($qp) => $this->k_acl->busy = $user->one($qp);
         if (!$post || $busy(qp('login=$+ or email=$+', $post->login, $post->email)))
             return $form;
-        $user->insert($form->validate(['!dt_r' => '$now']));
+        $ary = $form->validate();
+        if ($ary['x']) {
+            [$subject, $message] = explode('~', \view('ware.mail', $ary), 2);
+            \Rare::mail($message, $subject, $ary['email']);
+        }
+        unset($ary['x']);
+        $user->insert($ary + ['!dt_r' => '$now']);
         $this->log("Register new user `$post->login`");
         jump('acl?users');
     }
@@ -152,9 +159,5 @@ class t_user extends \Model_t
             'usr' => $user,
             'e_grp' => $this->sql($sql, (string)$this->t_user2grp, $id, $this->filter(''), $this->x0, $this->ipp),
         ];
-    }
-
-    function gnames(array $ids) {
-        return $ids ? $this->sqlf('@select id,name from $_ where is_grp=1 and id in (%s)', $ids) : [];
     }
 }
