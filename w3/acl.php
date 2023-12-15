@@ -3,9 +3,7 @@
 class Acl extends Console
 {
     function __construct($argv = [], $found = []) {
-        Plan::$ware = 'acl';
-        parent::__construct($argv, $found);
-        Plan::$ware = 'main';
+        Plan::set('acl', fn() => parent::__construct($argv, $found));
     }
 
     /** Lock user */

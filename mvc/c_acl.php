@@ -21,7 +21,7 @@ class c_acl extends Controller
     function x_filter_obj() {
         MVC::body('ware.filter_obj');
         return [
-            'list' => ACM::typNames(true),
+            'list' => $this->x_object->typNames(true),
             't' => $_GET['t'] ?? 0,
             's' => $_GET['s'] ?? '',
         ];
@@ -60,7 +60,7 @@ class c_acl extends Controller
     }
 
     function a_register($post) {
-        return ACM::Raclv() ? ['form' => $this->x_user->register($post)] : 404;
+        return ACM::Caclu() ? ['form' => $this->x_user->register($post)] : 404;
     }
 
     function a_user2grp($id, $post) {
@@ -68,7 +68,7 @@ class c_acl extends Controller
     }
 
     function a_profiles() { # -=-=-=-=-=-=-= PROFILE =-=-=-=-=-=-=-=-=-=-=
-        return ACM::Raclp() ? ['list' => $this->x_user->all(['is_grp=' => 0])] : 404;
+        return ACM::Raclp() ? ['list' => $this->x_user->profiles()] : 404;
     }
 
     function a_spid($id, $post) {

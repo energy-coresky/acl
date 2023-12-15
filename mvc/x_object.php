@@ -1,7 +1,7 @@
 <?php
 
 namespace acl;
-use ACM, Form;
+use SKY, ACM, Form;
 use function qp, jump;
 
 class t_object extends \Model_t
@@ -44,16 +44,18 @@ class t_object extends \Model_t
         }
 
         if ('uid' == $this->_1) { # userID (integrated)
-            $row = $this->x_user->get_user($id);
-            $or = qp('(uid=$. or pid=$.', $id, $row->pid);
-            if ($row->groups = ACM::grpNames($groups = ACM::usrGroups($id)))
-                $or->append(' or gid in ($@)', $groups);
+            $usr = $this->x_user->get_user($id);
+            $or = qp('(uid=$. or pid=$.', $id, $usr->pid);
+            if ($usr->groups = ACM::usrGroups($id, true))
+                $or->append(' or gid in ($@)', array_keys($usr->groups));
             $list && $this->x_access->crud($oid, $list, $or->append(')'));
         } elseif ('pid' == $this->_1) {
-            $row = $this->x_user->one(['.id=' => $id, 'is_grp=' => 0]);
+            if (!$name = SKY::$profiles[$id] ?? false)
+                return 404;
             $list && $this->x_access->crud($oid, $list, qp('pid=$.', $id));
         } elseif ('gid' == $this->_1) {
-            $row = $this->x_user->one(['.id=' => $id, 'is_grp=' => 1]);
+            if (!$name = $this->x_user->cell(['.id=' => $id, 'is_grp=' => 1], 'name'))
+                return 404;
             $list && $this->x_access->crud($oid, $list, qp('gid=$.', $id));
         }
         return get_defined_vars();
@@ -65,7 +67,7 @@ class t_object extends \Model_t
             -1 => ['name' => ['Must match regexp: [a-z][a-z\\d]+', '/^[a-z][a-z\d]+$/']],
             '/name' => ['Name'],
             '+comment' => ['Comment'],
-            '#typ_id' => ['Type', 'select', ACM::typNames()],
+            '#typ_id' => ['Type', 'select', $this->typNames()],
             ['Submit', 'submit', 'onclick="return sky.f.submit()"'],
         ], $ary);
 
@@ -102,7 +104,7 @@ class t_object extends \Model_t
         return !$page ? 404 : [
             'page' => $page,
             'e_list' => $this->sql("select * $from order by name limit $this->x0, $this->ipp"),
-            'types' => ACM::typNames(),
+            'types' => $this->typNames(),
         ];
     }
 
@@ -135,5 +137,12 @@ class t_object extends \Model_t
 
     function types() {
         return ['e_list' => $this->sqlf('select * from $_ where is_typ=1 order by id desc')];
+    }
+
+    function typNames($all = false) {
+        static $cache;
+        if (null === $cache)
+            $cache = $this->all(['is_typ=' => 1], 'id, name');
+        return ($all ? ['--ALL--'] : []) + $cache;
     }
 }

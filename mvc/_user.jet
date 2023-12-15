@@ -42,7 +42,7 @@ Total: {{$_}} item@if(1!=$_)s~if
   <tr style="background:skyblue">
     <th>ID</th><th>Login</th><th>E-mail</th><th>Profile, Groups, State</th><th width="17%">Date Registered</th>
     <th width="17%">Action
-      @if(ACM::Raclv())<a href="?register">register new</a>~if
+      @if(ACM::Caclu())<a href="?register">register new</a>~if
     </th>
   </tr>
 @loop($e_users)
@@ -50,7 +50,7 @@ Total: {{$_}} item@if(1!=$_)s~if
     <td>{{$row->id}}</td>
     <td><a style="color:{{1==$row->pid?'green;font-weight:bold':''}}" href="?uid={{$row->id}}">{{$row->login}}</a></td>
     <td>{{$row->email}}</td>
-    <td>{{$row->profile}}, {{$row->cnt}}, {{$row->state}}</td>
+    <td>{!$row->profile!}, {!$row->cnt!}, {!$row->state!}</td>
     <td>{{$row->dt_r}}</td>
     <td>
     @if($row->id == $y_user->id)
@@ -109,16 +109,16 @@ New account at {{_PUBLIC}}~
       @if(ACM::Caclp())<a href="?spid">add new</a>~if
     </th>
   </tr>
-@loop($list as $id => $one)
+@loop($list as $row)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
-    <td>{{$id}}</td>
-    <td><a style="color:{{1==$id?'green':($id?'':'red')}}" href="?pid={{$id}}">{{$one->name}}</a></td>
-    <td>{{$one->comment}}</td>
-    <td>{{$one->dt}}</td>
+    <td>{{$row->id}}</td>
+    <td><a style="color:{{1==$row->id?'green':($row->id?'':'red')}}" href="?pid={{$row->id}}">{{$row->name}}</a></td>
+    <td>{{$row->comment ?? 'Array from app'}}</td>
+    <td>{{$row->dt ?? 'Array from app'}}</td>
     <td>
-      @if($id > 3)
-        @if(ACM::Uaclp())<a href="?spid={{$id}}">edit</a>~if |
-        @if(ACM::Daclp())<a href="?dpid={{$id}}">delete</a>~if
+      @if($row->id > 3 && !ACM::$profiles_app)
+        @if(ACM::Uaclp())<a href="?spid={{$row->id}}">edit</a>~if |
+        @if(ACM::Daclp())<a href="?dpid={{$row->id}}">delete</a>~if
       @else@eat()Cannot change~if
     </td>
   </tr>

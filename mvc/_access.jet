@@ -3,33 +3,31 @@
 #._
 
 #.ug ========================================================================================
-@loop($row->groups as $gid => $gname)
+@loop($usr->groups as $gid => $gname)
   <b>{{$gname}}</b><br>
   @empty
   <span style="color:red;font-weight:bold">the user does not belong to groups</span><br>
 ~loop
-<a href="?user2grp={{$row->id}}">edit user groups</a>
+<a href="?user2grp={{$usr->id}}">edit user groups</a>
 #.ue.ug
-<b>{{$row->email}}</b>
+<b>{!$usr->email ?: '<r>E-mail not set!!!</r>'!}</b>
 #.up.ue
-<select style="width:100px">
-  {!option($row->pid, ACM::usrProfiles())!}
-</select>
+<b>{!SKY::$profiles[$usr->pid] ?? '<r>Broken!!!</r>'!}</b>
 #.us.up
-<select style="width:100px">
-  {!option($row->state, ACM::$user_states)!}
-</select>
-#.uid.us
+<b>{!ACM::$user_states[$usr->state] ?? '<r>Broken user state!!!</r>'!}</b>
+#.un.us
+<b>{{$usr->uname}}</b> <a href="?user2grp={{$usr->id}}">edit user</a>
+#.uid.un
 @inc(_ware.menu)
-<h1>User login: <u>{{$row->login}}</u>, ID={{$row->id}}</h1>
+<h1>User login: <u>{{$usr->login}}</u>, ID={{$usr->id}}</h1>
 <table width="80%">
-  <tr><td align="right" width="50%">User Name</td><td align="left"><b>{{$row->uname}}</b></td></tr>
+  <tr><td align="right" width="50%">User Name</td><td align="left">@inc(.un)</td></tr>
   <tr><td align="right" width="50%">User State</td><td align="left">@inc(.us)</td></tr>
   <tr><td align="right" width="50%">Profile</td><td align="left">@inc(.up)</td></tr>
   <tr><td align="right">E-mail</td><td align="left">@inc(.ue)</td></tr>
   <tr><td align="right" valign="top">User Groups</td><td align="left">@inc(.ug)</td></tr>
 </table>
-@if(1 == $row->pid)
+@if(1 == $usr->pid)
   <h1 style="color:green">Root Profile has untunable access to all Objects</h1>
 @else
 <h1>Integrated access to objects</h1>
@@ -64,7 +62,7 @@
 
 #.pid ========================================================================================
 @inc(_ware.menu)
-<h1>Access to objects for <u>{{$row['name']}}</u> Profile</h1>
+<h1>Access to objects for <u>{{$name}}</u> Profile</h1>
 @if(0 == $sky->_2)<h1 style="color:red">Anonymous Profile do not has access to all Objects and cannot tune</h1>
 @elseif(1 == $sky->_2)<h1 style="color:green">Root Profile has untunable access to all Objects</h1>
 @else@inc(_ware.objlist)
@@ -73,7 +71,7 @@
 
 #.gid ========================================================================================
 @inc(_ware.menu)
-<h1>Access to objects for <u>{{$row['name']}}</u> User Group</h1>
+<h1>Access to objects for <u>{{$name}}</u> User Group</h1>
 @inc(_ware.objlist)
 #.gid
 

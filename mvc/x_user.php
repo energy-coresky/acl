@@ -36,7 +36,6 @@ class t_user extends \Model_t
                 : $this->qp($s);
         };
 
-        $profiles = ACM::usrProfiles();
         $sql = 'select u.*, count(g.user_id) as cnt from $_users u
             left join $_' . $this->t_user2grp . ' g on (g.user_id=u.id) $$
             group by u.id
@@ -46,8 +45,8 @@ class t_user extends \Model_t
             'page' => $page,
             'e_users' => [
                 'query' => $this->sql($sql, $filter(''), $this->x0, $this->ipp),
-                'row_c' => function ($row) use (&$profiles) {
-                    $row->profile = $profiles[$row->pid];
+                'row_c' => function ($row) {
+                    $row->profile = SKY::$profiles[$row->pid] ?? '<r>Broken!!!</r>';
                 },
             ],
         ];
@@ -70,11 +69,12 @@ class t_user extends \Model_t
     }
 
     function register($post) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+        $options = array_filter(SKY::$profiles, fn($k) => $k, ARRAY_FILTER_USE_KEY);
         $form = new Form([
             '.login' => ['Login'],
             '*passw' => ['Password'],
             '-email' => ['E-mail'],
-            '#pid' => ['Profile', 'select', ACM::usrProfiles(0), '', 2],
+            '#pid' => ['Profile', 'select', $options, '', 2],
             '+uname' => ['User Name'],
             '#x' => ['Try to send e-mail to user', 'chk', '', 1],
             ['Submit', 'submit', 'onclick="return sky.f.submit()"'],
@@ -109,6 +109,20 @@ class t_user extends \Model_t
             $this->log("Profile ID=$id deleted");
         }
         jump('acl?profiles');
+    }
+
+    function profiles($as_e = true) {
+        $from = 'from $_ where is_grp=0 order by id';
+        if (!$as_e)
+            return $this->sqlf("@select id, name $from");
+        $ary = ACM::$profiles_app ? SKY::$profiles : $this->sqlf("%select * $from");
+        return new \eVar(function () use (&$ary) {
+            if (null === ($id = key($ary)))
+                return false;
+            $out = ACM::$profiles_app ? ['name' => pos($ary)] : pos($ary);
+            next($ary);
+            return $out + ['id' => $id];
+        });
     }
 
     function save_grp($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

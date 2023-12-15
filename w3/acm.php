@@ -3,7 +3,6 @@
 class ACM extends Model_t # Access control manager
 {
     use acl\common;
-    static $byId = [];
 
     static $user_states = [
         'ini' => 'Pre-registration passed',
@@ -21,67 +20,48 @@ class ACM extends Model_t # Access control manager
         return $acm ?? ($acm = new self);
     }
 
-    static function init(array $ary) {
-        self::$byId = $ary;
-        return self::usrProfiles();
-    }
-
-    static function access($obj, $obj_id) {
-        $acm = self::instance();
-        $acm->x_object->add($obj, $obj_id, $desc);
+    static function init($byId = []) {
+        if (!self::$profiles_app = (bool)SKY::$profiles)
+            SKY::$profiles = Plan::set('acl', fn() => self::instance()->x_user->profiles(false));
+        self::$byId = $byId;
     }
 
     static function logging($desc) {
-        $acm = self::instance();
-        $acm->log($desc);
+        Plan::set('acl', fn() => self::instance()->log($desc));
     }
 
     static function __callStatic($name, $args) {
+        if (!isset(self::$cr[$name[0]]))
+            throw new Error("Wrong char `$name[0]`");
+
         return Plan::set('acl', function () use ($name, $args) {
             global $user;
-            if (!isset(self::$cr[$name[0]]))
-                throw new Error('Wrong char');
-            $acm = self::instance();
             return $user->pid < 2
                 ? (bool)$user->pid
-                : $acm->x_access->allow($user, self::$cr[$name[0]], substr($name, 1), $args[0] ?? 0);
+                : self::instance()->x_access->allow($user, self::$cr[$name[0]], substr($name, 1), $args[0] ?? 0);
         });
     }
 
-    static function usrStates($id) {
-        $acm = self::instance();
+    static function usrStates() {
+        return self::$user_states;
     }
 
-    static function usrProfiles($id = null) {
-        static $profiles;
-        if (null === $profiles) {
-            $acm = self::instance();
-            $profiles = $acm->x_user->sqlf('@select id, name from $_ where is_grp=0');
-        }
-        $out = $profiles;
-        if (is_int($id))
-            unset($out[$id]);
-        return $out;
+    static function usrGroups($user_id, $with_names = false) {
+        static $cache = [];
+
+        isset($cache[$user_id]) or
+            $cache[$user_id] = Plan::set('acl', fn() => self::instance()->all(['user_id=' => $user_id], 'grp_id, ""'));
+
+        $p =& $cache[$user_id];
+        if (!$with_names || !$p || pos($p) !== '')
+            return $with_names ? $p : array_keys($p);
+
+        $select = '@select id, name from $_ where is_grp=1 and id in (%s)';
+        return $p = Plan::set('acl', fn() => self::instance()->x_user->sqlf($select, array_keys($p)));
     }
 
-    static function usrGroups($id, $new_grp_id = false) {
-        static $user_id, $groups;
-        if ($new_grp_id)
-            return is_null($groups) ? null : array_merge($groups, [$new_grp_id]);
-        if ($id === $user_id)
-            return $groups;
-        $acm = self::instance();
-        return $groups = $acm->all(['user_id=' => $user_id = $id], 'grp_id');
-    }
-
-    static function grpNames(array $ids) {
-        return $ids ? self::instance()->x_user->sqlf('@select id, name from $_ where is_grp=1 and id in (%s)', $ids) : [];
-    }
-
-    static function typNames($all = false) {
-        static $list;
-        if (null === $list)
-            $list = self::instance()->x_object->all(['is_typ=' => 1], 'id, name');
-        return ($all ? ['--ALL--'] : []) + $list;
-    }
+    #static function access($obj, $obj_id) {
+    #    $acm = self::instance();
+    #    $acm->x_object->add($obj, $obj_id, $desc);
+    #}
 }
