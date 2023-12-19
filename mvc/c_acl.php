@@ -34,22 +34,6 @@ class c_acl extends Controller
         return ACM::Racll() ? $this->x_access->logging() : 404;
     }
 
-    function j_set($x, $name, $mode) {
-        $this->x_access->set($x, $name, $mode);
-    }
-
-    function a_uid($id, $oid) {
-        return $this->x_object->access($id, $oid);
-    }
-
-    function a_pid($id, $oid) {
-        return $this->x_object->access($id, $oid);
-    }
-
-    function a_gid($id, $oid) {
-        return $this->x_object->access($id, $oid);
-    }
-
     function a_users() {
         return ACM::Raclu() ? $this->x_user->users() : 404;
     }
@@ -74,7 +58,27 @@ class c_acl extends Controller
         return ACM::Caclv() ? $this->x_user->user2grp($id, $post) : 404;
     }
 
-    function a_profiles() { # -=-=-=-=-=-=-= PROFILE =-=-=-=-=-=-=-=-=-=-=
+    /* ====================== ACCESS ======================
+    */
+    function j_set($x, $name, $mode) {
+        $this->x_access->set($x, $name, $mode);
+    }
+
+    function a_uid($id, $oid) {
+        return $this->x_object->access($id, $oid);
+    }
+
+    function a_pid($id, $oid) {
+        return $this->x_object->access($id, $oid);
+    }
+
+    function a_gid($id, $oid) {
+        return $this->x_object->access($id, $oid);
+    }
+
+    /* ====================== PROFILES ======================
+    */
+    function a_profiles() {
         return ACM::Raclp() ? $this->x_user->profiles() : 404;
     }
 
@@ -86,7 +90,9 @@ class c_acl extends Controller
         return $this->pap ? 404 : $this->x_user->drop_pid($id);
     }
 
-    function a_groups() { # -=-=-=-=- USER GROUPS -=-=-=-=-=-=-=-=-=-=-=
+    /* ====================== USER GROUPS ======================
+    */
+    function a_groups() {
         return ACM::Raclg() ? $this->x_user->groups() : 404;
     }
 
@@ -98,7 +104,9 @@ class c_acl extends Controller
         $this->x_user->drop_grp($id);
     }
 
-    function a_objects() { # -=-=-=-=-=-= OBJECTS =-=-=-=-=-=-=-=-=-=-=-=
+    /* ====================== OBJECTS ======================
+    */
+    function a_objects() {
         return ACM::Raclo() ? $this->x_object->objects() : 404;
     }
 
@@ -110,7 +118,9 @@ class c_acl extends Controller
         $this->x_object->drop_obj($id);
     }
 
-    function a_types() { # -=-=-=-=-=- OBJECT TYPES =-=-=-=-=-=-=-=-=-=
+    /* ====================== OBJECT TYPES ======================
+    */
+    function a_types() {
         return ACM::Raclt() ? $this->x_object->types() : 404;
     }
 
