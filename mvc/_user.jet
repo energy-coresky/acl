@@ -73,9 +73,9 @@ Total: {{$_}} item@if(1!=$_)s~if
 </table>
 #.users
 
-#.register ---------------------------------------
+#.register.user ---------------------------------------
 @inc(_ware.menu)
-<h1>Register new user</h1>{!$form!}
+<h1>{{$id ? 'Edit' : 'Register new'}} user</h1>{!$form!}
 @if($k_acl->busy ?? false)<h1 style="color:red">
   @if($_POST['login'] == $k_acl->busy['login'])
     Login name `{{$_POST['login']}}`
@@ -84,17 +84,25 @@ Total: {{$_}} item@if(1!=$_)s~if
   ~if
   is busy!</h1>
 ~if
-#.register
+<style>
+.w170 { width: 170px; }
+</style>
+#.register.user
 
 #.mail ---------------------------------------
-New account at {{_PUBLIC}}~
+@if($id)Account updated@elseNew account~if at {{_PUBLIC}}~
 <p>
   Hello, {{$uname}}!<br>
-  We are glad to inform you that an account has been registered for you on the {{_PUBLIC}} website.<br>
+  @if($id)
+    Your account has been changed
+  @else
+    We are glad to inform you that an account has been registered for you
+  ~if
+    on the {{_PUBLIC}} website. Account is <b>{{'act' == $state ? 'Active' : 'Disabled'}}</b><br>
   Authorization data:<br>
   Login: <b>{{$login}}</b><br>
   Password: <b>{{$passw}}</b><br>
-  Change the password as soon as possible.<br><br>
+  @if('act' == $state)Change the password as soon as possible.<br><br>~if
   Administration.<br>
 </p>
 #.mail
@@ -106,7 +114,7 @@ New account at {{_PUBLIC}}~
   <tr style="background:skyblue">
     <th>ID</th><th>Name</th><th>Comment</th><th width="17%">Added at</th>
     <th width="17%">Action
-      @if(ACM::Caclp())<a href="?spid">add new</a>~if
+      @if(!$pap && ACM::Caclp())<a href="?spid">add new</a>~if
     </th>
   </tr>
 @loop($list as $row)
@@ -116,7 +124,7 @@ New account at {{_PUBLIC}}~
     <td>{{$row->comment ?? 'Array from app'}}</td>
     <td>{{$row->dt ?? 'Array from app'}}</td>
     <td>
-      @if($row->id > 3 && !ACM::$profiles_app)
+      @if(!$pap && $row->id > 3)
         @if(ACM::Uaclp())<a href="?spid={{$row->id}}">edit</a>~if |
         @if(ACM::Daclp())<a href="?dpid={{$row->id}}">delete</a>~if
       @else@eat()Cannot change~if

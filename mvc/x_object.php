@@ -44,7 +44,7 @@ class t_object extends \Model_t
         }
 
         if ('uid' == $this->_1) { # userID (integrated)
-            $usr = $this->x_user->get_user($id);
+            $usr = $this->x_user->row($id);
             $or = qp('(uid=$. or pid=$.', $id, $usr->pid);
             if ($usr->groups = ACM::usrGroups($id, true))
                 $or->append(' or gid in ($@)', array_keys($usr->groups));
@@ -61,7 +61,9 @@ class t_object extends \Model_t
         return get_defined_vars();
     }
 
-    function save_obj($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    /* ====================== OBJECTS ======================
+    */
+    function save_obj($post, $id = 0) {
         $ary = $id && ACM::Raclo() ? $this->one(['id=' => $id]) : [];
         $form = new Form([
             -1 => ['name' => ['Must match regexp: [a-z][a-z\\d]+', '/^[a-z][a-z\d]+$/']],
@@ -81,7 +83,7 @@ class t_object extends \Model_t
         };
 
         if (!$post || $id && !ACM::Uaclo() || !$id && !ACM::Caclo() || $busy($id))
-            return $form;
+            return get_defined_vars();
 
         $ary = $form->validate(['is_typ' => 0, '!dt' => '$now']);
         $id ? $this->update($ary, ['id=' => $id]) : $this->insert($ary);
@@ -108,7 +110,9 @@ class t_object extends \Model_t
         ];
     }
 
-    function save_typ($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    /* ====================== OBJECT TYPES ======================
+    */
+    function save_typ($post, $id = 0) {
         $ary = $id && ACM::Raclt() ? $this->one(['id=' => $id]) : [];
         $form = new Form([
             '+name' => ['Name'],
@@ -117,7 +121,7 @@ class t_object extends \Model_t
         ], $ary);
 
         if (!$post || $id && !ACM::Uaclt() || !$id && !ACM::Caclt())
-            return $form;
+            return get_defined_vars();
 
         $ary = $form->validate(['is_typ' => 1, '!dt' => '$now']);
         $id ? $this->update($ary, ['id=' => $id]) : $this->insert($ary);

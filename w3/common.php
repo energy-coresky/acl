@@ -10,9 +10,6 @@ trait common
     protected $ipp;
     protected $x0;
 
-    static $byId;
-    static $profiles_app;
-
     function head_y() {
         $cfg = $this->cfg();
         $table = 'ACM' == __CLASS__ ? 'user2grp' : substr(explode('\\', __CLASS__)[1], 2);

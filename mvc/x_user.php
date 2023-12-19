@@ -1,7 +1,7 @@
 <?php
 
 namespace acl;
-use SKY, ACM, Form, Error;
+use SKY, ACM, Form, Rare, Error;
 use function qp, jump;
 
 class t_user extends \Model_t
@@ -23,10 +23,64 @@ class t_user extends \Model_t
         ]);
     }
 
-    function get_user($id) {
-        if (!$user = $this->sqlf('>select * from $_users where id=%d', $id))
+    function row($id, $pref = '>') {
+        if (!$user = $this->sqlf($pref . 'select * from $_users where id=%d', $id))
             throw new Error("Wrong user ID=$id");
         return $user;
+    }
+
+    function emulate($id) {
+        global $user;
+        if (!ACM::Xaclv() && !$user->v_emulate || !$id)
+            return 404;
+        if (($self = $user->v_emulate == $id) || !$user->v_emulate)
+            SKY::v('emulate', $self ? null : $user->id);
+        SKY::v(null, ['uid' => $id]);
+        jump(LINK);
+    }
+
+    function state($id, $name) {
+        $m = new \Model_t('users');
+        $m->update(['state' => $name], (int)$id);
+        jump(LINK);
+    }
+
+    /* ====================== USERS ======================
+    */
+    function register($id, $post) {
+        $ary = $id ? $this->row($id, '~') : [];
+        $ary['passw'] = '';
+        $profiles = array_filter(SKY::$profiles, fn($k) => $k, ARRAY_FILTER_USE_KEY);
+        $form = new Form([
+            -1 => ['state' => ['State not valid', '/^(' . implode('|', array_keys(ACM::$usrStates)) . ')$/']],
+            '.login' => ['Login'],
+            '*passw' => ['Password'],
+            '-email' => ['E-mail'],
+            '/state' => ['State', 'select', ACM::$usrStates, 'class="w170"', 'act'],
+            '#pid' => ['Profile', 'select', $profiles, 'class="w170"', 2],
+            '+uname' => ['User Name'],
+            '#x' => ['Try to send e-mail to user', 'chk', '', 1],
+            ['Submit', 'submit', 'onclick="return sky.f.submit()"'],
+        ], $ary);
+
+        $user = new \Model_t('users');
+        $busy = fn($qp) => $this->k_acl->busy = $user->one($qp->append(' and id!=$.', $id));
+        if (!$post || $busy(qp('(login=$+ or email=$+)', $post->login, $post->email)))
+            return get_defined_vars();
+
+        $ary = $form->validate(['id' => $id]);
+        if ($ary['x']) {
+            [$subject, $message] = explode('~', \view('ware.mail', $ary), 2);
+            Rare::mail($message, $subject, $ary['email']);
+        }
+
+        unset($ary['x'], $ary['id']);
+        if (PASS_CRYPT)
+            $ary['passw'] = Rare::passwd($ary['passw']);
+        $ary += ['!dt_r' => '$now'];
+        $id ? $user->update($ary, $id) : ($id = $user->insert($ary));
+        $this->log(($id ? 'Update' : 'Register new') . " user `$post->login`, ID=$id");
+        jump('acl?users');
     }
 
     function users() {
@@ -52,53 +106,13 @@ class t_user extends \Model_t
         ];
     }
 
-    function emulate($id) {
-        global $user;
-        if (!ACM::Xaclv() && !$user->v_emulate || !$id)
-            return 404;
-        if (($self = $user->v_emulate == $id) || !$user->v_emulate)
-            SKY::v('emulate', $self ? null : $user->id);
-        SKY::v(null, ['uid' => $id]);
-        jump(LINK);
-    }
-
-    function state($id, $name) {
-        $m = new \Model_t('users');
-        $m->update(['state' => $name], (int)$id);
-        jump(LINK);
-    }
-
-    function register($post) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-        $options = array_filter(SKY::$profiles, fn($k) => $k, ARRAY_FILTER_USE_KEY);
-        $form = new Form([
-            '.login' => ['Login'],
-            '*passw' => ['Password'],
-            '-email' => ['E-mail'],
-            '#pid' => ['Profile', 'select', $options, '', 2],
-            '+uname' => ['User Name'],
-            '#x' => ['Try to send e-mail to user', 'chk', '', 1],
-            ['Submit', 'submit', 'onclick="return sky.f.submit()"'],
-        ]);
-        $user = new \Model_t('users');
-        $busy = fn($qp) => $this->k_acl->busy = $user->one($qp);
-        if (!$post || $busy(qp('login=$+ or email=$+', $post->login, $post->email)))
-            return $form;
-        $ary = $form->validate();
-        if ($ary['x']) {
-            [$subject, $message] = explode('~', \view('ware.mail', $ary), 2);
-            \Rare::mail($message, $subject, $ary['email']);
-        }
-        unset($ary['x']);
-        $user->insert($ary + ['!dt_r' => '$now']);
-        $this->log("Register new user `$post->login`");
-        jump('acl?users');
-    }
-
-    function save_pid($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    /* ====================== PROFILES ======================
+    */
+    function save_pid($post, $id = 0) {
         if (!$post || $id && !ACM::Uaclp() || !$id && !ACM::Caclp())
             return $this->form($id && ACM::Raclp() ? $id : 0);
         $ary = $this->validate(0);
-        $id ? $this->update($ary, ['id=' => $id]) : $this->insert($ary);
+        $id ? $this->update($ary, $id) : $this->insert($ary);
         $this->log("Profile `$post->name` " . ($id ? ", ID=$id modified" : 'added'));
         jump('acl?profiles');
     }
@@ -115,21 +129,26 @@ class t_user extends \Model_t
         $from = 'from $_ where is_grp=0 order by id';
         if (!$as_e)
             return $this->sqlf("@select id, name $from");
-        $ary = ACM::$profiles_app ? SKY::$profiles : $this->sqlf("%select * $from");
-        return new \eVar(function () use (&$ary) {
-            if (null === ($id = key($ary)))
-                return false;
-            $out = ACM::$profiles_app ? ['name' => pos($ary)] : pos($ary);
-            next($ary);
-            return $out + ['id' => $id];
-        });
+        $ary = $this->cfg()->pap ? SKY::$profiles : $this->sqlf("%select * $from");
+        return [
+            'pap' => $pap = $this->cfg()->pap,
+            'list' => new \eVar(function () use (&$ary, $pap) {
+                if (null === ($id = key($ary)))
+                    return false;
+                $out = $pap ? ['name' => pos($ary)] : pos($ary);
+                next($ary);
+                return $out + ['id' => $id];
+            }),
+        ];
     }
 
-    function save_grp($post, $id = 0) { # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    /* ====================== USER GROUPS ======================
+    */
+    function save_grp($post, $id = 0) {
         if (!$post || $id && !ACM::Uaclg() || !$id && !ACM::Caclg())
             return $this->form($id && ACM::Raclg() ? $id : 0);
         $ary = $this->validate(1);
-        $id ? $this->update($ary, ['id=' => $id]) : $this->insert($ary);
+        $id ? $this->update($ary, $id) : $this->insert($ary);
         $this->log("User Group `$post->name` " . ($id ? ", ID=$id modified" : 'added'));
         jump('acl?groups');
     }
@@ -158,7 +177,7 @@ class t_user extends \Model_t
     }
 
     function user2grp($id, $post) {
-        $user = $this->get_user($id);
+        $usr = $this->row($id);
         if ($post && $post->is_add) {
             in_array($post->grp_id, ACM::usrGroups($id))
                 or $this->t_user2grp->insert(['.user_id' => $id, '.grp_id' => $post->grp_id]);
@@ -170,7 +189,7 @@ class t_user extends \Model_t
         $page = $this->page($this->filter(), [2, 2]);
         return !$page ? 404 : [
             'page' => $page,
-            'usr' => $user,
+            'usr' => $usr,
             'e_grp' => $this->sql($sql, (string)$this->t_user2grp, $id, $this->filter(''), $this->x0, $this->ipp),
         ];
     }

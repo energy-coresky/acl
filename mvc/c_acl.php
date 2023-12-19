@@ -2,10 +2,13 @@
 
 class c_acl extends Controller
 {
+    private $pap;
+
     function head_y($action) {
         $acl = explode('/', array_flip(SKY::$plans['main']['ctrl'])['acl']);
         $this->k_acl = new stdClass;
         $this->k_acl->jact = 2 == count($acl) ? $acl[0] : 'main';
+        $this->pap = ACM::instance()->cfg()->pap;
         MVC::body("ware." . substr($action, 2));
         return parent::head_y($action);
     }
@@ -59,8 +62,12 @@ class c_acl extends Controller
         return ACM::Daclv() ? $this->x_user->state($id, $name) : 404;
     }
 
+    function a_user($id, $post) {
+        return ACM::Uaclu() ? $this->x_user->register($id, $post) : 404;
+    }
+
     function a_register($post) {
-        return ACM::Caclu() ? ['form' => $this->x_user->register($post)] : 404;
+        return ACM::Caclu() ? $this->x_user->register(0, $post) : 404;
     }
 
     function a_user2grp($id, $post) {
@@ -68,15 +75,15 @@ class c_acl extends Controller
     }
 
     function a_profiles() { # -=-=-=-=-=-=-= PROFILE =-=-=-=-=-=-=-=-=-=-=
-        return ACM::Raclp() ? ['list' => $this->x_user->profiles()] : 404;
+        return ACM::Raclp() ? $this->x_user->profiles() : 404;
     }
 
     function a_spid($id, $post) {
-        return ['form' => $this->x_user->save_pid($post, $id)];
+        return $this->pap ? 404 : ['form' => $this->x_user->save_pid($post, $id)];
     }
 
     function a_dpid($id) {
-        $this->x_user->drop_pid($id);
+        return $this->pap ? 404 : $this->x_user->drop_pid($id);
     }
 
     function a_groups() { # -=-=-=-=- USER GROUPS -=-=-=-=-=-=-=-=-=-=-=
@@ -96,7 +103,7 @@ class c_acl extends Controller
     }
 
     function a_sobj($id, $post) {
-        return ['form' => $this->x_object->save_obj($post, $id)];
+        return $this->x_object->save_obj($post, $id);
     }
 
     function a_dobj($id) {
@@ -108,7 +115,7 @@ class c_acl extends Controller
     }
 
     function a_styp($id, $post) {
-        return ['form' => $this->x_object->save_typ($post, $id)];
+        return $this->x_object->save_typ($post, $id);
     }
 
     function a_dtyp($id) {

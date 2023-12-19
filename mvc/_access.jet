@@ -14,9 +14,9 @@
 #.up.ue
 <b>{!SKY::$profiles[$usr->pid] ?? '<r>Broken!!!</r>'!}</b>
 #.us.up
-<b>{!ACM::$user_states[$usr->state] ?? '<r>Broken user state!!!</r>'!}</b>
+<b>{!ACM::$usrStates[$usr->state] ?? '<r>Broken user state!!!</r>'!}</b>
 #.un.us
-<b>{{$usr->uname}}</b> <a href="?user2grp={{$usr->id}}">edit user</a>
+<b>{{$usr->uname}}</b> <a href="?user={{$usr->id}}">edit user</a>
 #.uid.un
 @inc(_ware.menu)
 <h1>User login: <u>{{$usr->login}}</u>, ID={{$usr->id}}</h1>

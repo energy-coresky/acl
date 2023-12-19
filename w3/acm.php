@@ -4,7 +4,7 @@ class ACM extends Model_t # Access control manager
 {
     use acl\common;
 
-    static $user_states = [
+    static $usrStates = [
         'ini' => 'Pre-registration passed',
         //2do: 'tel' => 'Phone code sent',
         'act' => 'Active User',
@@ -12,7 +12,7 @@ class ACM extends Model_t # Access control manager
         'del' => 'User Deleted',
         'blk' => 'User Locked',
     ];
-
+    static $byId;
     static $cr = ['C' => 1, 'R' => 2, 'U' => 4, 'D' => 8, 'X' => 16];
 
     static function instance() {
@@ -21,9 +21,9 @@ class ACM extends Model_t # Access control manager
     }
 
     static function init($byId = []) {
-        if (!self::$profiles_app = (bool)SKY::$profiles)
-            SKY::$profiles = Plan::set('acl', fn() => self::instance()->x_user->profiles(false));
         self::$byId = $byId;
+        $acm = self::instance();
+        $acm->cfg()->pap or SKY::$profiles = Plan::set('acl', fn() => $acm->x_user->profiles(false));
     }
 
     static function logging($desc) {
@@ -40,10 +40,6 @@ class ACM extends Model_t # Access control manager
                 ? (bool)$user->pid
                 : self::instance()->x_access->allow($user, self::$cr[$name[0]], substr($name, 1), $args[0] ?? 0);
         });
-    }
-
-    static function usrStates() {
-        return self::$user_states;
     }
 
     static function usrGroups($user_id, $with_names = false) {

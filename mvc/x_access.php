@@ -59,20 +59,18 @@ class t_access extends \Model_t
             return json(['y' => 'X']);
 
         $x = 1 << $x; # 1-C 2-R 4-U 8-D 16-X
-        $insert = function ($deny) use ($mode, $x, $name, $obj_id, $id) {
-            global $user;
-            $this->insert([
-                '+obj' => $name,
-                '.obj_id' => $obj_id,
-                '.crud' => $x,
-                '.is_deny' => $deny,
-                ".{$mode}id" => $id,
-                '.user_id' => $user->id,
-                '!dt_c' => '$now',
-            ]);
-        };
+        global $user;
+        $insert = fn($deny) => $this->insert([
+            '+obj' => $name,
+            '.obj_id' => $obj_id,
+            '.crud' => $x,
+            '.is_deny' => $deny,
+            ".{$mode}id" => $id,
+            '.user_id' => $user->id,
+            '!dt_c' => '$now',
+        ]);
 
-        $at = 'u' == $mode ? $this->x_user->get_user($id) : qp($mode . 'id=$.', $id);
+        $at = 'u' == $mode ? $this->x_user->row($id) : qp($mode . 'id=$.', $id);
         [$ok, $_ok, $deny, $allow] = $this->aggregate($at, $name, $obj_id);
         if ($on = $ok & $x) { # allow change to deny
             if ($allow)
