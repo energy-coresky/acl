@@ -6,7 +6,6 @@ use SKY, SQL, common_c;
 trait common
 {
     protected $ext;
-    protected $log;
     protected $ipp;
     protected $x0;
 
@@ -15,7 +14,6 @@ trait common
         $table = 'ACM' == __CLASS__ ? 'user2grp' : substr(explode('\\', __CLASS__)[1], 2);
         $this->table = $cfg->tt . '_' . $table;
         $this->ext = $cfg->ext;
-        $this->log = $cfg->log;
         $this->ipp = $this->x0 = $cfg->ipp;
         return SQL::open($cfg->connection);
     }
@@ -25,19 +23,28 @@ trait common
     }
 
     function __get($name) {
+        $users = 't_users' == $name;
+        if ($users || 't_visitors' == $name) {
+            $model = new \Model_t($users ? 'users' : 'visitors');
+            $model->dd(SKY::$dd);
+            return $model;
+        }
         $log = 't_log' == $name;
         if (!$log && 't_user2grp' != $name)
             return parent::__get($name);
-        return new \Model_t($this->cfg()->tt . ($log ? '_log' : '_user2grp'));
+        $model = new \Model_t($this->cfg()->tt . ($log ? '_log' : '_user2grp'));
+        $model->dd(SQL::open($this->cfg()->connection));
+        return $model;
     }
 
-    function log($desc) {
+    function log($desc, $force = false) {
         global $user;
-        $this->t_log->insert([
-            'user_id' => (int)$user->id,
-            'comment' => $desc,
-            '!dt' => '$now',
-        ]);
+        if ($this->cfg()->log || $force)
+            $this->t_log->insert([
+                '.user_id' => $user->id,
+                'comment' => $desc,
+                '!dt' => '$now',
+            ]);
     }
 
     function page($cnt, $v) {

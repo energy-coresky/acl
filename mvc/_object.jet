@@ -68,7 +68,7 @@
 ~loop
 @inc(_ware.items)
 </table>
-#.objects <pre>{!ACM::busy()!}</pre>
+#.objects
 
 #.sobj
 @inc(_ware.menu)

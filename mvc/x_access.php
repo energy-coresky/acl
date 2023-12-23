@@ -10,16 +10,17 @@ class t_access extends \Model_t
 
     function allow($user, $x, $name, $obj_id) {
         static $cache = [];
+        static $cr = [1 => 'C', 2 => 'R', 4 => 'U', 8 => 'D', 16 => 'X'];
 
         if (isset($cache[$name][$obj_id])) {
             $ok = $cache[$name][$obj_id];
             if (SKY::$debug > 1)
-                trace(array_flip(ACM::$cr)[$x] . $name, $ok & $x ? 'ACL ALLOW' : 'ACL DENY');
+                trace($cr[$x] . $name, $ok & $x ? 'ACL ALLOW' : 'ACL DENY');
         } else {
             [$ok] = $this->aggregate($user, $name, $obj_id);
             $cache[$name][$obj_id] = $ok;
             if (SKY::$debug)
-                trace(array_flip(ACM::$cr)[$x] . $name, $ok & $x ? 'ACL ALLOW' : 'ACL DENY');
+                trace($cr[$x] . $name, $ok & $x ? 'ACL ALLOW' : 'ACL DENY');
         }
         return $ok & $x;
     }

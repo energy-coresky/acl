@@ -34,7 +34,11 @@
 @loop($e_grp)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
     <td>{{$row->id}}</td>
-    <td><a href="?gid={{$row->id}}">{{$row->name}}</a></td>
+    <td>
+      @if(ACM::Racla())<a href="?gid={{$row->id}}">~if
+        {{$row->name}}
+      @if(ACM::Racla())</a>~if
+    </td>
     <td>{{$row->comment}}</td>
     <td>{{$row->dt}}</td>
     <td>

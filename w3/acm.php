@@ -3,17 +3,7 @@
 class ACM extends Model_t # Access control manager
 {
     use acl\common;
-
-    static $usrStates = [
-        'ini' => 'Pre-registration passed',
-        //2do: 'tel' => 'Phone code sent',
-        'act' => 'Active User',
-        //2do: 'acf' => 'Active 2 Factor User',
-        'del' => 'User Deleted',
-        'blk' => 'User Locked',
-    ];
     static $byId;
-    static $cr = ['C' => 1, 'R' => 2, 'U' => 4, 'D' => 8, 'X' => 16];
 
     static function instance() {
         static $acm;
@@ -24,21 +14,24 @@ class ACM extends Model_t # Access control manager
         self::$byId = $byId;
         $acm = self::instance();
         $acm->cfg()->pap or SKY::$profiles = Plan::set('acl', fn() => $acm->x_user->profiles(false));
-    }
-
-    static function logging($desc) {
-        Plan::set('acl', fn() => self::instance()->log($desc));
+        SKY::$states or SKY::$states = [
+            'ini' => 'Pre-registration passed',
+            'act' => 'Active User',
+            'del' => 'User Deleted',
+            'blk' => 'User Locked',
+        ];
     }
 
     static function __callStatic($name, $args) {
-        if (!isset(self::$cr[$name[0]]))
+        $cr = ['C' => 1, 'R' => 2, 'U' => 4, 'D' => 8, 'X' => 16];
+        if (!isset($cr[$name[0]]))
             throw new Error("Wrong char `$name[0]`");
 
-        return Plan::set('acl', function () use ($name, $args) {
+        return Plan::set('acl', function () use ($name, $args, $cr) {
             global $user;
             return $user->pid < 2
                 ? (bool)$user->pid
-                : self::instance()->x_access->allow($user, self::$cr[$name[0]], substr($name, 1), $args[0] ?? 0);
+                : self::instance()->x_access->allow($user, $cr[$name[0]], substr($name, 1), $args[0] ?? 0);
         });
     }
 
@@ -54,6 +47,10 @@ class ACM extends Model_t # Access control manager
 
         $select = '@select id, name from $_ where is_grp=1 and id in (%s)';
         return $p = Plan::set('acl', fn() => self::instance()->x_user->sqlf($select, array_keys($p)));
+    }
+
+    static function logging($desc) {
+        Plan::set('acl', fn() => self::instance()->log($desc, true));
     }
 
     #static function access($obj, $obj_id) {

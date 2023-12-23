@@ -31,17 +31,23 @@ class t_user extends \Model_t
 
     function emulate($id) {
         global $user;
-        if (!ACM::Xaclv() && !$user->v_emulate || !$id)
+        if ($user->v_emulate && $user->v_emulate == $id) {
+            SKY::v('emulate', null); # delete property
+        } elseif (!$id || !ACM::Xaclv() || 1 != $user->pid && 1 == $this->row($id)->pid) {
             return 404;
-        if (($self = $user->v_emulate == $id) || !$user->v_emulate)
-            SKY::v('emulate', $self ? null : $user->id);
+        } elseif (!$user->v_emulate) {
+            SKY::v('emulate', $user->id);
+        }
         SKY::v(null, ['uid' => $id]);
         jump(LINK);
     }
 
-    function state($id, $name) {
-        $m = new \Model_t('users');
-        $m->update(['state' => $name], (int)$id);
+    function state($id, $stt) {
+        if (isset(SKY::$states[$stt])) {
+            $this->t_users->update(['state' => $stt], (int)$id);
+            if ('act' != $stt)
+                $this->t_visitors->update(['uid' => null], qp('uid=$. || uid=-\1', $id));
+        }
         jump(LINK);
     }
 
@@ -52,19 +58,19 @@ class t_user extends \Model_t
         $ary['passw'] = '';
         $profiles = array_filter(SKY::$profiles, fn($k) => $k, ARRAY_FILTER_USE_KEY);
         $form = new Form([
-            -1 => ['state' => ['State not valid', '/^(' . implode('|', array_keys(ACM::$usrStates)) . ')$/']],
+            -1 => ['state' => ['State not valid', '/^(' . implode('|', array_keys(SKY::$states)) . ')$/']],
             '.login' => ['Login'],
             '*passw' => ['Password'],
             '-email' => ['E-mail'],
-            '/state' => ['State', 'select', ACM::$usrStates, 'class="w170"', 'act'],
+            '/state' => ['State', 'select', SKY::$states, 'class="w170"', 'act'],
             '#pid' => ['Profile', 'select', $profiles, 'class="w170"', 2],
             '+uname' => ['User Name'],
             '#x' => ['Try to send e-mail to user', 'chk', '', 1],
             ['Submit', 'submit', 'onclick="return sky.f.submit()"'],
         ], $ary);
 
-        $user = new \Model_t('users');
-        $busy = fn($qp) => $this->k_acl->busy = $user->one($qp->append(' and id!=$.', $id));
+        $mod = $this->t_users;
+        $busy = fn($qp) => $this->k_acl->busy = $mod->one($qp->append(' and id!=$.', $id));
         if (!$post || $busy(qp('(login=$+ or email=$+)', $post->login, $post->email)))
             return get_defined_vars();
 
@@ -78,7 +84,7 @@ class t_user extends \Model_t
         if (PASS_CRYPT)
             $ary['passw'] = Rare::passwd($ary['passw']);
         $ary += ['!dt_r' => '$now'];
-        $id ? $user->update($ary, $id) : ($id = $user->insert($ary));
+        $id ? $mod->update($ary, $id) : ($id = $mod->insert($ary));
         $this->log(($id ? 'Update' : 'Register new') . " user `$post->login`, ID=$id");
         jump('acl?users');
     }
@@ -95,8 +101,10 @@ class t_user extends \Model_t
             group by u.id
             order by u.id desc limit $., $.';
         $page = $this->page($filter(), [4, 2]);
+        global $user;
         return !$page ? 404 : [
             'page' => $page,
+            'user' => $user,
             'e_users' => [
                 'query' => $this->sql($sql, $filter(''), $this->x0, $this->ipp),
                 'row_c' => function ($row) {

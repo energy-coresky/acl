@@ -43,7 +43,7 @@ class c_acl extends Controller
     }
 
     function a_state($id, $name) {
-        return ACM::Daclv() ? $this->x_user->state($id, $name) : 404;
+        return ACM::Daclv() && isset(SKY::$states[$name]) ? $this->x_user->state($id, $name) : 404;
     }
 
     function a_user($id, $post) {

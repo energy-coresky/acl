@@ -48,15 +48,21 @@ Total: {{$_}} item@if(1!=$_)s~if
 @loop($e_users)
   <tr style="background:{{'act' != $row->state ? 'pink' : ($_ % 2 ? '#eee' : '')}}">
     <td>{{$row->id}}</td>
-    <td><a style="color:{{1==$row->pid?'green;font-weight:bold':''}}" href="?uid={{$row->id}}">{{$row->login}}</a></td>
+    <td>
+      @if(ACM::Racla())<a href="?uid={{$row->id}}">~if
+        <span style="color:{{1==$row->pid?'green;font-weight:bold':''}}">{{$row->login}}</span>
+      @if(ACM::Racla())</a>~if
+    </td>
     <td>{{$row->email}}</td>
     <td>{!$row->profile!}, {!$row->cnt!}, {!$row->state!}</td>
     <td>{{$row->dt_r}}</td>
     <td>
-    @if($row->id == $y_user->id)
-      Cannot change
+    @if($row->id == $user->id)
+      I'm
     @else
-      <a href="?emulate={{$row->id}}">emulate</a>
+      @if(ACM::Xaclv() && (1 == $user->pid || 1 != $row->pid || $row->id == $user->v_emulate))
+        <a href="?emulate={{$row->id}}">emulate</a>
+      ~if
       @if(ACM::Daclv())
         @if($row->state == 'act')<a href="?state={{$row->id}}&code=blk">lock</a>
         @else<a href="?state={{$row->id}}&code=act">unlock</a>~if
@@ -120,7 +126,11 @@ Total: {{$_}} item@if(1!=$_)s~if
 @loop($list as $row)
   <tr style="background:{{$_ % 2 ? '#eee' : ''}}">
     <td>{{$row->id}}</td>
-    <td><a style="color:{{1==$row->id?'green':($row->id?'':'red')}}" href="?pid={{$row->id}}">{{$row->name}}</a></td>
+    <td>
+      @if(ACM::Racla())<a href="?pid={{$row->id}}">~if
+        <span style="color:{{1==$row->id?'green':($row->id?'':'red')}}">{{$row->name}}</span>
+      @if(ACM::Racla())</a>~if
+    </td>
     <td>{{$row->comment ?? 'Array from app'}}</td>
     <td>{{$row->dt ?? 'Array from app'}}</td>
     <td>
