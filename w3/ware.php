@@ -11,7 +11,7 @@ class ware extends \Wares
 
     function form() {
         return [
-            'connection' => ['Database connection', 'select', $this->databases()],
+            'connection' => ['Database connection', 'select', \DEV::databases(['main'])],
             'tt' => ['Table\'s tune (middle part)', '', '', 'acl'],
             'ext' => ['Ware\'s mode', 'radio', ['simple', 'extended'], 1],
             'log' => ['Logate C/U/D in ACL ware', 'radio', ['off', 'on'], 1],
@@ -30,7 +30,7 @@ class ware extends \Wares
 
     function vars() {
         $cfg = \ACM::instance()->cfg();
-        $dd = SQL::open($cfg->connection);
+        $dd = SQL::open($cfg->connection, 'main');
         $tables = $this->tables($dd, $tt = $cfg->tt);
         $object = $this;
         $tune = Plan::_r(['main', 'wares.php'])['acl']['tune'];

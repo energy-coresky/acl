@@ -57,10 +57,10 @@ Total: {{$_}} item@if(1!=$_)s~if
     <td>{!$row->profile!}, {!$row->cnt!}, {!$row->state!}</td>
     <td>{{$row->dt_r}}</td>
     <td>
-    @if($row->id == $user->id)
+    @if(in_array($row->id, [$user->id, $user->v_emulate]))
       I'm
     @else
-      @if(ACM::Xaclv() && (1 == $user->pid || 1 != $row->pid || $row->id == $user->v_emulate))
+      @if(ACM::Xaclv() && (1 == $user->pid || 1 != $row->pid))
         <a href="?emulate={{$row->id}}">emulate</a>
       ~if
       @if(ACM::Daclv())

@@ -15,7 +15,7 @@ trait common
         $this->table = $cfg->tt . '_' . $table;
         $this->ext = $cfg->ext;
         $this->ipp = $this->x0 = $cfg->ipp;
-        return SQL::open($cfg->connection);
+        return SQL::open($cfg->connection, 'main');
     }
 
     function cfg() {
@@ -24,17 +24,12 @@ trait common
 
     function __get($name) {
         $users = 't_users' == $name;
-        if ($users || 't_visitors' == $name) {
-            $model = new \Model_t($users ? 'users' : 'visitors');
-            $model->dd(SKY::$dd);
-            return $model;
-        }
+        if ($users || 't_visitors' == $name)
+            return new \Model_t($users ? 'users' : 'visitors', SKY::$dd);
         $log = 't_log' == $name;
         if (!$log && 't_user2grp' != $name)
             return parent::__get($name);
-        $model = new \Model_t($this->cfg()->tt . ($log ? '_log' : '_user2grp'));
-        $model->dd(SQL::open($this->cfg()->connection));
-        return $model;
+        return new \Model_t($this->cfg()->tt . ($log ? '_log' : '_user2grp'), SKY::$dd);
     }
 
     function log($desc, $force = false) {
