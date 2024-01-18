@@ -96,7 +96,7 @@ $('td.crud').each(function (i) {
     };
     ajax('set', hash, function (r) {
       el.html(r.y).css('background', r.y ? '#dfd' : '');
-    }, 'acl', '{{$k_acl->jact}}');
+    });
   });
 });
 </script>

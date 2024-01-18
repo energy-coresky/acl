@@ -1,8 +1,6 @@
 core:
   plans:
-    view: {path: __DIR__/mvc}
     app:
       type: prod
       flags: tune
-      cli: c:/web/hole
-#    ram: {path: /acl/}
+    view: {path: __DIR__/mvc}

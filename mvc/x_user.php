@@ -39,7 +39,7 @@ class t_user extends \Model_t
             SKY::v('emulate', $user->id);
         }
         SKY::v(null, ['uid' => $id]);
-        jump(LINK);
+        jump(HOME);
     }
 
     function state($id, $stt) {
@@ -48,7 +48,7 @@ class t_user extends \Model_t
             if ('act' != $stt)
                 $this->t_visitors->update(['uid' => null], qp('uid=$. || uid=-\1', $id));
         }
-        jump(LINK);
+        jump(HOME);
     }
 
     /* ====================== USERS ======================

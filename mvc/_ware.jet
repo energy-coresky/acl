@@ -43,6 +43,18 @@ td.pages span {
 </style>
 #.menu
 
+#.fictition
+@verb<?php
+
+class ACM # fictitious class used when ACL ware do not installed
+{
+    static function __callStatic($name, $args) {
+        global $user;
+        return 1 == $user->pid;
+    }
+}~verb
+#.fictition
+
 #.install ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 @inc(__dev.title)
 <div style="margin:10px;">

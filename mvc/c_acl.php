@@ -7,7 +7,7 @@ class c_acl extends Controller
     function head_y($action) {
         $acl = explode('/', array_flip(SKY::$plans['main']['ctrl'])['acl']);
         $this->k_acl = new stdClass;
-        $this->k_acl->jact = 2 == count($acl) ? $acl[0] : 'main';
+        $this->k_acl->tune = 2 == count($acl) ? $acl[0] : 'main';
         $this->pap = ACM::instance()->cfg()->pap;
         MVC::body("ware." . substr($action, 2));
         return parent::head_y($action);
