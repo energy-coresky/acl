@@ -1,38 +1,59 @@
-
 CREATE TABLE `{{$dd->pref . $tt}}_access` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `obj` varchar(10) DEFAULT NULL,
-  `obj_id` int(11) NOT NULL DEFAULT '0',
-  `name` varchar(255) NOT NULL DEFAULT '',
-  `comment` varchar(255) DEFAULT NULL,
+  `obj` varchar(55) NOT NULL,
+  `crud` int(11) NOT NULL, -- c=1|r=2|u=4|d=8|x=16
+  `obj_id` int(11) DEFAULT 0,
+  `is_deny` int(11) DEFAULT 0,
+  `pid` int(11) DEFAULT 0,
+  `gid` int(11) DEFAULT 0,
+  `uid` int(11) DEFAULT 0,
+  `user_id` int(11) NOT NULL,
   `dt_c` datetime NOT NULL,
-  `c_user_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=%engine% DEFAULT CHARSET=utf8
 ~~
-CREATE TABLE `{{$dd->pref . $tt}}_grp_obj` (
+CREATE TABLE `{{$dd->pref . $tt}}_log` ( -- ACL's actions log (optional)
   `id` int(11) NOT NULL AUTO_INCREMENT,
-) ENGINE=%engine% DEFAULT CHARSET=utf8
-~~
-CREATE TABLE `{{$dd->pref . $tt}}_grp_user` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-) ENGINE=%engine% DEFAULT CHARSET=utf8
-~~
-CREATE TABLE "acl_object" ( -- objects for access & it's groups
-  "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  "name" VARCHAR(55) DEFAULT '-',
-  "grp_id" INTEGER DEFAULT 0,
-  "is_grp" INTEGER DEFAULT 0,
-  "comment" VARCHAR(255) DEFAULT NULL,
-  "dt" DATETIME NOT NULL
-);
-INSERT INTO "acl_object" values (1, 'ACL self', 0, 1, '', '1971-01-01 01:01:01')
-~~
-CREATE TABLE `{{$dd->pref . $tt}}_profile` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL DEFAULT '',
+  `user_id` int(11) NOT NULL,
   `comment` varchar(255) DEFAULT NULL,
   `dt` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=%engine% DEFAULT CHARSET=utf8
-
+~~
+CREATE TABLE `{{$dd->pref . $tt}}_user2grp` ( -- user's groups
+  `user_id` int(11) NOT NULL,
+  `grp_id` int(11) NOT NULL
+) ENGINE=%engine% DEFAULT CHARSET=utf8
+~~
+CREATE TABLE `{{$dd->pref . $tt}}_object` ( -- objects for access & its types
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(55) DEFAULT '-',
+  `typ_id` int(11) DEFAULT 0,
+  `is_typ` int(11) DEFAULT 0,
+  `comment` varchar(255) DEFAULT NULL,
+  `dt` DATETIME NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=%engine% DEFAULT CHARSET=utf8;
+INSERT INTO `{{$dd->pref . $tt}}_object` values (1, 'ACL self', 0, 1, '', '1971-01-01 01:01:01');
+INSERT INTO `{{$dd->pref . $tt}}_object` values (2, 'acla', 1, 0, 'ACL access', '1971-01-01 01:01:01');
+INSERT INTO `{{$dd->pref . $tt}}_object` values (3, 'aclg', 1, 0, 'User Groups X=change access', '1971-01-01 01:01:01');
+INSERT INTO `{{$dd->pref . $tt}}_object` values (4, 'acll', 1, 0, 'ACL action''s log', '1971-01-01 01:01:01');
+INSERT INTO `{{$dd->pref . $tt}}_object` values (5, 'aclo', 1, 0, 'ACL objects', '1971-01-01 01:01:01');
+INSERT INTO `{{$dd->pref . $tt}}_object` values (6, 'aclp', 1, 0, 'Users profiles X=change access', '1971-01-01 01:01:01');
+INSERT INTO `{{$dd->pref . $tt}}_object` values (7, 'aclt', 1, 0, 'ACL object types', '1971-01-01 01:01:01');
+INSERT INTO `{{$dd->pref . $tt}}_object` values (8, 'aclu', 1, 0, 'ACL users X=change access', '1971-01-01 01:01:01');
+INSERT INTO `{{$dd->pref . $tt}}_object` values (9, 'aclv', 1, 0, 'ACL users R-register D-lock X-emulate', '1971-01-01 01:01:01');
+~~
+CREATE TABLE `{{$dd->pref . $tt}}_user` ( -- profiles & user groups
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(55) DEFAULT '',
+  `is_grp` int(11) DEFAULT 0,
+  `comment` varchar(255) DEFAULT NULL,
+  `dt` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=%engine% DEFAULT CHARSET=utf8;
+INSERT INTO `{{$dd->pref . $tt}}_user` values (1, 'Anonymous', 0, 'Not authorized', '1971-01-01 01:01:01');
+UPDATE `{{$dd->pref . $tt}}_user` set id=0 WHERE id=1;
+INSERT INTO `{{$dd->pref . $tt}}_user` values (1, 'Root', 0, 'Undeniable full access', '1971-01-01 01:01:01');
+INSERT INTO `{{$dd->pref . $tt}}_user` values (2, 'Mia', 0, 'Minimal access', '1971-01-01 01:01:01');
+INSERT INTO `{{$dd->pref . $tt}}_user` values (3, 'Admin', 0, 'Default admin', '1971-01-01 01:01:01');

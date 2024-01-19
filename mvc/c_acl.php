@@ -5,12 +5,14 @@ class c_acl extends Controller
     private $pap;
 
     function head_y($action) {
-        $acl = explode('/', array_flip(SKY::$plans['main']['ctrl'])['acl']);
         $this->k_acl = new stdClass;
-        $this->k_acl->tune = 2 == count($acl) ? $acl[0] : 'main';
         $this->pap = ACM::instance()->cfg()->pap;
         MVC::body("ware." . substr($action, 2));
         return parent::head_y($action);
+    }
+
+    function empty_a() {
+        jump(ACM::Raclu() ? 'acl?users' : HOME);
     }
 
     function a_error() {

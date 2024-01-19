@@ -9,7 +9,7 @@
     "coresky production ware"
   ],
   "require": {
-    "php": ">7.0",
+    "php": ">=7.4.0",
     "energy/air": "*"
   },
   "authors": [
