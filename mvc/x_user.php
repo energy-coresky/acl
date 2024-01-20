@@ -57,14 +57,17 @@ class t_user extends \Model_t
         $ary = $id ? $this->row($id, '~') : [];
         $ary['passw'] = '';
         $profiles = array_filter(SKY::$profiles, fn($k) => $k, ARRAY_FILTER_USE_KEY);
-        $form = new Form([
+        $uname = $this->uname ? ['+uname' => ['User Name']] : [
+            'fname' => ['First Name'],
+            'lname' => ['Last Name'],
+        ];
+        $form = new Form($uname + [
             -1 => ['state' => ['State not valid', '/^(' . implode('|', array_keys(SKY::$states)) . ')$/']],
             '.login' => ['Login'],
             '*passw' => ['Password'],
             '-email' => ['E-mail'],
             '/state' => ['State', 'select', SKY::$states, 'class="w170"', 'act'],
             '#pid' => ['Profile', 'select', $profiles, 'class="w170"', 2],
-            '+uname' => ['User Name'],
             '#x' => ['Try to send e-mail to user', 'chk', '', 1],
             ['Submit', 'submit', 'onclick="return sky.f.submit()"'],
         ], $ary);
@@ -91,8 +94,9 @@ class t_user extends \Model_t
 
     function users() {
         $filter = function ($s = 'from $_users u ') {
+            $uname = $this->uname ? 'u.uname' : 'u.fname like \1 or u.lname';
             return ($_GET['s'] ?? false) && is_string($_GET['s'])
-                ? $this->qp($s . 'where u.login like $+ or u.email like \1 or u.uname like \1', "%$_GET[s]%")
+                ? $this->qp($s . "where u.login like $+ or u.email like \\1 or $uname like \\1", "%$_GET[s]%")
                 : $this->qp($s);
         };
 

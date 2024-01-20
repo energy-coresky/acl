@@ -13,10 +13,9 @@ class ware extends \Wares
         return [
             'connection' => ['Database connection', 'select', \DEV::databases(['main'])],
             'tt' => ['Table\'s tune (middle part)', '', '', 'acl'],
-            'ext' => ['Ware\'s mode', 'radio', ['simple', 'extended'], 1],
             'log' => ['Logate C/U/D in ACL ware', 'radio', ['off', 'on'], 1],
             'pap' => ['Profiles from APP', 'radio', ['off', 'on'], 0],
-            'ram' => ['Use `ram` plan for Redis cache', 'radio', ['off', 'on'], 0],
+# 2do?      'ram' => ['Use `ram` plan for Redis cache', 'radio', ['off', 'on'], 0],
             'ipp' => ['Items per page for paginations', 'number', '', 17],
         ];
     }
@@ -24,7 +23,7 @@ class ware extends \Wares
     function tables($dd, $tt) {
         $ary = [];
         foreach ($this->tables as $one)
-            $ary[] = [$name = $dd->pref . $tt . "_$one", $dd->_tables($name)];
+            $ary[] = [$name = $tt . "_$one", $dd->_tables($name)];
         return $ary;
     }
 
@@ -50,6 +49,10 @@ class ware extends \Wares
                 foreach (Rare::split($str) as $create)
                     $dd->sqlf(SQL::NO_PARSE, $create); //2do: use migrations
             }
+            $wares = Plan::_r($to = ['main', 'wares.php']);
+            $struct = SQL::open($cfg->connection, 'main')->_struct('users');
+            $wares['acl']['options']['uname'] = isset($struct['uname']);
+            Plan::_s($to, \Boot::auto($wares));
             echo 'OK';
             return;
         }

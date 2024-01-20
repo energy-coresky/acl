@@ -40,7 +40,7 @@ class t_object extends \Model_t
         } else {
             if (!$page = $this->page($from = $this->filter(), [4, 6]))
                 return 404;
-            $list = $this->sql("#select name as q, * $from order by name limit $this->x0, $this->ipp");
+            $list = $this->sql("#select name as q, id, name, comment, typ_id $from order by name limit $this->x0, $this->ipp");
         }
 
         if ('uid' == $this->_1) { # userID (integrated)

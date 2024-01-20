@@ -16,7 +16,7 @@
 #.us.up
 <b>{!SKY::$states[$usr->state] ?? '<r>Broken user state!!!</r>'!}</b>
 #.un.us
-<b>{{$usr->uname}}</b> <a href="?user={{$usr->id}}">edit user</a>
+<b>{{$usr->uname ?? "$usr->fname $usr->lname"}}</b> <a href="?user={{$usr->id}}">edit user</a>
 #.uid.un
 @inc(_ware.menu)
 <h1>User login: <u>{{$usr->login}}</u>, ID={{$usr->id}}</h1>

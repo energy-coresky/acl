@@ -104,7 +104,7 @@ class t_access extends \Model_t
             return $ary ? ($list[$row->key]->crud = $fn) : $fn;
         };
 
-        $select = '&select *, !! as key from $_ where $$ and $$ order by obj, obj_id, uid, is_deny';
+        $select = '&select *, !! as "key" from $_ where $$ and $$ order by obj, obj_id, uid, is_deny';
         $keys = array_keys($list);
         $qp = $oid ? qp('obj=$+ and obj_id in (0, $@)', $oid, $keys) : qp('obj in ($@) and obj_id=0', $keys);
         $mem = ['', 0];

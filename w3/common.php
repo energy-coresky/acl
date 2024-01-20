@@ -5,16 +5,16 @@ use SKY, SQL, common_c;
 
 trait common
 {
-    protected $ext;
     protected $ipp;
+    protected $uname;
     protected $x0;
 
     function head_y() {
         $cfg = $this->cfg();
         $table = 'ACM' == __CLASS__ ? 'user2grp' : substr(explode('\\', __CLASS__)[1], 2);
         $this->table = $cfg->tt . '_' . $table;
-        $this->ext = $cfg->ext;
         $this->ipp = $this->x0 = $cfg->ipp;
+        $this->uname = $cfg->uname ?? null;
         return SQL::open($cfg->connection, 'main');
     }
 

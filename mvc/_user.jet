@@ -98,7 +98,7 @@ Total: {{$_}} item@if(1!=$_)s~if
 #.mail ---------------------------------------
 @if($id)Account updated@elseNew account~if at {{_PUBLIC}}~
 <p>
-  Hello, {{$uname}}!<br>
+  Hello, {{$uname ?? "$fname $lname"}}!<br>
   @if($id)
     Your account has been changed
   @else
