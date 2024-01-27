@@ -1,0 +1,30 @@
+# ..with unified SQL syntax..
+tables:
+  _access:
+
+  _log:
+    id: int NOT NULL auto_increment
+    user_id: int NOT NULL
+    comment: varchar(255) DEFAULT NULL
+    dt: datetime NOT NULL
+    -:
+      keys:
+        - primary(id)
+
+  _user2grp:
+
+  _object:
+    # .. all columns
+    '':
+      keys:
+        - PRIMARY KEY (id)
+      insert:
+        - (1, 'ACL self', 0, 1, '', '1971-01-01 01:01:01')
+      # 2do
+
+  _user:
+
+
+..2do: continue
+
+#sky y acl database.yaml

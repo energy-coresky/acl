@@ -1,6 +1,9 @@
 <?php
 
-class Acl extends Console
+namespace acl;
+use Plan, MVC;
+
+class app extends \Console
 {
     function __construct($argv = [], $found = []) {
         Plan::set('acl', fn() => parent::__construct($argv, $found));
@@ -13,7 +16,7 @@ class Acl extends Console
 
     /** ACL test */
     function a_t() {
-        MVC::$cc = new common_c;
+        MVC::$cc = new \common_c;
         echo (string)MVC::$cc->x_object;
     }
 }

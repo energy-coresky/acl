@@ -3,4 +3,4 @@ core:
     app:
       type: prod
       flags: tune
-    view: {path: __DIR__/mvc}
+    view: {path: $SELF/mvc}
