@@ -15,7 +15,7 @@ tables:
 
   _object:
     # .. all columns
-    '':
+    -:
       keys:
         - PRIMARY KEY (id)
       insert:
