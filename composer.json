@@ -1,7 +1,7 @@
 {
   "name": "coresky/acl",
   "license": "MIT",
-  "description": "Prod-ware for ACL",
+  "description": "Production ware for ACL",
   "keywords": [
     "acl",
     "access control list",

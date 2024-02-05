@@ -3,8 +3,7 @@
 
 Production ware. Use this product if your application require access control manager.
 
-This ACL ware support simple and extended mode for manage access for
-CRUD operations. CUD operation logging configurable at the ware installation stage.
+CUD operation logging configurable at the ware installation stage.
 
 **Simple mode**: Create/Read/Update/Delete for users profile <span style="color:green">allow</span> objects.
 User's groups and single _user\_id_ do not used for ACL.
